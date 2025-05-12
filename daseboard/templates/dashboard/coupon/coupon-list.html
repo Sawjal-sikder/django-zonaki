@@ -1,0 +1,84 @@
+{% extends 'dashboard/base.html' %}
+
+
+{% block dashboard %}
+  <div class="content-wrapper">
+	  <div class="container-full">
+		<div class="content-header d-flex">
+			<div class="me-auto mt-2">
+				<h4 class="page-title">Coupon List</h4>
+			</div>
+			<div>
+				<a class="btn btn-primary me-2" href="{% url 'coupon-add-2' %}">Add User Coupon</a>
+			</div>
+			<div>
+				<a class="btn btn-primary" href="{% url 'coupon-add' %}">Add Product Coupon</a>
+			</div>
+		</div>
+		<section class="content">
+		  <div class="row">
+			  <div class="col-12">
+				<div class="box">
+				  <div class="box-body">
+					<div class="table-responsive">
+						<table id="productorder" class="table table-hover no-wrap product-order" data-page-size="10">
+							<thead>
+								<tr>
+                                    <th>ID</th>
+									<th>User</th>
+									<th>Coupon Type</th>
+                                    <th>Code</th>
+									<th>Amount</th>
+									<th>Max Value</th>
+									<th>Used</th>
+                                    <th>Expiry Date</th>
+                                    <th>Actions</th>
+								</tr>
+							</thead>
+							<tbody>		
+                                {% for c in coupons %}
+                                <tr>
+									<td>{{ c.id }}</td>
+									<td>{{ c.user }}</td>
+									<td>{% if c.product.all %}Product Coupon{% else %}User Coupon{% endif %}</td>
+                                    <td><strong>{{ c.code }}</strong></td>
+                                    <td>{{ c.coupon_types }}</td>
+                                    <td>{{ c.max_value }}</td>
+                                    <td>{{ c.used }}</td>   
+                                    <td>
+										{% if now <= c.valid_to %}
+											{{ c.valid_to }}
+										{% else %}
+											<span class="badge-danger p-2 rounded">Expired</span>
+										{% endif %}
+									</td>
+									<td>
+									{% if c.product.all %}
+										<a href="{% url 'coupon-update' c.pk %}" class="text-info me-10" data-bs-toggle="tooltip" data-bs-original-title="Edit">
+										<i class="ti-marker-alt"></i>
+										</a>
+									{% else %}
+										<a href="{% url 'coupon-update-2' c.pk %}" class="text-info me-10" data-bs-toggle="tooltip" data-bs-original-title="Edit">
+										<i class="ti-marker-alt"></i>
+										</a>
+									{% endif %}
+										<a href="javascript:void(0)" class="text-danger delete-link"
+											data-url="{% url 'coupon-delete' c.pk %}"
+											data-bs-original-title="Delete" data-bs-toggle="tooltip">
+											<i class="ti-trash"></i>
+                                        </a>
+									</td>
+								</tr>
+								{% endfor %}								
+							</tbody>						
+						</table>
+					</div>
+				  </div>
+				</div>
+			  </div>		  
+		  </div>
+		</section>
+	</div>
+</div>
+{% endblock dashboard %}
+	

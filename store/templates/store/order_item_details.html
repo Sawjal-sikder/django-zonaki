@@ -1,0 +1,173 @@
+
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    .size-label{
+        border: 1px solid #bdbdbd;
+        width: 40px;
+    }
+    .color-label{
+        border: 1px solid #bdbdbd;
+        width: 70px;
+    }
+    .size-variation:checked + .size-label{
+    border: 1px solid #ED2224;
+    border-radius: 10%;
+    color:rgb(0, 0, 0);
+    }
+    .color-variation:checked + .color-label{
+    border: 1px solid #ED2224;
+    border-radius: 10%;
+    color:rgb(0, 0, 0);
+    }
+</style>
+
+<main class="main my-5">
+    <div class="page-content">
+        <div class="container">
+            <div class="product-details-top">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="product-gallery product-gallery-vertical">
+                            <div class="row">
+                                <figure class="product-main-image">
+                                    <img id="product-zoom" src="{{ cartitems.item.image.url }}" data-zoom-image="{{ cartitems.item.image.url }}" alt="product image">
+
+                                    <a href="#" id="btn-product-gallery" class="btn-product-gallery">
+                                        <i class="icon-arrows"></i>
+                                    </a>
+                                </figure><!-- End .product-main-image -->
+
+                                <div id="product-zoom-gallery" class="product-image-gallery">
+                                    <a class="product-gallery-item active" href="#" data-image="{{ cartitems.item.image.url }}">
+                                        <img src="{{ cartitems.item.image.url }}" alt="product side">
+                                    </a>
+                                    
+                                    {% for im in img %}
+                                    <a class="product-gallery-item" href="#" data-image="{{ im.image.url }}" data-zoom-image="{{ im.image.url }}">
+                                        <img src="{{ im.image.url }}" alt="product cross">
+                                    </a>
+                                    {% endfor %}
+
+                                </div><!-- End .product-image-gallery -->
+                            </div><!-- End .row -->
+                        </div><!-- End .product-gallery -->
+                    </div><!-- End .col-md-6 -->
+
+                    <div class="col-md-6">
+                        <div class="product-details">
+                            <h1 class="product-title">{{ cartitems.item.product_name }}</h1><!-- End .product-title -->
+                                <b>{% if cartitems.item.discount_price %}
+                                <span class="new-price"> ৳{{ cartitems.item.discount_price }} </span>
+                                <br>
+                                <span class="old-price"><del>Was ৳{{ cartitems.item.price }} </del></span><span> saving(Tk{{ cartitems.item.saving_price }}) {{ cartitems.item.saving_percent|floatformat:"2" }}%</span>
+                                {% else %}
+                                <span > ৳{{ cartitems.item.price }} </span>
+                                {% endif %} 
+                                </b>
+                            <!-- End .product-price -->
+
+                            <div class="product-content">
+                                <p>{{ cartitems.item.sort_discription }}</p>
+                            </div><!-- End .product-content -->
+                            <div class="product-details-footer">
+                                <div class="product-cat">
+                                    <span>Category:</span>
+                                    <a href="#">{{ cartitems.item.categoris.category_name }}</a>,
+                                </div><!-- End .product-cat -->
+
+                                <div class="social-icons social-icons-sm">
+                                    <span class="social-label">Share:</span>
+                                    <a href="#" class="social-icon" title="Facebook" target="_blank"><i class="icon-facebook-f"></i></a>
+                                    <a href="#" class="social-icon" title="Twitter" target="_blank"><i class="icon-twitter"></i></a>
+                                    <a href="#" class="social-icon" title="Instagram" target="_blank"><i class="icon-instagram"></i></a>
+                                    <a href="#" class="social-icon" title="Pinterest" target="_blank"><i class="icon-pinterest"></i></a>
+                                </div>
+                            </div><!-- End .product-details-footer -->
+                        </div><!-- End .product-details -->
+                    </div><!-- End .col-md-6 -->
+                </div><!-- End .row -->
+            </div><!-- End .product-details-top -->
+
+            <div class="product-details-tab">
+                <ul class="nav nav-pills justify-content-center" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="product-desc-link" data-toggle="tab" href="#product-desc-tab" role="tab" aria-controls="product-desc-tab" aria-selected="true">Description</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="product-info-link" data-toggle="tab" href="#product-info-tab" role="tab" aria-controls="product-info-tab" aria-selected="false">Additional information</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="product-shipping-link" data-toggle="tab" href="#product-shipping-tab" role="tab" aria-controls="product-shipping-tab" aria-selected="false">Shipping & Returns</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="product-desc-tab" role="tabpanel" aria-labelledby="product-desc-link">
+                        <div class="product-desc-content">
+                            <p style='color:black;'>{{ cartitems.item.discription|safe }}</p>
+                        </div><!-- End .product-desc-content -->
+                    </div><!-- .End .tab-pane -->
+                    <div class="tab-pane fade" id="product-info-tab" role="tabpanel" aria-labelledby="product-info-link">
+                        <div class="product-desc-content">
+                            <p style='color:black;'>{{ cartitems.item.aditional_discription }}</p>
+                        </div><!-- End .product-desc-content -->
+                    </div><!-- .End .tab-pane -->
+                    <div class="tab-pane fade" id="product-shipping-tab" role="tabpanel" aria-labelledby="product-shipping-link">
+                        <div class="product-desc-content">
+                            <p style='color:black;'>We deliver to over 100 countries around the world. For full details of the delivery options we offer, please view our <a href="#">Delivery information</a><br>
+                            We hope you’ll love every purchase, but if you ever need to return an item you can do so within a month of receipt. For full details of how to make a return, please view our <a href="#">Returns information</a></p>
+                        </div><!-- End .product-desc-content -->
+                    </div><!-- .End .tab-pane -->
+                </div><!-- End .tab-content -->
+            </div><!-- End .product-details-tab -->
+
+
+            <style>
+                    .size-variation:checked + .size-label{
+                       background-color: #ED2224;
+                        border-radius: 10%;
+                        color:#fff;
+                    }
+            </style>
+            <div class="card mt-5 col-md-6 mx-auto py-3 shadow">
+                <h3>Send Your Review</h3>
+                <form action="" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+   
+                    <div class="form-group">
+                        
+                        <div class="details-filter-row details-row-size">
+                            <label for="">Rating</label>                             
+                            {% for rating  in form.rating %}
+                            {% if forloop.counter == 5 %}
+                              <input type="radio" class="size-variation" id="size{{ forloop.counter }}" hidden  name="rating" value="{{ forloop.counter }}" checked>
+                              {% else %}
+                                <input type="radio" class="size-variation" id="size{{ forloop.counter }}" hidden  name="rating" value="{{ forloop.counter }}">
+                            {% endif %}
+                              <label class="size-label text-center" for="size{{ forloop.counter }}">{{ forloop.counter }} <i class="fa-solid fa-star"></i></label><br>
+                            {% endfor %}
+                        </div>
+                       
+                    </div>
+                    <div class="form-group">
+                        <label for="">Review</label>
+                        {{ form.review }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="formFileMultiple" class="form-label">Image(optional)</label>
+                        <input name="image" class="form-control" type="file" id="formFileMultiple" multiple>
+                      </div>
+        
+                    <button style="background-color: #ED2224; color: white; float: right;" class="btn btn-sm">Send</button>
+                </form>
+            </div>
+        </div><!-- End .container -->
+    </div><!-- End .page-content -->
+</main><!-- End .main -->
+
+{% endblock %}

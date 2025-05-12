@@ -1,0 +1,54 @@
+{% extends "store/base.html" %}
+{% load static %}
+
+
+{% block content %}
+<section class="content-section my-5">
+  <div class="container my-5">
+    <div class="row justify-content-center align-items-center shadow">
+      <div class="col-11 col-lg-5 my-4 p-4">
+        <form action="" method="post">
+          <h2>Create a vendor account</h2>
+          {% if messages %}
+          <ul class="messages text-danger">
+            {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+          <hr class="mt-1 mb-3">
+          {% csrf_token %}
+
+      
+          <div class="form-group">
+            <input type="text" class="form-control" name="full_name" placeholder="Full name" required>
+          </div>
+          <div class="form-group">
+            <input type="tel" class="form-control" name="phone" placeholder="Phone number" 
+                  pattern="^(?:\+?88)?01[3-9]\d{8}$" title="Please enter a valid Bangladeshi phone number" required>
+          </div>          
+          <div class="form-group">
+            <input type="email" class="form-control" name="email" placeholder="E-mail Address" required>
+          </div>
+          <div class="form-group">
+            <input type="password" class="form-control" name="password1" placeholder="Password" required>
+          </div>
+          <div class="form-group">
+            <input type="password" class="form-control" name="password2" placeholder="Confirm Password" required>
+          </div>
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn w-100" style="background-color:#eb5525; color: white;">Sign Up</button>
+          </div>
+        </form>
+        <div class="my-3 text-center">
+          <p>If you have already an account?<a class="mx-2" href="{% url 'signin' %}">Login</a>now.</p>
+        </div>
+      </div>
+      <div class="col-11 col-lg-6 my-4 p-4">
+        <img src="{% static 'images/auth/sign_up.png' %}" class="img-fluid h-50" alt="Registration">
+      </div>
+    </div>
+  </div>
+  </div>
+</section>
+{% endblock content %}

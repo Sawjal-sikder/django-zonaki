@@ -1,0 +1,227 @@
+{% extends 'dashboard/base.html' %}
+{% load crispy_forms_tags %}
+{% load coupon_products %}
+
+{% block dashboard %}
+<style>
+	.custom_multiple_choice{
+		height: 250px;
+		overflow-y: scroll;
+		padding: 5px;
+	}
+	.div_user_per{
+		padding: 5px;
+		border: 1px dashed #000;
+	}
+	hr{
+		padding: 0 !important;
+		margin: 0 !important;
+	}
+</style>
+  <div class="content-wrapper">
+	  <div class="container-full">
+		<section class="content">
+			<div class="row">
+			  <div class="col-12">
+				<div class="box">
+				  <div class="box-body">
+					<h4 class="page-title">Add/Edit Coupon</h4>
+					<form action="" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+						<div class="form-body">
+							<div class="row">
+								<div class="col-md-6">
+									<div class="form-group">
+										{{ form.code|as_crispy_field }}
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										{{ form.coupon_type|as_crispy_field }}
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										{{ form.amount_or_percentage|as_crispy_field }}
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										{{ form.minimum_price_range|as_crispy_field }}
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										{{ form.valid_from|as_crispy_field }}
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										{{ form.valid_to|as_crispy_field }}
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										{{ form.max_value|as_crispy_field }}
+									</div>
+								</div>
+								{% if form.product %}
+								<div class="div_user_per mb-3">
+									<div class="d-flex align-items-center mb-2">
+										<div class="">
+										<input class="form-check-input" type="checkbox" id="id_product" onchange="robinChecks('all-choices-data')">
+										<label for="id_product" class="form-label mb-0">Select All</label>
+										</div>
+										<div class="ms-4">
+										<input class="form-control" type="text" placeholder="Search a product" id="js-serach-btn">
+										</div>
+									</div>
+									<hr>
+									<div class="custom_multiple_choice">
+										{% for p in form.product.field.queryset %}
+										<div class="form-check js-check">
+											<input class="form-check-input all-choices-data" 
+												type="checkbox"
+												name="product" 
+												value="{{ p.id }}"
+												id="p-form-{{ forloop.counter }}"
+												{% if p in form.instance.product.all %}checked{% endif %}>
+											<label class="form-check-label" for="p-form-{{ forloop.counter }}">
+											{{ p }}
+											{% for i in request|coupon_products %}
+												{% for j in i.product.all %}
+													{% if p.id == j.id %}---|--- <span class="text-primary"> This Product already has {{ i.code }} coupon</span>{% endif %}
+												{% endfor %}
+											{% endfor %}
+											</label>
+										</div>
+										{% endfor %}
+									</div>
+								</div>
+								{% else %}
+								<div class="div_user_per mb-3">
+									<div class="d-flex align-items-center mb-2">
+										<div class="">
+											<input class="form-check-input" type="checkbox" id="id_user" onchange="robinChecks('all-choices-data-2')">
+											<label for="id_user" class="form-label mb-0">Select All</label>
+										</div>
+										<div class="ms-4">
+											<input class="form-control" type="text" placeholder="Search a user" id="js-serach-btn">
+										</div>
+									</div>
+									<hr>
+									<div class="custom_multiple_choice">
+										{% for p in form.coupon_user.field.queryset %}
+										<div class="form-check js-check">
+											<input class="form-check-input all-choices-data-2" 
+												type="checkbox"
+												name="coupon_user" 
+												value="{{ p.id }}"
+												id="p-form-{{ forloop.counter }}"
+												{% if p in form.instance.coupon_user.all %}checked{% endif %}>
+											<label class="form-check-label" for="p-form-{{ forloop.counter }}">
+											{{ p }}
+											{% for i in request|coupon_users %}
+												{% for j in i.coupon_user.all %}
+													{% if p.id == j.id %}---|--- <span class="text-primary"> This User already has {{ i.code }} coupon</span>{% endif %}
+												{% endfor %}
+											{% endfor %}
+											</label>
+										</div>
+										{% endfor %}
+									</div>
+								</div>
+								{% endif %}
+								<div class="col-md-12">
+									<div class="form-group">
+										{{ form.is_verified|as_crispy_field }}
+									</div>
+								</div>
+							</div>
+							<div class="form-actions text-end">
+                                <button type="submit" class="btn btn-primary"> <i class="fa fa-check"></i> Save</button>
+                            </div>
+						</div>
+					</form>
+				  </div>
+				</div>
+			  </div>		  
+		  </div>
+		</section>
+	</div>
+</div>
+<script>
+	const permissionsContainer = document.querySelector('.custom_multiple_choice');
+	const originalPermissionsHTML = permissionsContainer.innerHTML;
+
+	// Store checkbox states
+	let checkboxStates = {};
+
+	document.getElementById('js-serach-btn').addEventListener("input", function() {
+	let value = this.value.toLowerCase();
+	let newArray = [];
+	
+	// Update states for existing checkboxes
+	document.querySelectorAll('.js-check input').forEach(input => {
+		checkboxStates[input.id] = input.checked;
+	});
+
+	if (value) {
+		document.querySelectorAll('.js-check').forEach(data => {
+		let label = data.querySelector('label').innerText.toLowerCase();
+		if (label.includes(value)) {
+			newArray.push(data.outerHTML);
+		}
+		});
+		permissionsContainer.innerHTML = newArray.join('') || '<div>No permissions found</div>';
+	} else {
+		permissionsContainer.innerHTML = originalPermissionsHTML;
+	}
+
+	// Restore checkbox states
+	document.querySelectorAll('.js-check input').forEach(input => {
+		if (checkboxStates[input.id] !== undefined) {
+		input.checked = checkboxStates[input.id];
+		}
+	});
+	});
+
+	// Checkbox checked start
+	function robinChecks(className) {
+	const selectAll = event.target;
+	document.querySelectorAll(`.${className}`).forEach(choice => {
+		choice.checked = selectAll.checked;
+		// Update state for the "Select All" functionality
+		checkboxStates[choice.id] = selectAll.checked;
+	});
+	}
+</script>
+{% comment %} <script>
+    const permissionsContainer = document.querySelector('.custom_multiple_choice');
+    const originalPermissionsHTML = permissionsContainer.innerHTML;
+    document.getElementById('js-serach-btn').addEventListener("input", function() {
+      let value = this.value.toLowerCase();
+      let newArray = [];
+      if (value) {
+        document.querySelectorAll('.js-check').forEach(data => {
+          let label = data.querySelector('label').innerText.toLowerCase();
+          if (label.includes(value)) {
+            newArray.push(data.outerHTML);
+          }
+        });
+        permissionsContainer.innerHTML = newArray.join('') || 'No permissions found';
+      } else {
+        permissionsContainer.innerHTML = originalPermissionsHTML;
+      }
+    });
+	// checkbox checked start
+    function robinChecks(className) {
+		const selectAll = event.target;
+		document.querySelectorAll(`.${className}`).forEach(choice => {
+			choice.checked = selectAll.checked;
+		});
+	}
+</script> {% endcomment %}
+{% endblock dashboard %}
+
+

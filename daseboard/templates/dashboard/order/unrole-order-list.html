@@ -1,0 +1,190 @@
+{% extends 'dashboard/base.html' %}
+
+
+{% block dashboard %}
+<div class="content-wrapper">
+  <div class="container-full">
+    <div class="content-header d-flex">
+      <div class="me-auto mt-2">
+        <h4 class="page-title">Unrole Order List</h4>
+      </div>
+    </div>
+    <section class="content">
+      <div class="row">
+        <div class="col-12">
+          <div class="box">
+            <div class="box-body">
+                <form action="" method="get" class="filter-form">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <div class="pe-2 form-group d-flex align-items-center mb-0 js-staff-filter">
+                                <label for="from" class="form-label fw-bold me-2 mb-0 text-uppercase">Staffs:</label>
+                                <select name="staff_id" id="" class="form-select">
+                                    <option value="">Select User </option>
+                                    {% for i in users %}
+                                        <option value="{{ i.id }}" {% if staff_id == i.id|stringformat:"s" %}selected{% endif %}>{{ i }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="js-btn-filter">
+                                <button type="submit" class="bg-primary border-primary py-1 px-2 rounded">Filter</button>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <div class="pe-2 form-group d-flex align-items-center mb-0">
+                                <input type="radio" name="roled_type" id="2" value="False" {% if not roled_type %}checked{% endif %} onclick="roleUnroleStaffVisibility('False')">
+                                <label for="2" class="form-check-label fw-bold me-2 mb-0 text-uppercase">Unroled Order</label>
+                            </div>
+                            <div class="pe-2 form-group d-flex align-items-center mb-0">
+                                <input type="radio" name="roled_type" id="1" value="True" {% if roled_type %}checked{% endif %} onclick="roleUnroleStaffVisibility('True')">
+                                <label for="1" class="form-check-label fw-bold me-2 mb-0 text-uppercase">Roled Order</label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <div class="table-responsive">
+                        <div class="d-flex justify-content-between align-items-center mb-2 js-staff-role">
+                            <div class="d-flex justify-content-start align-items-center">
+                                <div class="pe-2 form-group d-flex align-items-center mb-0">
+                                    <label for="from" class="form-label fw-bold me-2 mb-0 text-uppercase">Staffs:</label>
+                                    <select name="user_id" id="" class="form-select" required>
+                                    <option value="">Select User</option>
+                                    {% for i in users %}
+                                        <option value="{{ i.id }}">{{ i }}</option>
+                                    {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="">
+                                    <input type="submit" class="bg-primary border-primary py-1 px-2 rounded" value="Set Roled">
+                                </div>
+                            </div>
+                        </div>
+                        <table id="" class="table table-hover no-wrap product-order" data-page-size="10">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <div class="d-flex">
+                                        <div class="form-gropu">
+                                            <input type="checkbox" class="form-control" id="user-btn">
+                                            <label for="user-btn" class="form-label"></label>
+                                        </div>
+                                        OrderID
+                                    </div>
+                                </th>
+                                <th>Customer Name</th>
+                                <th>Staff Name</th>
+                                <th>Total Amount</th>
+                                <th>Order Date</th>
+                                {% comment %} <th>Status</th> {% endcomment %}
+                                {% comment %} <th>Parcel</th> {% endcomment %}
+                                {% comment %} <th>Actions</th> {% endcomment %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in pending_orders %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex">
+                                        <div class="form-gropu">
+                                            <input type="checkbox" class="form-control js-user-ids" name="order_ids" value="{{ p.id }}" id="{{ p.id }}">
+                                            <label for="{{ p.id }}" class="form-label"></label>
+                                        </div>
+                                        <a href="javascript:void(0)"><strong>{{ p.orderId }}</strong></a>
+                                    </div>
+                                </td>
+                                <td>
+                                    {{ p.shipping_address.full_name }}
+                                </td>
+                                <td>{{p.staff_role }}</td>
+                                <td>{{p.total_order_amount }}</td>
+                                <td>{{ p.ordered_date }}</td>
+
+                                {% comment %} {% if p.order_status == 'Pending' %}
+                                <td><span class="badge bg-primary">{{p.order_status }}</span></td>
+                                {% elif p.order_status == 'Processing' %}
+                                <td><span class="badge bg-info">{{p.order_status }}</span></td>
+                                {% elif p.order_status == 'On the way' %}
+                                <td><span class="badge bg-warning">{{p.order_status }}</span></td>
+                                {% elif p.order_status == 'Complete' %}
+                                <td><span class="badge bg-success">{{p.order_status }}</span></td>
+                                {% elif p.order_status == 'Cancel' %}
+                                <td><span class="badge bg-danger">{{p.order_status }}</span></td>
+                                {% endif %} {% endcomment %}
+                                {% comment %} <td>
+                                    {% if p.others_transport_trakink_url %}
+                                    Others Transport
+                                    {% elif p.redx_percel_traking_number %}
+                                    Steadfast Transport
+                                    {% else %}
+                                    <a href="{% url 'create_parcel' p.pk %}" class="text-info me-10" data-bs-toggle="tooltip"
+                                    data-bs-original-title="create">
+                                    Create Parcel
+                                    </a>
+                                    {% endif %}
+                                </td> {% endcomment %}
+                                {% comment %} <td>
+                                    
+                                    <a href="{% url 'order_update' p.pk %}" class="text-info me-10" data-bs-toggle="tooltip"
+                                    data-bs-original-title="Edit">
+                                        <i class="ti-marker-alt"></i>
+                                    </a>
+                                   
+                                    <a href="{% url 'order_detail' p.pk %}" class="text-primary" data-bs-original-title="View"
+                                    data-bs-toggle="tooltip">
+                                    <i class="ti-eye"></i>
+                                    </a>
+                                    
+                                    <a href="javascript:void(0)" class="text-danger delete-link" data-url="{% url 'order_delete' p.pk %}" data-bs-original-title="Delete" data-bs-toggle="tooltip">
+                                        <i class="ti-trash"></i>
+                                    </a>
+                                
+                                </td> {% endcomment %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        </table>
+                    </div>
+                </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+<script>
+    const filterForm = document.querySelector('.filter-form');
+    const filterStaff = document.querySelector('.js-staff-filter');
+    const filterbtnStaff = document.querySelector('.js-btn-filter');
+    const roleStaff = document.querySelector('.js-staff-role');
+    function roleUnroleStaffVisibility(value){
+        if (value == 'True'){
+            roleStaff.classList.add('d-none');
+            filterStaff.classList.remove('d-none');
+            filterbtnStaff.classList.remove('d-none');
+            filterForm.style.marginBottom = '0px';
+        } else {
+            filterForm.style.marginBottom = '-32px';
+            filterStaff.classList.add('d-none');
+            filterbtnStaff.classList.add('d-none');
+            roleStaff.classList.remove('d-none');
+        }
+    }
+    roleUnroleStaffVisibility('{{roled_type}}');
+
+    document.getElementById('user-btn').addEventListener('change', function () {
+        let btn = this.checked;
+        if (btn) {
+            document.querySelectorAll('.js-user-ids').forEach(data => {
+                data.checked = true;
+            });
+        } else {
+            document.querySelectorAll('.js-user-ids').forEach(data => {
+                data.checked = false;
+            });
+        }
+    });
+</script>
+{% endblock dashboard %}

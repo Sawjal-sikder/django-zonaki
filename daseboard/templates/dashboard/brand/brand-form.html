@@ -1,0 +1,121 @@
+{% extends 'dashboard/base.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block dashboard %}
+<div class="content-wrapper">
+	<div class="container">
+		<section class="content">
+			<div class="row justify-content-center align items-center">
+				<div class="col-12 text-end">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddBrand">
+                Add Brand
+            </button>
+				</div>
+        <!--Add Brand Modal -->
+        <div class="modal fade" id="AddBrand" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+            <div class="modal-content rounded">
+                <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Add Brand</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="col-12 mb-3">
+                            <label for="idBrand" class="sr-only">Category Name</label>
+                            <input type="text" name="name" class="form-control" id="idBrand" placeholder="Brand Name" required>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label for="id_image" class="sr-only">Image</label>
+                            <input type="file" name="image" class="form-control" id="id_image">
+                        </div>
+                        {% if not request.user.is_vendor %}
+                        <div class="col-12 mb-3 text-start">
+                            <div class="form-check">
+                                <input type="checkbox" name="is_verified" class="form-check-input" id="id_is_verified" checked> 
+                                <label class="form-check-label" for="id_is_verified">Is Verified</label>
+                            </div>
+                        </div>
+                        {% endif %}
+                        <div class="col-12 text-end">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="reset" class="btn btn-danger">Reset</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            </div>
+        </div>
+			</div>
+		</section>
+        <section class="content">
+            <div class="row">
+              <div class="col-12">
+                <div class="box">
+                  <div class="box-body">
+                    <div class="table-responsive">
+                      <form id="brand-form" method="post">
+                        {% csrf_token %}
+                        <table id="productorder" class="table table-hover no-wrap product-order" data-page-size="10">
+                          <thead>
+                            <tr>
+                              <th class="align-middle">
+                                <div class="form-check">
+                                  <input type="checkbox" id="AllBrand" class="form-check-input" onclick="selectAllCheckboxes(this)">
+                                  <label for="AllBrand"></label>
+                                </div>
+                              </th>
+                              <th>ID</th>
+                              <th>Name</th>
+                              <th>Slug</th>
+                              <th>Image</th>
+                              {% if user.is_superuser == True and user.is_staff == True %}
+                                <th>Actions</th>
+                              {% endif %}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% for c in brands %}
+                              <tr>
+                                <td>
+                                  <div class="form-check">
+                                    <input type="checkbox" id="Brand{{ forloop.counter0 }}" class="form-check-input" name="selected_brands" value="{{ c.pk }}">
+                                    <label for="Brand{{ forloop.counter0 }}"></label>
+                                  </div>
+                                </td>
+                                <td>{{ c.id }}</td>
+                                <td>{{ c.name }}</td>
+                                <td>{{ c.slug }}</td>
+                                {% if c.image %}
+                                  <td>
+                                    <img src="{{ c.image.url }}" alt="brand" style="width: 30px;" />
+                                  </td>
+                                {% else %}
+                                  <td>no image</td>
+                                {% endif %}
+                                {% if user.is_superuser == True and user.is_staff == True %}
+                                  <td>
+                                    <a href="{% url 'brand-update' c.slug %}" class="text-info me-10" data-bs-toggle="tooltip" data-bs-original-title="Edit"><i class="ti-marker-alt"></i></a>
+                                    <a href="javascript:void(0)" class="text-danger delete-link" data-url="{% url 'brand-delete' c.slug %}" data-bs-original-title="Delete" data-bs-toggle="tooltip"><i class="ti-trash"></i></a>
+                                  </td>
+                                {% endif %}
+                              </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                        <div class="d-flex">
+                          <button type="button" class="btn btn-primary" id="verify-button" style="display: none;" onclick="submitForm('{% url 'selected_brand_verify' %}')">Verify Selected Brand</button>
+                          <button type="button" class="btn btn-danger ms-3" id="delete-button" style="display: none;" onclick="submitForm('{% url 'selected_brand_delete' %}')">Delete Selected Brand</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+	</div>
+</div>
+{% endblock dashboard %}

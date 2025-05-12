@@ -1,0 +1,232 @@
+{% extends 'dashboard/base.html' %}
+{% block dashboard %}
+  <div class="content-wrapper">
+    <div class="container-full">
+      <div class="content-header">
+        <div class="d-flex align-items-center">
+          <div class="me-auto">
+            <h4 class="page-title">Retuen Product Details</h4>
+          </div>
+        </div>
+      </div>
+      <section class="content">
+        <div class="row">
+          <div class="col-xxxl-4 col-12">
+            <div class="box">
+              <div class="box-body">
+                <div class="d-flex align-items-center">
+                    
+                    {% for r  in return_products %}
+                        
+                    <img class="me-10 rounded-circle avatar avatar-xl b-2 border-primary" src="{{ r.customer.profile.image.url }}" alt="Customer" />
+                    <div>
+                      <h4 class="mb-0">{{ r.customer }}</h4>
+                    {% endfor %}
+                        
+                    <span class="fs-14 text-info">
+                      {% if order.user.is_superuser %}
+                        Superuser
+                      {% elif order.user.is_staff %}
+                        Staff
+                      {% else %}
+                        Customer
+                      {% endif %}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xxxl-8 col-12">
+            <div class="box">
+              <div class="box-body">
+                <div class="table-responsive-xl">
+                  <table class="table product-overview">
+                    <thead>
+                      <tr>
+                        <th>Customer</th>
+                        <th>Product Name</th>
+                        <th>Return Reason</th>
+                        <th>Status</th>
+                        <th>Return Shipment</th>
+                        <th>Comment</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for p in return_products %}
+                        <tr>
+                          <td>{{ p.customer }}</td>
+                          <td>{{ p.items.item.product_name }}</td>
+                          <td>{{ p.get_return_reason_display }}</td>
+                          {% if p.status == 'Pending' %}
+                            <td>
+                              <span class="badge bg-primary">{{ p.status }}</span>
+                            </td>
+                          {% elif p.status == 'Processing' %}
+                            <td>
+                              <span class="badge bg-info">{{ p.status }}</span>
+                            </td>
+                          {% elif p.status == 'On the way' %}
+                            <td>
+                              <span class="badge bg-warning">{{ p.status }}</span>
+                            </td>
+                          {% elif p.status == 'Complete' %}
+                            <td>
+                              <span class="badge bg-success">{{ p.status }}</span>
+                            </td>
+                          {% elif p.status == 'Cancel' %}
+                            <td>
+                              <span class="badge bg-danger">{{ p.status }}</span>
+                            </td>
+                          {% endif %}
+                          <td>{{ p.return_shipment }}</td>
+                          <td>{{ p.comment }}</td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div class="box">
+              <div class="box-body">
+                <table class="table table-summary">
+                  <tbody>
+                    <tr class="summary-subtotal">
+                      <td colspan="4" class="col-12 text-left h4">Product Image</td>
+                    </tr>
+
+                    {% for p in return_products %}
+                     
+                        <tr class="summary-total">
+                          <td>
+                            <div class="row">
+                              <div class="col-6 text-left">
+                                <p>Image</p>
+                              </div>
+
+                              <div class="col-6" style="text-align:right;">
+                                {% for c in p.returnproductimages.all %}
+                                  <img src="{{ c.img.url }}" alt="" style="width:150px; aspect-ratio: 1/1;" />
+                                {% endfor %}
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+    
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="box">
+              <div class="box-body">
+                <table class="table table-summary">
+                  <tbody>
+                    <tr class="summary-subtotal">
+                      <td colspan="4" class="col-12 text-left h4">Product Information</td>
+                    </tr>
+
+                    {% for p in return_products %}
+             
+                        <tr class="summary-total">
+                          <td>
+                            <div class="row">
+                              <div class="col-6 text-left">
+                                <p>Return Request Price</p>
+                              </div>
+                                <div class="col-6" style="text-align:right;">
+                                  <p>৳{{ p.return_request_price }}</p>
+                                </div>
+                            </div>
+                          </td>
+                        </tr>
+                        {% if request.user.is_superuser and request.user.is_staff %}
+                        <tr class="summary-total">
+                          <td>
+                            <div class="row">
+                              <div class="col-6 text-left">
+                                <p>Return Charge</p>
+                              </div>
+                              <div class="col-6" style="text-align:right ;">
+                                <p>৳{{ p.return_charge }}</p>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr class="summary-total">
+                          <td style="color: green;">
+                            <div class="row">
+                              <div class="col-6 text-left">
+                                <p>Return Price</p>
+                              </div>
+                              <div class="col-6" style="text-align:right ;">
+                                <p>+ ৳{{ p.return_price }}</p>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      {% endif %}
+                    {% endfor %}
+                  </tbody>
+                </table>
+                <p style="color:black; text-align: center;">Payment Method - {{ order.payment_option }}</p>
+              </div>
+            </div>
+            <div class="box">
+              <div class="box-body">
+                <table class="table table-summary">
+                  <tbody>
+                    <tr class="summary-subtotal">
+                      <td colspan="4" class="col-12 text-left h4">Bank Information</td>
+                    </tr>
+                    <tr class="col-12">
+                      <td colspan="4">
+                        {% for p in return_products %}
+                          <div class="row">
+                            <div class="col-6 text-left">
+                              <p>Bank Transfer</p>
+                            </div>
+                            <div class="col-6" style="text-align:right;">
+                              <p>{{ p.bank_transfer }}</p>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-6 text-left">
+                              <p>Account Number</p>
+                            </div>
+                            <div class="col-6" style="text-align:right;">
+                              <p>{{ p.account_number }}</p>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-6 text-left">
+                              <p>Account Name</p>
+                            </div>
+                            <div class="col-6" style="text-align:right;">
+                              <p>{{ p.account_name }}</p>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-6 text-left">
+                              <p>Branch Name</p>
+                            </div>
+                            <div class="col-6" style="text-align:right;">
+                              <p>{{ p.branch_name }}</p>
+                            </div>
+                          </div>
+                        {% endfor %}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+{% endblock %}

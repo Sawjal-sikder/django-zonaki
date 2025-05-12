@@ -1,0 +1,80 @@
+<style>
+    .m-active a,
+    .text-primary,
+    .mobile-cats-menu li a:hover {
+		color: #eb5525 !important;
+	}
+    .card-profile {
+		height: 200px;
+		background-color: #eb5525;
+	}
+</style>
+
+<div class="col-12 col-md-4 col-lg-3 shadow p-3 rounded mb-3"> 
+    <div class="text-center my-5">
+        <img src="{{ user.profile.image.url }}" class="mx-auto my-4 rounded-circle" alt="User" style="height: 70px; width: 70px;">
+        <h5 class="text-dark fw-bolder">{{ user.full_name }}</h5>
+        <p class="text-dark fw-bold">{{ user.email }}</p>
+    </div>
+    <div class="d-none d-md-block">
+        <nav class="mobile-cats-nav">
+            <ul class="mobile-cats-menu dashboard-menu">
+                {% url 'customer_dashboard' as customer_dashboard_url %}
+                <li class="{% if request.path == customer_dashboard_url %}m-active{% endif %}">
+                    <a href="{{ customer_dashboard_url }}"><i class="fa-solid fa-house"></i>Dashboard</a>
+                </li>
+        
+                {% url 'cart_summary' as cart_summary_url %}
+                <li class="{% if request.path == cart_summary_url %}m-active{% endif %}">
+                    <a href="{{ cart_summary_url }}"><i class="fa-solid fa-cart-shopping"></i>Cart History</a>
+                </li>
+        
+                {% url 'order_summary' as order_summary_url %}
+                <li class="{% if request.path == order_summary_url %}m-active{% endif %}">
+                    <a href="{{ order_summary_url }}"><i class="fa-solid fa-book"></i>Purchase History</a>
+                </li>
+        
+                {% url 'wishlist' as wishlist_url %}
+                <li class="{% if request.path == wishlist_url %}m-active{% endif %}">
+                    <a href="{{ wishlist_url }}"><i class="fa-solid fa-heart"></i>Wishlist</a>
+                </li>
+        
+                {% url 'my_review' as my_review_url %}
+                <li class="{% if request.path == my_review_url %}m-active{% endif %}">
+                    <a href="{{ my_review_url }}"><i class="fa-solid fa-list"></i>My Review</a>
+                </li>
+        
+                {% url 'profile' as profile_url %}
+                {% url 'profile_update' as profile_update_url %}
+                <li class="{% if request.path == profile_url or request.path == profile_update_url %}m-active{% endif %}">
+                    <a href="{{ profile_url }}"><i class="fa-solid fa-circle-user"></i>Manage Profile</a>
+                </li>
+                
+                {% url 'return-product' as return_url %}
+                {% url 'return-status' as return_status_url %}
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropdown-toggle {% if request.path == return_url or request.path == return_status_url %}text-primary{% endif %}" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa-solid fa-rotate-left"></i>Return Product<span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu" style="min-width: 250px;">
+                        <li>
+                            <a style="font-size: 15px" href="{% url 'return-product' %}"> <span style="color:{% if request.path == return_url %}#eb5525{% else %}#000{% endif %}">Request</span></a>
+                        </li>
+                        <li>
+                            <a style="font-size: 15px;" href="{% url 'return-status' %}"><span style="color:{% if request.path == return_status_url %}#eb5525{% else %}#000{% endif %}">Status</span></a>
+                        </li>
+                    </ul>
+                </li>
+        
+                {% url 'password_change' as password_change_url %}
+                <li class="{% if request.path == password_change_url %}m-active{% endif %}">
+                    <a href="{{ password_change_url }}"><i class="fa-solid fa-lock"></i>Change Password</a>
+                </li>
+        
+                <li>
+                    <a href="{% url 'signout' %}"><i class="fa-solid fa-power-off"></i>Logout</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>

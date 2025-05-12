@@ -1,0 +1,80 @@
+{% extends 'dashboard/base.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block dashboard %}
+<div class="content-wrapper">
+    <div class="container-full">
+        <section class="content">
+            <div class="row">
+                <div class="col-12">
+                    <div class="box">
+                        <div class="box-body">
+                            <h4 class="page-title">Create Pathao Store Account</h4>
+                            <form action="" method="POST" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="form-body">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="id_vendor_info_id">Vendor List</label>
+                                                <select name="vendor_info_id" id="id_vendor_info_id" class="form-select">
+                                                    {% for i in query %}
+                                                        {% if i.store_id == 'None' %}
+                                                        <option value="{{ i.id }}">{{ i.user }}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-actions text-end">
+                                        <button type="submit" class="btn btn-primary"> <i class="fa fa-check"></i> Save</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="box">
+                        <div class="box-body">
+                            <div class="table-responsive">
+                                <div class="d-flex justify-content-end">
+                                    <a href="{% url 'pathao_store_list' %}" class="btn btn-success">View Pathao Stores</a>
+                                </div>
+                                <hr>
+                                <table id="" class="table table-hover no-wrap product-order"
+                                    data-page-size="10">
+                                    <thead>
+                                        <tr>
+                                            <th>VendorID</th>
+                                            <th>Name</th>
+                                            <th>Shop Name</th>
+                                            <th>Phone</th>
+                                            <th>Email</th>
+                                            <th>Store Id</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for c in query %}
+                                        <tr>
+                                            <td>{{ c.id }}</td>
+                                            <td>{{c.user.full_name}}</td>
+                                            <td>{{c.shop_name}}</td>
+                                            <td>{{ c.user.phone }}</td>
+                                            <td>{{ c.user.email }}</td>
+                                            <td>{{ c.store_id }}</td>   
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock dashboard %}

@@ -1,0 +1,282 @@
+{% extends 'dashboard/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block css %}
+<style>
+    /* .formset-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .formset-table th, .formset-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+
+    .formset-table th {
+        background-color: #f2f2f2;
+        text-align: left;
+    }
+
+    .formset-row {
+        background-color: #fff;
+    }
+
+    .formset-row:nth-child(even) {
+        background-color: #f9f9f9;
+    } */
+    .table > thead > tr > td, .table > thead > tr > th {
+        padding: 0.3rem 2rem 0.3rem 0;
+        vertical-align: middle;
+    }
+
+    .table > tbody > tr > td, .table > tbody > tr > th {
+        padding: 0.3rem 1rem 0.3rem 0;
+        vertical-align: middle;
+    }
+
+    .remove-form {
+        cursor: pointer;
+        color: red;
+        padding: 4px 10px;
+    }
+</style>
+{% endblock css %}
+
+{% block dashboard %}
+<div class="content-wrapper">
+    <div class="container-full">
+        <section class="content">
+            <div class="row justify-content-center align-items-center">
+                <div class="col-12 col-md-12 col-lg-12">
+                    <div class="box">
+                        <div class="box-body">
+                            <h4 class="page-title">Add/Edit Website Information</h4>
+                            <form method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-6">
+                                        {{ form.name|as_crispy_field }}
+                                    </div>
+                                    <div class="col-6">
+                                        {{ form.bkash_number|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        {{ form.nagad_number|as_crispy_field }}
+                                    </div>
+                                    <div class="col-6">
+                                        {{ form.rocket_number|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    {{ form.image|as_crispy_field }}
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        {{ form.facebook|as_crispy_field }}
+                                    </div>
+                                    <div class="col-6">
+                                        {{ form.twitter|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        {{ form.instagram|as_crispy_field }}
+                                    </div>
+                                    <div class="col-6">
+                                        {{ form.youtube|as_crispy_field }}
+                                    </div>
+                                    <div class="col-6">
+                                        {{ form.linkedin|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    {{ form.description|as_crispy_field }}
+                                </div>
+                                
+                                <!-- PhoneNumber Formset -->
+                                <h5 class="mt-40 border-bottom border-1 py-2 fw-bolder text-warning">Phone Numbers</h5>
+                                <div id="phone_numbers_container">
+                                    {{ phone_formset.management_form }}
+                                    <table class="table table-borderless">
+                                        <thead>
+                                            <tr>
+                                                <th class="d-none">ID</th>
+                                                <th>Phone Number</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for form in phone_formset %}
+                                                <tr class="formset-row">
+                                                    <td class="d-none">{{ form.id }}</td>
+                                                    <td>{{ form.phone }}</td>
+                                                    <td>
+                                                        {% if form.instance.pk %}
+                                                            <input type="button" class="remove-form" value="Remove" data-id="{{ form.instance.pk }}" data-prefix="phone">
+                                                        {% else %}
+                                                            <input type="button" class="remove-form" value="Remove" data-id="" data-prefix="phone" style="display:none;">
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    <input type="button" class="btn btn-sm btn-secondary" id="add_phone_number" value="Add More Phone Number">
+                                </div>
+
+                                <!-- EmailAddress Formset -->
+                                <h5 class="mt-40 border-bottom border-1 py-2 fw-bolder text-warning">Email Addresses</h5>
+                                <div id="email_addresses_container">
+                                    {{ email_formset.management_form }}
+                                    <table class="table table-borderless">
+                                        <thead>
+                                            <tr>
+                                                <th class="d-none">ID</th>
+                                                <th>Email Address</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for form in email_formset %}
+                                                <tr class="formset-row">
+                                                    <td class="d-none">{{ form.id }}</td>
+                                                    <td>{{ form.email }}</td>
+                                                    <td>
+                                                        {% if form.instance.pk %}
+                                                            <input type="button" class="remove-form" value="Remove" data-id="{{ form.instance.pk }}" data-prefix="email">
+                                                        {% else %}
+                                                            <input type="button" class="remove-form" value="Remove" data-id="" data-prefix="email" style="display:none;">
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    <input type="button" class="btn btn-sm btn-secondary" id="add_email_address" value="Add More Email Address">
+                                </div>
+
+                                <!-- CompanyAddress Formset -->
+                                <h5 class="mt-40 border-bottom border-1 py-2 fw-bolder text-warning">Company Addresses</h5>
+                                <div id="company_addresses_container">
+                                    {{ address_formset.management_form }}
+                                    <table class="table table-borderless">
+                                        <thead>
+                                            <tr>
+                                                <th class="d-none">ID</th>
+                                                <th>Company Address</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for form in address_formset %}
+                                                <tr class="formset-row">
+                                                    <td class="d-none">{{ form.id }}</td>
+                                                    <td>{{ form.address }}</td>
+                                                    <td>
+                                                        {% if form.instance.pk %}
+                                                            <input type="button" class="remove-form" value="Remove" data-id="{{ form.instance.pk }}" data-prefix="address">
+                                                        {% else %}
+                                                            <input type="button" class="remove-form" value="Remove" data-id="" data-prefix="address" style="display:none;">
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    <input type="button" class="btn btn-sm btn-secondary" id="add_company_address" value="Add More Company Address">
+                                </div>
+                                
+                                <div class="text-end">
+                                    
+                                    {% if form.instance.pk %}
+                                    <button type="submit" class="btn btn-primary">Update</button>
+                                    {% else %}
+                                    <button type="submit" class="btn btn-primary">Save</button>
+                                    {% endif %}
+                                        
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>		  
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock dashboard %}
+
+{% block script %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        function updateFormIndex(prefix, formIndex) {
+            var totalForms = $('#id_' + prefix + '-TOTAL_FORMS');
+            totalForms.val(formIndex);
+        }
+
+        function addForm(prefix, container) {
+            var formCount = $('#' + container + ' .formset-row').length;
+            var newForm = $('#' + container + ' .formset-row:first').clone(false).get(0);
+            $(newForm).removeAttr('id').insertAfter('#' + container + ' .formset-row:last');
+            $(newForm).find(':input').each(function() {
+                var name = $(this).attr('name').replace('-0-', '-' + formCount + '-');
+                var id = 'id_' + name;
+                $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
+            });
+            $(newForm).find('label').each(function() {
+                var forValue = $(this).attr('for').replace('-0-', '-' + formCount + '-');
+                $(this).attr({'for': forValue});
+            });
+            $(newForm).find('.remove-form').show();
+            updateFormIndex(prefix, formCount + 1);
+        }
+
+        function removeForm(prefix, btn) {
+            var formId = $(btn).data('id');
+            {% comment %} var url = '/delete_' + prefix + '/'; {% endcomment %}
+            var url = '/dashboard/website-information/' + prefix + '/delete/';
+            if (formId) {
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: {
+                        'csrfmiddlewaretoken': '{{ csrf_token }}',
+                        [prefix + '_id']: formId
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            $(btn).parents('.formset-row').remove();
+                            var forms = $('#' + prefix + '_container .formset-row');
+                            updateFormIndex(prefix, forms.length);
+                        }
+                    }
+                });
+            } else {
+                $(btn).parents('.formset-row').remove();
+                var forms = $('#' + prefix + '_container .formset-row');
+                updateFormIndex(prefix, forms.length);
+            }
+        }
+
+        $('#add_phone_number').click(function() {
+            addForm('phone', 'phone_numbers_container');
+        });
+
+        $('#add_email_address').click(function() {
+            addForm('email', 'email_addresses_container');
+        });
+
+        $('#add_company_address').click(function() {
+            addForm('address', 'company_addresses_container');
+        });
+
+        $(document).on('click', '.remove-form', function() {
+            var prefix = $(this).data('prefix');
+            removeForm(prefix, this);
+        });
+    });
+</script>
+{% endblock script %}

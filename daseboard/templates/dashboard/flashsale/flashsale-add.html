@@ -1,0 +1,171 @@
+{% extends 'dashboard/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block dashboard %}
+<style>
+  /* [type="checkbox"]:not(:checked), [type="checkbox"]:checked {
+    
+    left: 1020px !important;
+    opacity: 1 !important;
+} */
+</style>
+  <div class="content-wrapper">
+    <div class="container-full">
+      <section class="content">
+        <div class="row">
+          <div class="col-12">
+            <div class="box">
+              <div class="box-body">
+                <h4 class="page-title">Add/Edit Flashsale</h4>
+                <form action="" method="POST" enctype="multipart/form-data">
+                  {% csrf_token %}
+
+                  <div class="form-body">
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <div class="form-row">{{ form|crispy }}</div>
+                        </div>
+                      </div>
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          {% with formset=flashformset %}
+                            {{ formset.management_form }}
+                            <div class="form-row">
+                              <script type="text/html" id="flashsale-item-template">
+                                <tr id="flashsale_products-__prefix__">
+                                  {% for hidden_field in formset.empty_form.hidden_fields %}
+                                    {{ hidden_field }}
+                                  {% endfor %}
+                                  {% for field in formset.empty_form.visible_fields %}
+                                    <td class="py-1">{{ field }}</td>
+                                  {% endfor %}
+                                </tr>
+                              </script>
+                            </div>
+                            <div class="table-responsive card mt-4">
+                              <div class="card-header card-header-secondary">
+                                <h4 class="card-title">Add Products</h4>
+                              </div>
+                              <table class="table">
+                                <thead class="text-secondary">
+                                  <th>Product</th>
+                                  <th>Variation</th>
+                                  <th>Flashsale Price</th>
+                                  <th>Stock</th>
+                                  <th>Sold</th>
+                              
+                                </thead>
+                                <tbody id="flashsale-item">
+                                  {% for error in formset.non_form_errors %}
+                                    <span style="color: red">{{ error }}</span>
+                                  {% endfor %}
+                                  {% for formss in formset %}
+                                    <tr id="flashsale_products-{{ forloop.counter0 }}">
+                                      {{ formss.id }}
+                                      {% for field in formss.visible_fields %}
+                                        <td class="py-1">
+                                          {{ field }}
+                                          {% for error in field.errors %}
+                                            <span style="color: red">{{ error }}</span>
+                                          {% endfor %}
+                                        </td>
+                                      {% endfor %}
+                                        <td>
+                                          <button type="button" class="btn btn-danger delete-flashsale" data-id="{{ formss.instance.pk }}">Delete</button>
+                                        </td>         
+                                      
+                                    </tr>
+                                  {% endfor %}
+                                </tbody>
+                              </table>
+                              <a href="javascript:void(0)" id="add-variant-button" class="btn btn-secondary add-flashsale">Add More</a>
+                            </div>
+                          {% endwith %}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-actions text-end">
+                      <button type="submit" class="btn btn-primary"><i class="fa fa-check"></i> Save</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var formsetContainer = document.getElementById('flashsale-item');
+    var addButton = document.querySelector('.add-flashsale');
+    var totalFormsInput = document.getElementById('id_flashsale_products-TOTAL_FORMS');
+
+    function attachProductChangeListener(productField, formCount) {
+      productField.addEventListener('change', function() {
+        let val = this.value;
+        fetch(`/dashboard/flashsale-variation/${val}`)
+          .then(response => response.text())
+          .then(data => {
+            let variationField = document.getElementById(`id_flashsale_products-${formCount}-variation`);
+            variationField.innerHTML = data;
+          })
+          .catch(error => {
+            console.error('Error fetching data:', error);
+          });
+      });
+    }
+
+    document.querySelectorAll('[id^="id_flashsale_products-"][id$="-product"]').forEach(function(productField) {
+      let formCount = productField.id.match(/id_flashsale_products-(\d+)-product/)[1];
+      attachProductChangeListener(productField, formCount);
+    });
+
+    addButton.addEventListener('click', function(ev) {
+      ev.preventDefault();
+      var formCount = parseInt(totalFormsInput.value);
+      var tmplMarkup = document.getElementById('flashsale-item-template').innerHTML;
+      var newForm = tmplMarkup.replace(/__prefix__/g, formCount);  
+      formsetContainer.insertAdjacentHTML('beforeend', newForm);  
+      totalFormsInput.value = formCount + 1; 
+
+
+      let newProductField = document.getElementById(`id_flashsale_products-${formCount}-product`);
+      attachProductChangeListener(newProductField, formCount);
+    });
+  });
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('.btn-danger').forEach(button => {
+      button.addEventListener('click', function(event) {
+        event.preventDefault(); 
+        const productId = this.getAttribute('data-id');
+        fetch(`/dashboard/flashsale-product-delete/${productId}/`, {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json'
+          },
+        })
+        .then(response => {
+          if (response.ok) {
+            location.reload();
+          } else {
+            console.error('Failed to delete:', response.statusText);
+          }
+        })
+        .catch(error => {
+          console.error('Error deleting product:', error);
+        });
+      });
+    });
+  });
+
+
+</script>
+{% endblock %}

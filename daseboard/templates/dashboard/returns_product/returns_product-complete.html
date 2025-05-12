@@ -1,0 +1,189 @@
+{% extends 'dashboard/base.html' %}
+
+
+{% block dashboard %}
+  <div class="content-wrapper">
+	  <div class="container-full">
+		<div class="content-header d-flex">
+			<div class="me-auto mt-2">
+				<h4 class="page-title">Return Product Complete List</h4>
+			</div>
+			{% if request.user.is_staff or request.user.is_superuser %}
+			<div>
+				<a class="btn btn-primary" href="{% url 'returns_product-add' %}">Add Return Product</a>
+			</div>
+			{% endif %}
+		</div>
+		{% if request.user.is_staff or request.user.is_superuser %}
+		<section class="content">
+		  <div class="row">
+			  <div class="col-12">
+				<div class="box">
+				  <div class="box-body">
+					<div class="table-responsive">
+						<table id="example" class="table table-hover no-wrap product-order" data-page-size="10">
+							<thead>
+								<tr>
+                                    <th>ID</th>
+									<th>Customer Informations</th>
+									<th>Return Product</th>  
+									<th>Return Reason</th>    
+									<th>Product Image</th>  
+									<th>Status</th> 
+									<th>Comment</th>   
+									<th>Return Shipment</th>       
+									<th>Bank Transfer</th>    
+									<th>Account Number</th>  
+									<th>Account Name</th>   
+									<th>Branch Name</th>   
+									<th>Created on</th> 
+									<th>Product Owner</th>                
+                                    <th>Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+							{% for c in return_products %} 
+								<tr>
+                                    <td>{{ c.id }}</td>
+                                    <td>{{ c.customer }}</td>
+									{% for order_item in c.items.all %}
+									<td>{{order_item}}</td>
+									{% endfor %}
+									<td>{{c.get_return_reason_display}}</td>
+									<td><img src="{{c.product_image.url}}" alt="" height="50px"></td>
+									{% if c.status == 'Pending' %}
+									<td><span class="badge bg-primary">{{c.status }}</span></td>
+									{% elif c.status == 'Processing' %}
+									<td><span class="badge bg-info">{{c.status }}</span></td>
+									{% elif c.status == 'On the way' %}
+									<td><span class="badge bg-warning">{{c.status}}</span></td>
+									{% elif c.status == 'Complete' %}
+									<td><span class="badge bg-success">{{c.status }}</span></td>
+									{% elif c.status == 'Cancel' %}
+									<td><span class="badge bg-danger">{{c.status }}</span></td>
+									{% endif %}
+									<td>{{c.comment}}</td>
+									<td>{{c.get_return_shipment_display }}</td>
+									<td>{{c.get_bank_transfer_display}}</td>
+									<td>{{c.account_number}}</td>
+									<td>{{c.account_name}}</td>
+									<td>{{c.branch_name}}</td>
+									<td>{{c.created_on}}</td>
+									<td>
+										{% for order_item in c.items.all %}
+										{% if order_item.item.user.email %}
+										{{order_item.item.user.email}}
+										{% else %}
+									   {{ order_item.item.user.phone }}
+									   {% endif %}
+									   {% endfor %}
+									</td>
+
+									<td><a href="{% url 'returns_product-update' c.pk %}" class="text-info me-10" data-bs-toggle="tooltip" data-bs-original-title="Edit">
+											<i class="ti-marker-alt"></i>
+										</a>
+										<a href="javascript:void(0)" class="text-danger delete-link"
+											data-url="{% url 'returns_product-delete' c.pk %}"
+											data-bs-original-title="Delete" data-bs-toggle="tooltip">
+											<i class="ti-trash"></i>
+                                        </a>
+									</td>
+								</tr>
+								{% endfor%}								
+							</tbody>						
+						</table>
+					</div>
+				  </div>
+				</div>
+			  </div>		  
+		  </div>
+		</section>
+		{% endif %}
+
+		{% if request.user.is_vendor  %}
+		<section class="content">
+			<div class="row">
+				<div class="col-12">
+				  <div class="box">
+					<div class="box-body">
+					  <div class="table-responsive">
+						  <table id="productorder" class="table table-hover no-wrap product-order" data-page-size="10">
+							  <thead>
+								  <tr>
+									  <th>ID</th>
+									  <th>Customer Informations</th>
+									  <th>Return Product</th>  
+									  <th>Return Reason</th>    
+									  <th>Product Image</th>
+									  <th>Status</th>   
+									  <th>Comment</th>   
+									  <th>Return Shipment</th>       
+									  <th>Bank Transfer</th>    
+									  <th>Account Number</th>  
+									  <th>Account Name</th>   
+									  <th>Branch Name</th>   
+									  <th>Created on</th> 
+									  {% if request.user.is_superuser or request.user.is_staff %}
+									  <th>Actions</th>
+									  {% endif %}
+								  </tr>
+							  </thead>
+							  <tbody>
+							  {% for c in vendor_return_products %} 
+								  <tr>
+									  <td>{{ c.id }}</td>
+									  <td>{{ c.customer }}</td>
+									  {% for order_item in c.items.all %}
+									  <td>{{order_item}}</td>
+									  {% endfor %}
+									  <td>{{c.get_return_reason_display}}</td>
+									  <td><img src="{{c.product_image.url}}" alt="" height="80px"></td>
+									  {% if c.status == 'Pending' %}
+									  <td><span class="badge bg-primary">{{c.status }}</span></td>
+									  {% elif c.status == 'Processing' %}
+									  <td><span class="badge bg-info">{{c.status }}</span></td>
+									  {% elif c.status == 'On the way' %}
+									  <td><span class="badge bg-warning">{{c.status}}</span></td>
+									  {% elif c.status == 'Complete' %}
+									  <td><span class="badge bg-success">{{c.status }}</span></td>
+									  {% elif c.status == 'Cancel' %}
+									  <td><span class="badge bg-danger">{{c.status }}</span></td>
+									  {% endif %}
+									  <td>{{c.comment}}</td>
+									  <td>{{c.get_return_shipment_display }}</td>
+									  <td>{{c.get_bank_transfer_display}}</td>
+									  <td>{{c.account_number}}</td>
+									  <td>{{c.account_name}}</td>
+									  <td>{{c.branch_name}}</td>
+									  <td>{{c.created_on}}</td>
+									  
+  
+									  {% if request.user.is_superuser or request.user.is_staff %}
+									  <td>
+											<a href="{% url 'returns_product-update' c.pk %}" class="text-info me-10" data-bs-toggle="tooltip" data-bs-original-title="Edit">
+												<i class="ti-marker-alt"></i>
+											</a>
+											<a href="javascript:void(0)" class="text-danger delete-link"
+												data-url="{% url 'returns_product-delete' c.pk %}"
+												data-bs-original-title="Delete" data-bs-toggle="tooltip">
+												<i class="ti-trash"></i>
+											</a>
+									  </td>
+										
+									  {% endif %}
+								  </tr>
+								  {% endfor %}								
+							  </tbody>						
+						  </table>
+					  </div>
+					</div>
+				  </div>
+				</div>		  
+			</div>
+		  </section>
+		{% endif %}
+
+	</div>
+</div>
+{% endblock dashboard %}
+	

@@ -1,0 +1,95 @@
+{% extends 'store/base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container-fluid my-5">
+	<div class="row justify-content-between my-5">
+
+		{% include 'userapp/sidebar.html' %}
+
+		<div class="col-md-8 col-lg-9 px-5">
+			<h5>Purchase History</h5>
+			<div class="row">
+				<div class="col-lg-12 mx-auto">
+					<table class="table table-mobile">
+						<thead>
+							<tr>
+								<th>Order ID</th>
+								<th>Order Date</th>
+								<th>Total Amount</th>
+								<th>Status</th>
+								<th>Invoice</th>
+								<th>Detail</th>
+							</tr>
+						</thead>
+
+						<tbody>
+							{% for p in query %}
+							<tr>
+								<td>
+									#{{ p.orderId }}
+								</td>
+								<td>
+									{{ p.ordered_date }}
+								</td>
+								<td>৳{{p.total_order_amount }} </td>
+								<td>
+									{% if p.merchant_order_id %}
+									<a href="{% url 'pathao_order_status' p.id %}" class="btn btn-info">See Status</a>
+									{% else %}
+									<p class="btn ">{{ p.order_status }}</p>
+									{% endif %}
+									<!-- {% if p.others_transport_trakink_url %}
+									<p class="badge badge-primary p-2">
+										<a class="text-white" href="{{ p.others_transport_trakink_url }}" target="_blank">Tracking Order</a>
+									</p>
+									{% elif p.redx_percel_traking_number %}
+									<p class="badge badge-primary p-2">
+										<a class="text-white" href="{% url 'order_tracking' p.redx_percel_traking_number %}" target="_blank">Tracking Order</a></p>
+									{% else %}
+									<p class="badge badge-primary p-2">{{ p.get_order_status_display }}</p>
+									{% endif %} -->
+
+								</td>
+								{% if p.order_status == 'Complete' %}
+								<td>{{ p.order_complate_date }}</td>
+								{% else %}
+								<td>
+									<a class="badge badge-info p-2" href="{% url 'render-order-pdf-view' p.pk %}">Download</a></td>
+								{% endif %}
+								<td>
+									<a style="font-size: 20px ;" href="{% url 'product_order_detail' p.pk %}"><i class="fa fa-eye" aria-hidden="true"></i></a>
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+				<div class="col-12 d-flex justify-content-center">
+					<div class="pagination">
+						<span class="step-links">
+							{% if query.has_previous %}
+								<a href="?page={{ query.previous_page_number }}" class="btn btn-info rounded">prev</a>
+							{% endif %}
+							
+							<span class="current">
+								{% if query.has_previous %}
+									<a href="?page={{ query.previous_page_number }}" class="btn btn-outline-dark rounded">{{ query.previous_page_number }}</a>
+								{% endif %}
+								<a href="?page={{ query.number }}" class="btn btn-info rounded">{{ query.number }}</a>
+								{% if query.has_next %}
+									<a href="?page={{ query.next_page_number }}" class="btn btn-outline-dark rounded">{{ query.next_page_number }}</a>
+								{% endif %}
+							</span>
+					
+							{% if query.has_next %}
+								<a href="?page={{ query.next_page_number }}" class="btn btn-info rounded">next</a>
+							{% endif %}
+						</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

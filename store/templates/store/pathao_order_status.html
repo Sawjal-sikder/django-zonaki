@@ -1,0 +1,103 @@
+{% extends 'store/base.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+	.profile-dashboard h4,
+	p {
+		color: white;
+	}
+
+	.cart-product {
+		background: linear-gradient(-45deg, #00a000, #5ddf51, #23d5ab, #04ff3a);
+		background-size: 400% 400%;
+		animation: gradient 15s ease infinite;
+		height: 140px;
+		color: white;
+		padding-top: 30px;
+		text-align: center;
+		border-radius: 3%;
+	}
+
+	.wishlist-product {
+		background: linear-gradient(-45deg, #e558f8, #a800b8, #e42695, #6b1a60);
+		background-size: 400% 400%;
+		animation: gradient 15s ease infinite;
+		height: 140px;
+		color: white;
+		padding-top: 30px;
+		text-align: center;
+		border-radius: 3%;
+	}
+
+	.ordered-product {
+		background: linear-gradient(-45deg, #2fff1c, #ff1b1b, #ff2525, #009b0d);
+		background-size: 400% 400%;
+		animation: gradient 15s ease infinite;
+		height: 140px;
+		color: white;
+		padding-top: 30px;
+		text-align: center;
+		border-radius: 3%;
+	}
+
+	@keyframes gradient {
+		0% {
+			background-position: 0% 50%;
+		}
+
+		50% {
+			background-position: 100% 50%;
+		}
+
+		100% {
+			background-position: 0% 50%;
+		}
+	}
+
+
+	.card-profile {
+		height: 200px;
+		background-color: #ED2224;
+	}
+
+	.m-active a {
+		color: #ED2224 !important;
+	}
+</style>
+<div class="container-fluid my-5">
+	<div class="row justify-content-between my-5">
+
+		{% include 'userapp/sidebar.html' %}
+
+		<div class="col-md-8 col-lg-9 px-5">
+			<h5>Order Items Status</h5>
+			<div class="row">
+				<div class="col-lg-12 mx-auto">
+					<table class="table table-mobile">
+						<thead>
+							<tr>
+								<th>Order Item ID</th>
+								<th>Price</th>
+								<th>Shipping Charge</th>
+								<th>Status</th>
+							</tr>
+						</thead>
+
+						<tbody>
+							{% for p in order_items %}
+							<tr>
+								<td>#{{ p.id }}</td>
+								<td>{{ p.get_subtotal }}</td>
+								<td>{{ p.shipping_charge }}</td>
+								<td><a href="#" class="btn btn-success">{{ p.pathao_status }}</a></td>    
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

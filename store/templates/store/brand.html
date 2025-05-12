@@ -1,0 +1,193 @@
+{% extends 'store/base.html' %}
+{% load static %}
+{% load desktop_menu %}
+{% load top_category %}
+{% block content %}
+
+<style>
+    .load-product{
+        display: none;
+    }
+    .category {
+        display: none;
+    }
+    .brand {
+        display: none;
+    }
+
+    .loadMore {
+        width: 150px;
+        color: #fff;
+        display: block;
+        text-align: center;
+        margin: 20px auto;
+        padding: 5px;
+        border-radius: 20px;
+        border: 1px solid transparent;
+        background-color: red;
+        transition: .3s;
+    }
+    .loadMore:hover {
+        color: red;
+        background-color: #fff;
+        border: 1px solid red;
+        text-decoration: none;
+    }
+    .noContent {
+        color: #000 !important;
+        background-color: transparent !important;
+        pointer-events: none;
+    }
+    .product{
+        box-shadow: 0 8px 16px 0 rgba(167, 165, 165, 0.2);
+    }
+    .product:hover{
+        box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    }
+    .product-image{
+        object-fit: fill;
+    }
+</style>
+<main class="main">
+    <div class="container electronics my-5">
+        <div class="row">
+            <div class="d-none d-md-block col-md-3">
+                <div class="heading heading-flex">
+                    <div class="heading-center">
+                        <h5 class="text-left">Brands</h5>
+                        <!-- End .title -->
+                    </div><!-- End .heading-left -->
+                </div><!-- End .heading -->
+                <div class="row brands">
+                    {% for p in request|brands %}
+                    <div class="col-3 col-md-12 brand">
+                        <a style="color:{% if brands.id == p.id %}red{% else %}#595c59{% endif %}; font-weight: 500;" href="{% url 'brand' p.slug %}">{{ p.name }}</a>
+                    </div>
+                    {% endfor %}
+                </div>
+                <a class="loadMoreBrands" style="color: red; cursor: pointer;">
+                    + View More
+                </a>                
+                <div class="heading heading-flex mb-1">
+                    <div class="heading-center mt-3">
+                        <h5 class="mb-1 text-left">Price Range</h5><!-- End .title -->
+                    </div><!-- End .heading-left -->
+                </div><!-- End .heading -->
+                <div class="row">
+                    {% for p in request|price_ranges %}
+                    <div class="col-3 col-md-12">
+                        <a style="color:#595c59; font-weight: 500;" href="{% url 'price_range_filtering' p.pk %}">{{ p.price_range }}</a>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="heading heading-flex mb-1">
+                    <div class="heading-center mt-3">
+                        <h5 class="mb-1 text-left">Categories</h5><!-- End .title -->
+                    </div><!-- End .heading-left -->
+                </div><!-- End .heading -->
+                <div class="row categories">
+                    {% for p in request|category %}
+                    <div class="col-3 col-md-12 category">
+                        <a style="color:#595c59; font-weight: 500;" href="{% url 'category' p.slug %}">{{ p.category_name }}</a>
+                    </div>
+                    {% endfor %}
+                </div>
+                <a class="loadMoreCategories" style="color: red; cursor: pointer;">+ View More</a>                                     
+            </div>
+            <div class="col-md-9">
+                <div class="heading heading-flex heading-border mb-3">
+                    <div class="heading-center">
+                        <h2 class="title mb-1"><span style="color: red;">{{ brands.name }}</span> Products </h2><!-- End .title -->
+                    </div><!-- End .heading-left -->
+                </div><!-- End .heading -->
+                <div class="row equal">
+                    {% for p in products_brands %}
+                    <div class="col-6 col-md-4 col-lg-3 d-flex align-items-stretch">
+                        <div class="product mx-2 load-product">
+                            <figure class="product-media">
+                                {% if p.stock_quantity %}
+                                {% if p.discount_price %}
+                                <span class="product-label label-sale" style="background-color: red; color:#fff">{{ p.saving_percent|floatformat:"0" }}% Off</span>
+                                {% endif %}
+                                {% else %}
+                                <span class="product-label label-sale" style="background-color: #e70f0f; color:#fff">Out Of Stock</span>
+                                {% endif %}
+                                <a href="{% url 'product_detail' p.slug %}">
+                                    <img src="{{  p.image.url }}" alt="Product image" class="product-image">
+                                </a>
+                
+                                <div class="product-action-vertical">
+                                    <a href="{% url 'add_to_wishlist' p.slug %}" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
+                                </div><!-- End .product-action-vertical -->
+                            </figure><!-- End .product-media -->
+                
+                            <div class="product-body pb-1">
+                                <h3 class="product-title text-center"><a href="{% url 'product_detail' p.slug %}">{{ p.product_name|truncatechars_html:35 }}</a></h3><!-- End .product-title -->
+                                <div class="product-price pt-1 justify-content-center">
+                                    {% if p.discount_price %}
+                                    <span class="new-price">৳{{ p.discount_price }}</span>
+                                    <span class="old-price"><del>৳{{ p.price }}</del></span>
+                                    {% else %}
+                                    ৳{{ p.price }}
+                                    {% endif %}
+                                </div><!-- End .product-price -->
+                                <div class="ratings-container justify-content-center">
+                                    <div class="ratings">       
+                                        {% if p.get_avg_rating %}
+                                        <div class="ratings-val" style="width:{{p.get_avg_rating}}%;"></div><!-- End .ratings-val -->           
+                                        {% endif %}
+                                        <div class="ratings-val" style="width: 0%;"></div><!-- End .ratings-val -->                                  
+                                    </div><!-- End .ratings -->
+                                    {% if p.get_rating_count %}
+                                    <span class="ratings-text">( {{ p.get_rating_count }} )</span>
+                                        {% else %}
+                                    <span class="ratings-text">(0)</span>
+                                {% endif %}
+                                </div><!-- End .rating-container -->
+                            </div><!-- End .product-body -->
+                        </div><!-- End .product -->
+                    </div>
+                    {% endfor %}
+                </div>
+                <a href="" class="loadMore">Load More</a>
+            </div>
+        </div>
+    </div><!-- End .container -->
+</main><!-- End .main -->
+{% endblock %}
+
+
+{% block script %}
+<script>
+    $(document).ready(function() {
+      // Initially show the first 15 items
+      $(".load-product").slice(0, 15).fadeIn();
+  
+      $(".loadMore").on("click", function(e) {
+        e.preventDefault();
+        
+        // Smoothly reveal the next 5 hidden items
+        $(".load-product:hidden").slice(0, 5).each(function(index) {
+          $(this).delay(100 * index).fadeIn(500);
+        });
+  
+        // Check if there are any more hidden items
+        if ($(".load-product:hidden").length === 0) {
+          $(".loadMore").text("No Content").addClass("noContent");
+        }
+      });
+    });
+</script>
+{% comment %} <script>
+    $(document).ready(function(){
+    $(".load-product").slice(0, 15).show();
+    $(".loadMore").on("click", function(e){
+      e.preventDefault();
+      $(".load-product:hidden").slice(0, 2).slideDown();
+      if($(".load-product:hidden").length == 0) {
+        $(".loadMore").text("No Content").addClass("noContent");
+      }
+    });  
+  })
+</script> {% endcomment %}
+{% endblock script %}

@@ -1,0 +1,156 @@
+{% extends 'dashboard/base.html' %}
+
+
+{% block dashboard %}
+<div class="content-wrapper mt-90">
+    <div class="container-full">
+        <div class="content-header">
+            <div class="d-flex align-items-center">
+                <div class="me-auto">
+                    <h4 class="page-title">
+                        {% if user.is_superuser and user.is_staff and user.is_active %}
+                        Superuser
+                        {% elif user.is_admin %}
+                        Admin
+                        {% elif user.is_vendor %}
+                        Vendor
+                        {% elif user.is_customer %}
+                        Customer
+                        {% elif user.is_staff %}
+                        Staff
+                        {% endif %}
+                        Profile
+                    </h4>
+                </div>
+            </div>
+        </div>
+        <section class="content">
+            <div class="row">
+                <div class="col-xxxl-4 col-12">
+                    <div class="box">
+                        <div class="box-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="col">
+                                    <div class="d-flex align-items-center">
+                                        <div class="vendor-img">
+                                            <img class="me-10 rounded-circle avatar avatar-xl b-2 border-primary" src="{{ user.profile.image.url }}" alt="Customer">
+                                        </div>
+                                        <div class="vendor-info">
+                                            <h4 class="mb-0">{{ user.first_name }} {{ user.last_name }}</h4>
+                                            <span class="fs-14 text-info">
+                                                {% if user.is_superuser and user.is_staff and user.is_active %}
+												Superuser
+												{% elif user.is_admin %}
+												Admin
+												{% elif user.is_vendor %}
+												Vendor
+												{% elif user.is_customer %}
+												Customer
+												{% elif user.is_staff %}
+												Staff
+												{% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col text-end">
+                                    <a href="{% url 'user-update' user.pk %}" class="btn btn-primary">Edit</a>      
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xxxl-8 col-12">
+                    <div class="box">
+                        <div class="box-body">
+                            <table class="table table-summary">
+                                <tbody>
+                                    <tr class="summary-subtotal">
+                                        <td colspan="4" class="col-12 text-left h4">Basic Information</td>
+                                    </tr>
+                                    <tr class="col-12">
+                                        <td colspan="4">
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Customer ID</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ user.id }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Name</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ user.first_name }} {{ user.last_name }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Mobile</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ user.profile.phone }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>E-mail</p>
+                                                </div>
+                                                <div class="col-6 " style="text-align: right;">
+                                                    <p>{{ user.email }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Date of Birth</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ user.profile.date_of_birthday }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Present Address</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ user.profile.present_address }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Permanent Address</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ user.profile.permanent_address }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Joining Date</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ user.date_joined }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Last Login</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ user.last_login }}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock dashboard %}

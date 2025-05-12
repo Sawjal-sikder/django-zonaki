@@ -1,0 +1,315 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+
+{% block content %}
+<div class="page-wrapper">
+  <main class="main">
+    <nav aria-label="breadcrumb" class="breadcrumb-nav">
+      <div class="container">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/">Home</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'shop' %}">Shop</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'address' %}">Shipping Address</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Checkout</li>
+        </ol>
+      </div>
+    </nav>
+
+    <div class="page-content">
+      <div class="checkout">
+        {% if order.items.all %}
+        <div class="container">
+          <form action="#" method="POST">
+            {% csrf_token %}
+            <div class="row">
+              {% regroup order_items by item.user.id as user_items %}
+              <div class="col-12 col-lg-9">
+                  {% for user in user_items %}
+                      <div class="card mb-3">
+                          <div class="card-body rounded shadow">
+                              {% for p in user.list %}
+                                  <div class="d-flex justify-content-center align-items-center">
+                                      <div class="col-12 p-4">
+                                          <div class="row justify-content-center align-items-center">
+                                              <div class="col-10 col-md-2 col-lg-2 mb-2">
+                                                  {% if p.item.image %}
+                                                  <a href="">
+                                                    <img src="{{ p.item.image.url }}" alt="Product">
+                                                  </a>
+                                                  {% endif %}
+                                              </div>
+                                              <div class="col-10 col-md-6 col-lg-6 border-right">
+                                                  <div>
+                                                      <h6>
+                                                          <a href="">{{ p.item.product_name|truncatechars_html:35 }}</a>
+                                                          <span>X {{ p.quantity }}</span>
+                                                      </h6>
+
+                                                      {% for q in p.variation.all %}
+                                                          {% if p.item.discount_price %}
+                                                              <strong class="price-col">
+                                                                  <span>৳{{ p.item.discount_price }}</span>
+                                                                  <del class="text-danger">৳{{ p.item.price }}</del>
+                                                              </strong>
+                                                          {% else %}
+                                                              <strong class="price-col">৳{{ p.item.price }}</strong>
+                                                          {% endif %}
+                                                          <span>
+                                                              {% if p.item.discount_price %}
+                                                                  Saving ৳{{ p.saving_price }}
+                                                                  ({{ p.saving_percent|floatformat:"2" }}%)
+                                                              {% endif %}
+                                                          </span>
+                                                          {% if q.color %}
+                                                              <p>
+                                                                  <strong>Color:</strong>
+                                                                  <span>{{ q.color|join:", " }}</span>
+                                                              </p>
+                                                          {% endif %}
+                                                          {% if q.size %}
+                                                              <p>
+                                                                  <strong>Size:</strong>
+                                                                  <span>{{ q.size|join:", " }}</span>
+                                                              </p>
+                                                          {% endif %}
+                                                      {% endfor %}
+                                                  </div>
+                                              </div>
+                                              <div class="col-10 col-md-4 col-lg-4">
+                                                <div>
+                                                    <p class="text-dark font-weight-bold">
+                                                        ৳{{ p.get_subtotal }}
+                                                    </p>
+                                                    <p class="text-dark">
+                                                        Delivery Charge: <span class="text-danger font-weight-bold">
+                                                          {% if p.item.free_delivery %}
+                                                          Free Delivery
+                                                          {% else %}
+                                                          {{ p.shipping_charge }}
+                                                          {% endif %}
+                                                        </span>
+                                                    </p>
+                                                </div>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </div>
+                              {% endfor %}
+                          </div>
+                      </div>
+                  {% endfor %}
+              </div>
+              <aside class="col-lg-3">
+                <div class="summary shadow">
+                  <h3 class="summary-title py-3" style="text-align: center;">Proceed to Pay</h3>
+                  <table class="table table-summary">
+                    <h6>Shipping Information</h6>
+                    <thead>
+                      <tr>
+                        <p class="col-12 text-left">
+                          <i class="fa fa-user mr-2"></i> {{ order.shipping_address.full_name }}
+                        </p>
+                        <p class="col-12 text-left">
+                          <i class="fa fa-phone mr-2"></i> {{ order.shipping_address.phone }}
+                        </p>
+                        <p class="col-12 text-left">
+                          <i class="fa fa-house mr-2"></i>{{ order.shipping_address.full_address }}
+                        </p>
+                        <p class="col-12 text-left">
+                          <i class="fa fa-location mr-2"></i>{{ order.shipping_address.area_name }}, {{ order.shipping_address.zone_name }}, {{ order.shipping_address.city_name }}
+                        </p>
+                        {% if order.shipping_address.order_note %}
+                        <p class="col-12 text-left">
+                          <i class="fa fa-list mr-2"></i> {{ order.shipping_address.order_note }}
+                        </p>
+                        {% endif %}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="summary-subtotal">
+                        <td colspan="4" class="col-12 text-left">Order Summary</td>
+                      </tr>
+                      <tr class="col-12">
+                        <td colspan="4">
+                          <div class="row">
+                            <div class="col-8 text-left">
+                              <p>Sub Total Price</p>
+                            </div>
+                            <div class="col-4">
+                              <p>{{ order.get_total|floatformat:2 }} TK</p>
+                            </div>
+                          </div>
+                          {% if order.coupon %}
+                          <div class="row">
+                            <div class="col-8 text-left">
+                              <p>Coupon</p>
+                            </div>
+                            <div class="col-4">
+                              <p>
+                                {% if order.coupon.coupon_type == 'Percentage' %}
+                                  - ৳{{ order.coupon.amount_or_percentage }}%
+                                {% elif order.coupon.coupon_type == 'Amount' %}
+                                  - ৳{{ order.coupon.amount_or_percentage|floatformat:0 }}
+                                {% endif %}
+                              
+                              </p>
+                            </div>
+                          </div>
+                          {% endif %}
+                          <div class="row">
+                            <div class="col-6 text-left">
+                              <p>Delivery Fee</p>
+                            </div>
+                            <div class="col-6">
+                              <p>+ {{ order.get_delivery_amount|floatformat:2 }}TK </p>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr class="summary-total">
+                        <td>
+                          <div class="row">
+                            <div class="col-6 text-left">Total</div>
+                            <div class="col-6">{{ order.total|floatformat:2 }} Tk</div>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <div class="card">
+                    <div class="mb-2" id="heading-3">
+                      <label for="id_payment_option_0" class="d-flex align-items-center mt-2">
+                        <input type="radio" name="payment_option" value="Cash On Delivery" required
+                          id="id_payment_option_0" checked>
+                        <span class="mx-2">Cash On Delivery</span>
+                        <img src="{% static 'store/images/cash.jpg' %}" style='height:30px;' alt="Cash On Delivery">
+                      </label>
+                      {% comment %} <div class="d-flex mb-2">
+                        <input type="radio" name="payment_option" value="Bkash" required id="bKash_button">
+                        <label for="bKash_button" class="d-flex align-items-center">
+                          <span class="mx-2">Pay On bKash</span>
+                          <img src="{% static 'store/images/bkash.jpg' %}" style='height:30px;' alt="bKash Logo">
+                        </label>
+                      </div> {% endcomment %}
+                    </div>
+                    <div id="collapse-3" class="collapse cash-on-delivery" aria-labelledby="heading-3">
+                      <h6>ক্যাশ অন ডেলিভারিঃ</h6>
+                      <ul>
+                        <li>আপনাকে {{ order.get_delivery_amount|floatformat:2 }} টাকা ডেলিভারি ফি দিতে হবে।</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <button style="background-color: #ED2224; color: white;" type="submit"
+                    class="btn btn-outline-primary-2 btn-order btn-block">
+                    <span>Place Order</span>
+                  </button>
+                </div>
+              </aside>
+            </div>
+          </form>
+        </div>
+        {% else %}
+        <h2 class="text-center text-warning">You have no active order.</h2>
+        {% endif %}
+      </div>
+    </div>
+  </main>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script>
+  $(document).ready(function () {
+    var cashOnDeliveryOption = $('#id_payment_option_0');
+    var bKashOption = $('#bKash_button');
+    var collapseContainer = $('#collapse-3');
+
+    // Initially hide the collapse container
+    collapseContainer.collapse('hide');
+
+    cashOnDeliveryOption.change(function () {
+      if ($(this).is(':checked')) {
+        collapseContainer.collapse('show');
+      }
+    });
+
+    bKashOption.change(function () {
+      if ($(this).is(':checked')) {
+        collapseContainer.collapse('hide');
+      }
+    });
+  });
+</script>
+{% endblock %}
+
+
+{% comment %}
+{% block script %}
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://scripts.sandbox.bka.sh/versions/1.2.0-beta/checkout/bKash-checkout-sandbox.js"></script>
+
+
+<script>
+  var paymentID = '';
+  bKash.init({
+    paymentMode: 'checkout',
+    paymentRequest: {
+      amount: '{{ order.total }}',
+      intent: 'sale'
+    },
+    createRequest: function (request) {
+      console.log("create working !!")
+      $.ajax({
+        url: "{% url 'bkash-payment' %}",
+        type: 'GET',
+        data: JSON.stringify(request),
+        contentType: 'application/json',
+        success: function (data) {
+          console.log('test')
+          console.log(data)
+          if (data && data.paymentID != null) {
+            paymentID = data.paymentID;
+            bKash.create().onSuccess(data);
+          } else {
+            bKash.create().onError();
+          }
+        },
+        error: function () {
+          bKash.create().onError();
+        }
+      });
+    },
+    executeRequestOnAuthorization: function () {
+      console.log("execute working !!")
+      $.ajax({
+        url: '{% url "execute-bkash" %}',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({
+          "paymentID": paymentID
+        }),
+        success: function (data) {
+
+          console.log("execute response ", data)
+
+          if (data && data.paymentID != null) {
+            console.log("trxID: ", data.trxID)
+            window.location.href = '{% url "order-summary" %}';
+          } else {
+            console.log("error ");
+            window.location.href = '{% url "Check-Out" %}';
+            bKash.execute().onError();
+          }
+        },
+        error: function () {
+          bKash.execute().onError();
+        }
+      });
+    },
+    onClose: function () {
+      window.location.href = '/';
+    },
+  });
+</script>
+{% endblock script %} 
+{% endcomment %}
+  

@@ -1,0 +1,70 @@
+{% extends "store/base.html" %}
+{% load crispy_forms_tags %}
+
+{% load static %}
+
+
+
+{% block css %}
+<style>
+  #div_id_username,
+  #div_id_password {
+    margin-bottom: 0 !important;
+  }
+</style>
+{% endblock css %}
+
+
+
+
+{% block content %}
+<section class="content-section my-5">
+  <div class="container my-5">
+    <div class="row justify-content-center align-items-center">
+      <div class="col-11 col-lg-5 my-4 p-4 order-2 shadow-sm order-lg-1">
+        <form action="" method="post">
+          <h3>Vendor Login</h3>
+          {% if messages %}
+          <ul class="messages text-danger">
+            {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+          <hr class="mt-1 mb-3">
+          {% csrf_token %}
+
+          <div class="form-group">
+            <input type="text" class="form-control" name="phone" placeholder="Phone number" required>
+          </div>
+          <div class="form-group">
+            <input type="password" class="form-control" name="password" placeholder="Password" required>
+          </div>
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary w-100">Log In</button>
+          </div>
+        </form>
+        <div class="my-3 text-center">
+          <a href="{% url 'password_reset' %}">Forgotten password?</a>
+        </div>
+
+
+        <div class="my-3">
+          <p>Doesn't have any account?<a class="mx-2" href="{% url 'vendor_registaion_step_1' %}">Sign Up</a>now.</p>
+        </div>
+      </div>
+      <div class="col-10 col-lg-7 my-4 p-4 order-1 order-lg-2">
+        <img src="{% static 'images/auth/vlogin.png' %}" class="img-fluid" alt="Vendor Login">
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock content %}
+
+
+{% comment %}
+
+{% load socialaccount %}
+{% providers_media_js %}
+
+{% endcomment %}

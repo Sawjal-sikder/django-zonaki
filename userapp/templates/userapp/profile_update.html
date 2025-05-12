@@ -1,0 +1,31 @@
+{% extends 'store/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<style>
+    .dashboard-menu li a {
+        color: rgb(77, 77, 77);
+    }
+</style>
+<div class="container-fluid my-5">
+    <div class="row justify-content-between">
+        {% include 'userapp/sidebar.html' %}
+        <div class="col-md-8 col-lg-9 px-5">
+            <h5>Profile Edit</h5>
+            <div class="card border mt-2">
+                <div class="px-4">
+                    <form action="" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ u_form|crispy }}
+                        {{ p_form|crispy }}
+                        <div class="form-group float-right">
+                            <input style="background-color: #eb5525;" class="btn rounded text-white" type="submit" value="Update">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

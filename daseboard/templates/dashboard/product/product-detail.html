@@ -1,0 +1,279 @@
+{% extends 'dashboard/base.html' %}
+
+
+{% block dashboard %}
+<div class="content-wrapper mt-90">
+    <div class="container-full">
+        <div class="content-header">
+            <div class="d-flex align-items-center">
+                <div class="me-auto">
+                    <h4 class="page-title">Product Information</h4>
+                </div>
+            </div>
+        </div>
+        <section class="content">
+            <div class="row">
+                <div class="col-xxxl-4 col-12">
+                    <div class="box">
+                        <div class="box-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="col">
+                                    <div class="d-flex align-items-center">
+                                        <div class="vendor-img">
+                                            <img class="me-10 rounded-circle avatar avatar-xl b-2 border-primary" src="{{ product.image.url }}" alt="Product">
+                                        </div>
+                                        <div class="vendor-info">
+                                            <h4 class="mb-0">{{ product.product_name }}</h4>
+                                            <span class="fs-14 text-info">{{ product.categoris }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col text-end">       
+                                    <form action="{% url 'product_verify' %}" method="post">
+                                        {% csrf_token %}
+                                        {% if product.is_verified %}
+                                        <button type="submit" class="btn btn-primary {% if request.user.is_vendor %}d-none{% endif %}">Verified</button>
+                                        {% elif request.user.is_superuser or request.user.is_staff %}
+                                        <button type="submit" class="btn btn-primary">Verifiy</button>
+                                        {% endif %} 
+                                    </form>          
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xxxl-8 col-12">
+                    <div class="box">
+                        <div class="box-body">
+                            <table class="table table-summary">
+                                <tbody>
+                                    <tr class="summary-subtotal">
+                                        <td colspan="4" class="col-12 text-left h4">Basic Information</td>
+                                    </tr>
+                                    <tr class="col-12">
+                                        <td colspan="4">
+                                            <div class="row mb-2">
+                                                <div class="col-6 text-left">
+                                                    <p>Product ID</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ product.pk }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-6 text-left">
+                                                    <p>Product Name</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ product.product_name }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-6 text-left">
+                                                    <p>Product Code</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ product.product_code }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-6 text-left">
+                                                    <p>Weight</p>
+                                                </div>
+                                                <div class="col-6 " style="text-align: right;">
+                                                    <p>{{ product.weight }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-6 text-left">
+                                                    <p>Slug</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right ;">
+                                                    <p>{{ product.slug }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-6 text-left">
+                                                    <p>Category</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ product.categoris }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-6 text-left">
+                                                    <p>Brand</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ product.brand }}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="box">
+                        <div class="box-body">
+                            <table class="table table-summary">
+                                <tbody>
+                                    <tr class="summary-subtotal">
+                                        <td colspan="4" class="col-12 text-left h4">Price Information</td>
+                                    </tr>
+                                    <tr class="col-12">
+                                        <td colspan="4">
+                                            <div class="row mb-2">
+                                                <div class="col-6 text-left">
+                                                    <p>Price</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ product.price }}Tk</p>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-6 text-left">
+                                                    <p>Discount Price</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right ;">
+                                                    <p>{{ product.discount_price }}Tk</p>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-6 text-left">
+                                                    <p>Purchase Price</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right ;">
+                                                    <p>{{ product.product_purchase_price }}Tk</p>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-6 text-left">
+                                                    <p>Price Range</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ product.price_range }}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="box">
+                        <div class="box-body">
+                            <table class="table table-summary">
+                                <tbody>
+                                    <tr class="summary-subtotal">
+                                        <td colspan="4" class="col-12 text-left h4">Description &  Image</td>
+                                    </tr>
+                                    <tr class="col-12">
+                                        <td colspan="4">
+                                            <div class="row mb-2">
+                                                <div class="col-6 text-left">
+                                                    <p>Short Description</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ product.sort_discription|safe }} </p>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-6 text-left">
+                                                    <p>Description</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ product.discription|safe }} </p>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-6 text-left">
+                                                    <p>Addition Description</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ product.aditional_discription|safe }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-6 text-left">
+                                                    <p>Image</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    {% if product.image %}
+                                                        <img src="{{ product.image.url }}" alt="Product Image" style="height: 100px;">
+                                                    {% else %}
+                                                        <p>Product image not available.</p>
+                                                    {% endif %}          
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-6 text-left">
+                                                    <p>Hover Image</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;"> 
+                                                    {% if product.hover_image %}
+                                                        <img src="{{ product.hover_image.url }}" alt="Hover Image" style="height: 100px;">
+                                                    {% else %}
+                                                        <p>Product hover image not available.</p>
+                                                    {% endif %}        
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="box">
+                        <div class="box-body">
+                            <table class="table table-summary">
+                                <tbody>
+                                    <tr class="summary-subtotal">
+                                        <td colspan="4" class="col-12 text-left h4">Addition Information</td>
+                                    </tr>
+                                    <tr class="col-12">
+                                        <td colspan="4">
+                                            <div class="row mb-2">
+                                                <div class="col-6 text-left">
+                                                    <p>Stock Quantity</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ product.stock_quantity }} </p>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-6 text-left">
+                                                    <p>Meta Title</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right ;">
+                                                    <p>{{ product.meta_title }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-6 text-left">
+                                                    <p>Meta Keyword</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ product.meta_keyword }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-6 text-left">
+                                                    <p>Is Verified?</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ product.is_verified }}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock dashboard %}

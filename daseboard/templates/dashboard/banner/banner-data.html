@@ -1,0 +1,171 @@
+{% extends 'dashboard/base.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block dashboard %}
+<div class="content-wrapper">
+	<div class="container-full">
+		<section class="content">
+		  <div class="row">
+			  <div class="col-12">
+				<div class="box">
+				  <div class="box-body">
+                    <div class="accordion" id="accordionExample">
+                        <div class="accordion-item">
+                          <h2 class="accordion-header mt-0">
+                            <button class="accordion-button {% if not added %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="{% if added %}true{% else %}false{% endif %}" aria-controls="collapseThree">
+                              Add Banner
+                            </button>
+                          </h2>
+                          <div id="collapseThree" class="accordion-collapse collapse {% if added %}show{% endif %}" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                <form action="" method="POST" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                {{ form.title|as_crispy_field }}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                {{ form.http_url_link|as_crispy_field }}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                {{ form.image|as_crispy_field }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                    </div>
+                                </form>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        </div>
+		<section class="content">
+		  <div class="row">
+			  <div class="col-12">
+				<div class="box">
+				  <div class="box-body">
+                    <h1 class="fs-5">List Banner</h1>
+					<div class="table-responsive">
+						<table id="" class="table table-hover no-wrap product-order" data-page-size="10">
+							<thead>
+								<tr>
+                                    <th>ID</th>
+									<th>Title</th>
+									<th>Image</th>
+                                    <th>Link</th>                                  
+                                    <th>Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+							{% for c in query %} 
+								<tr>
+                                    <td>{{ c.id }}</td>                                                                      
+									<td>{{ c.title }}</td>
+									<td>{% if c.image %}<img src="{{ c.image.url }}" alt="brand" style="width: 40px; height: 30px;" >{% endif %}</td>
+									<td>
+										{% if c.http_url_link %}
+											{{ c.http_url_link }}
+										{% endif %}								
+									</td>
+						
+									<td>
+                                        <a href="javascript:void" class="text-info me-10" data-bs-toggle="modal" data-bs-target="#editBanner{{ c.pk }}" data-bs-original-title="Edit">
+											<i class="ti-marker-alt"></i>
+										</a>
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="editBanner{{ c.pk }}" tabindex="-1" aria-labelledby="editBanner{{ c.pk }}Label" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <form action="" method="POST" enctype="multipart/form-data">
+                                                        <div class="modal-header">
+                                                            <h1 class="modal-title fs-5" id="editBanner{{ c.pk }}Label">Edit Banner</h1>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            {% csrf_token %}
+                                                            <div class="form-body">
+                                                                <div class="row">
+                                                                    <input type="hidden" name="obj_id" id="" value="{{ c.id }}">
+                                                                    <div class="col-md-12">
+                                                                        <div class="form-group">
+                                                                            <label for="" class="form-label">Title*</label>
+                                                                            <input type="text" name="title" id="" class="form-control" value="{{ c.title }}" required>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-12">
+                                                                        <div class="form-group">
+                                                                            <label for="" class="form-label">Image*</label>
+                                                                            <input type="file" name="image" id="" class="form-control" value="{{ c.image }}">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-12">
+                                                                        <div class="form-group">
+                                                                            <label for="" class="form-label">Http Url Link</label>
+                                                                            <input type="text" name="http_url_link" id="" class="form-control" value="{% if c.http_url_link %}{{ c.http_url_link }}{% endif %}">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                            <button type="submit" class="btn btn-primary">Save</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+										<a href="javascript:void(0)" class="text-danger delete-link"
+											data-url="{% url 'banner-delete' c.pk %}"
+											data-bs-original-title="Delete" data-bs-toggle="tooltip">
+											<i class="ti-trash"></i>
+                                        </a>
+									</td>
+								</tr>
+								{% endfor %}								
+							</tbody>						
+						</table>
+                        <!-- pagination start -->
+                        <div class="pagination justify-content-end pt-5">
+                            <span class="step-links">
+                            {% if query.has_previous %}
+                            <a href="?order_page=product&page=1"
+                                class="bg-danger p-2 rounded fw-bold">&laquo;
+                                first</a>
+                            <a
+                                href="?order_page=product&page={{ query.previous_page_number }}"
+                                class="bg-primary p-2 rounded fw-bold">previous</a>
+                            {% endif %}
+                            <span class="current bg-secondary p-2 rounded">Page {{ query.number }} of {{ query.paginator.num_pages }}.</span>
+                            {% if query.has_next %}
+                            <a
+                                href="?order_page=product&page={{ query.next_page_number }}"
+                                class="bg-primary p-2 rounded fw-bold">next</a>
+                            <a
+                                href="?order_page=product&page={{ query.paginator.num_pages }}"
+                                class="bg-danger p-2 rounded fw-bold">last &raquo;</a>
+                            {% endif %}
+                            </span>
+                        </div>
+                        <!-- pagination end -->
+					</div>
+				  </div>
+				</div>
+			  </div>		  
+		  </div>
+		</section>
+	</div>
+</div>
+{% endblock dashboard %}
+	

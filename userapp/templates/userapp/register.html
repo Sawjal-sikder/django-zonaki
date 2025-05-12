@@ -1,0 +1,55 @@
+{% extends "store/base.html" %}
+{% load static %}
+{% load socialaccount %}
+
+
+
+{% block content %}
+<section class="content-section my-5">
+  <div class="container">
+    <div class="row justify-content-center align-items-center">
+      <div class="col-11 col-md-4 my-4 p-5 shadow rounded">
+        <form action="" method="post">
+          <h2>Registration</h2>
+          {% if messages %}
+          <ul class="messages text-danger">
+            {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+          <hr class="mt-1 mb-3">
+          {% csrf_token %}
+
+          <div class="form-group">
+            <input type="tel" class="form-control" name="phone" placeholder="Phone number" 
+                   pattern="^(?:\+?88)?01[3-9]\d{8}$" title="Please enter a valid Bangladeshi phone number" required>
+          </div>          
+          <div class="form-group">
+            <input type="email" class="form-control" name="email" placeholder="E-mail Address" required>
+          </div>
+          <div class="form-group">
+            <input type="password" class="form-control" name="password1" placeholder="Password" required>
+          </div>
+          <div class="form-group">
+            <input type="password" class="form-control" name="password2" placeholder="Confirm Password" required>
+          </div>
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn w-100 rounded-pill" style="background-color: #eb5525; color: #fff; font-size: 18px;">Sign Up</button>
+          </div>
+        </form>
+        <div class="social-login my-3">
+          <a style="color: #eb5525; border: 1px solid #eb5525; font-size: 16px;" class="btn rounded-pill btn-block my-1" href="{% url 'google_login_with_type' %}?registration_type=customer">
+            <i class="fa-brands fa-google" style="font-size: 20px; color: #4285F4;"></i>
+            Login with Google
+          </a>
+        </div>
+        <div class="my-3 text-center">
+          <p>If you have already an account?<a class="mx-2" href="{% url 'signin' %}">Login</a>now.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</section>
+{% endblock content %}

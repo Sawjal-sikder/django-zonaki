@@ -1,0 +1,131 @@
+{% extends 'dashboard/base.html' %}
+
+{% block dashboard %}
+  <div class="content-wrapper">
+    <div class="container-full">
+      <div class="content-header d-flex">
+        <div class="me-auto mt-2">
+          <h4 class="page-title">Pending Category List</h4>
+        </div>
+      </div>
+      <section class="content">
+        <div class="row">
+          <div class="col-12">
+            <div class="box">
+              <div class="box-body">
+                <div class="table-responsive">
+                  <form id="category-form" method="post">
+                    {% csrf_token %}
+                    <table id="productorder" class="table table-hover no-wrap product-order" data-page-size="10">
+                      <thead>
+                        <tr>
+                          <th class="align-middle">
+                            <div class="form-check">
+                              <input type="checkbox" id="AllCategory" class="form-check-input" onclick="selectAllCheckboxes(this)" />
+                              <label for="AllCategory"></label>
+                            </div>
+                          </th>
+                          <th>ID</th>
+                          <th>Name</th>
+                          <th>Parent</th>
+                          <th>Image</th>
+                          <th>Commission</th>
+                          {% if user.is_superuser == True and user.is_staff == True %}
+                            <th>Actions</th>
+                          {% endif %}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for c in categories %}
+                          <tr>
+                            <td>
+                              <div class="form-check">
+                                <input type="checkbox" id="Category{{ forloop.counter0 }}" class="form-check-input" name="selected_categories" value="{{ c.pk }}" />
+                                <label for="Category{{ forloop.counter0 }}"></label>
+                              </div>
+                            </td>
+                            <td>{{ c.id }}</td>
+                            <td>{{ c.category_name }}</td>
+                            <td>
+                              {% if c.parent %}
+                                {{ c.parent }}
+                              {% endif %}
+                            </td>
+                            {% if c.img %}
+                              <td>
+                                <img src="{{ c.img.url }}" alt="category" style="width: 30px;" />
+                              </td>
+                            {% else %}
+                              <td>No Image</td>
+                            {% endif %}
+                            <td>
+                              {% if c.commission %}
+                                {{ c.commission }}%
+                              {% else %}
+                                0.00%
+                              {% endif %}
+                            </td>
+                            {% if user.is_superuser == True and user.is_staff == True %}
+                              <td>
+                                <a href="{% url 'category-update' c.slug %}" class="text-info me-10" data-bs-toggle="tooltip" data-bs-original-title="Edit"><i class="ti-marker-alt"></i></a>
+                                <a href="javascript:void(0)" class="text-danger delete-link" data-url="{% url 'category-delete' c.slug %}" data-bs-original-title="Delete" data-bs-toggle="tooltip"><i class="ti-trash"></i></a>
+                              </td>
+                            {% endif %}
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                    <div class="d-flex">
+                      <button type="button" class="btn btn-primary" id="verify-button" style="display: none;" onclick="submitForm('{% url 'selected_category_verify' %}')">Verify Selected Category</button>
+                      <button type="button" class="btn btn-danger ms-3" id="delete-button" style="display: none;" onclick="submitForm('{% url 'selected_category_delete' %}')">Delete Selected Category</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+{% endblock %}
+
+{% block script %}
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      function attachCheckboxListeners() {
+        var checkboxes = document.getElementsByName('selected_categories')
+        checkboxes.forEach((checkbox) => {
+          checkbox.addEventListener('change', toggleButtonVisibility)
+        })
+        toggleButtonVisibility() // Call toggleButtonVisibility initially
+      }
+    
+      function toggleButtonVisibility() {
+        var checkboxes = document.getElementsByName('selected_categories')
+        var verifyButton = document.getElementById('verify-button')
+        var deleteButton = document.getElementById('delete-button')
+        var anyChecked = Array.prototype.slice.call(checkboxes).some((x) => x.checked)
+        verifyButton.style.display = anyChecked ? 'block' : 'none' // Show verify button if any checkbox is checked
+        deleteButton.style.display = anyChecked ? 'block' : 'none' // Show delete button if any checkbox is checked
+      }
+    
+      window.selectAllCheckboxes = function (source) {
+        var checkboxes = document.getElementsByName('selected_categories')
+        for (var i = 0; i < checkboxes.length; i++) {
+          checkboxes[i].checked = source.checked
+        }
+        toggleButtonVisibility()
+      }
+    
+      window.submitForm = function (actionUrl) {
+        var form = document.getElementById('category-form')
+        form.action = actionUrl
+        form.submit()
+      }
+    
+      attachCheckboxListeners() // Attach listeners on initial load
+    })
+  </script>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% load humanize %}
+
+{% for p in products %}
+<tr>
+    <td>
+        <div class="form-check">
+            <input type="checkbox" id="verify{{ forloop.counter0 }}" class="form-check-input" name="selected_products" value="{{ p.pk }}">
+            <label for="verify{{ forloop.counter0 }}"></label>
+        </div>
+    </td>
+    <td>{{ p.pk }}</td>
+    <td>{{ p.product_name }}</td>
+    <td>{{ p.category }}</td>
+    <td>{{ p.brand }}</td>
+    <td>{{ p.created_at|naturaltime }}</td>
+    {% if p.stock_quantity == 0 %}
+    <td>
+        <span class="badge badge-pill badge-danger">Out</span>
+    </td>
+    {% else %}
+    <td>
+        <span class="badge badge-pill badge-success">{{ p.stock_quantity }}</span>
+    </td>
+    {% endif %}
+    {% if p.user.is_superuser %}
+    <td>Superuser</td>
+    {% elif p.user.is_staff %}
+    <td>Staff</td>
+    {% elif p.user.is_customer %}
+    <td>Customer</td>
+    {% elif p.user.is_vendor %}
+    <td>Vendor</td>
+    {% else %}
+    <td>Unknown</td>
+    {% endif %}
+    <td>
+        <a href="{% url 'product_detail' p.pk %}" class="text-primary me-10" data-bs-toggle="tooltip" data-bs-original-title="View">
+            <i class="fa fa-eye"></i>
+        </a>
+        <a href="{% url 'product-update' p.pk %}" class="text-info me-10" data-bs-toggle="tooltip" data-bs-original-title="Edit">
+            <i class="ti-marker-alt"></i>
+        </a>
+        <a href="javascript:void(0)" class="text-danger delete-link" data-url="{% url 'dashboard-product-delete' p.pk %}" data-bs-original-title="Delete" data-bs-toggle="tooltip">
+            <i class="ti-trash"></i>
+        </a>
+    </td>
+</tr>
+{% endfor %}
+
+
+{% comment %} {% include 'dashboard/product/filtered_products.html' %} {% endcomment %}
+

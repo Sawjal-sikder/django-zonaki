@@ -1,0 +1,528 @@
+{% load static %}
+{% load desktop_menu %}
+{% load top_category %}
+{% load cart_view %}
+{% load cart_count %}
+{% load wish_list_product_count %}
+{% load campaign %}
+{% load logo %}
+
+<style>
+  @media only screen and (min-width: 765px) {
+    .mobile {
+      display: none;
+    }
+
+    .menu-slider a {
+      font-size: 15px;
+      color: rgb(255, 255, 255);
+      font-weight: 400;
+    }
+
+    .side-nav ul li a {
+      font-size: 12px;
+    }
+  }
+
+  @media only screen and (max-width: 765px) {
+    .desktop {
+      display: none;
+    }
+  }
+
+  .header-middle {
+    height: 70px;
+    background-color: #ED2224 !important;
+  }
+
+  /* .header-middle .header-left a {
+    margin-top: 20px;
+  } */
+
+  .sticky-header a img {
+    margin-top: -10px;
+  }
+</style>
+
+
+<header class="header header-10 header-intro-clearance desktop">
+  <div class="header-middle sticky-header mx-auto">
+    <div class="container">
+      <div class="header-left py-auto">
+        <a href="{% url 'home' %}" class="logo">
+            <img src="{{ logo.image.url }}" alt="Zonaki">
+        </a>
+      </div>
+      <!-- End .header-left -->
+      <div class="header-center">
+        <div class="header-search header-search-extended header-search-visible header-search-no-radius">
+          <form action="{% url 'search' %}" method="GET">
+            <div class="header-search-wrapper search-wrapper-wide" style="margin-top: -15px; border-radius: 3px;">
+              <label for="q" class="sr-only">Search</label>
+              <input type="search" class="form-control" name="q" id="q" placeholder="Search here ..." required>
+              <button class="btn" type="submit" style="background-color:#070101; border-radius: 0px 3px 3px 0px;"><i
+                  style="color: rgb(247, 244, 244); font-size: 25px; font-weight: 700; " class="icon-search"></i></button>
+            </div><!-- End .header-search-wrapper -->
+          </form>
+        </div><!-- End .header-search -->
+      </div>
+
+      <div class="header-right">
+        <div class="header-dropdown-link" style="margin-top: -5px;">
+          
+          {% if request.user.is_authenticated %}
+          {% if request.user.is_customer and request.user.is_active %}
+          <div class="dropdown user-profile cart-dropdown mx-2">
+            <a class="dropdown-toggle" role="button" aria-haspopup="true" aria-expanded="false" data-display="static">
+              <i style="color:#140909; font-size: 25px;" class="fa-solid fa-circle-user"></i>
+              <span class="cart-txt"> <p style="color: rgb(250, 250, 250);">Profile</p></span>
+            </a>
+
+            <div class="dropdown-menu dropdown-menu-right" style="width: 150px; margin-top: 13px;">
+              <ul class="mb-0">
+                <li><a style="font-size: 15px ;" href="{% url 'profile-dashboard' %}">Profile</a></li>
+                <li><a style="font-size: 15px ;" href="{% url 'logout' %}">Logout</a></li>
+              </ul>
+            </div>
+            <!-- End .dropdown-menu -->
+          </div>
+          {% else %}
+          <a href="{% url 'dashboard-home' %}" style="background-color: yellow; padding: 7px 10px; border-radius: 5px; margin-bottom: 2px; font-weight: 600;">Dashboard</a>
+            {% endif %}
+          {% else %}
+          <a href="{% url 'customer-login' %}" class="text-white fw-bolder" style="background-color: #ED2224; padding: 7px 10px; margin-bottom: 2px; font-weight: 600;">Login</a> 
+          <span style="font-weight: 700; margin: 0 10px 8px; color: white;">|</span>
+          <a href="{% url 'register' %}" class="text-white fw-bolder" style="background-color: #ED2224; padding: 7px 10px; margin-bottom: 2px; font-weight: 600;">Register</a>
+          {% endif %}
+            
+          <a href="{% url 'wish-list' %}" class="wishlist-link">
+            <i style="color:white; font-size: 25px;" class="fa-solid fa-heart"></i>
+            <span class="wishlist-count shadow">{{ request.user|wish_list_product_count }}</span>
+            <span class="wishlist-txt"> <p style="color: rgb(250, 250, 250);">Wishlist</p></span>
+          </a>
+
+          <div class="dropdown cart-dropdown mx-2">
+            <a href="{% url 'cart-summary' %}" class="dropdown-toggle" role="button" aria-haspopup="true"
+              aria-expanded="false" data-display="static">
+              <i style="color:white; font-size: 25px;" class="fa-solid fa-cart-shopping"></i>
+              <span class="cart-count shadow">{{ request.user|cart_count }}</span>
+              <span class="cart-txt"><p style="color: rgb(250, 250, 250);">Cart</p></span>
+            </a>
+          </div><!-- End .cart-dropdown -->
+        </div>
+      </div><!-- End .header-right -->
+    </div><!-- End .container -->
+  </div><!-- End .header-middle -->
+  <div class="header-bottom container-fluid" style="border-top: 1px solid #ED2224; background-color: rgb(0, 0, 0)">
+    <div class="row d-flex col-11 mx-auto " style="background-color: rgb(0, 0, 0)">
+      <div class="col-md-4 col-lg-3">
+        {% if request.resolver_match.url_name == 'home' %}
+        <div class="dropdown category-dropdown show is-on" data-visible="true">
+          {% else %}
+          <div class="dropdown category-dropdown is-on">
+            {% endif %}
+            <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true"
+              aria-expanded="false" data-display="static" title="Browse Categories">
+              <span class="pl-5" style="font-size: 14px;">Browse Categories</span>
+            </a>
+            {% if request.resolver_match.url_name == 'home' %}
+            <div class="dropdown-menu show"
+              style="height: 400px;width: 200px; border-left: 1px solid #ED2224; margin-left: 12px;  background-color: rgb(241, 238, 238);">
+              {% else %}
+              <div class="dropdown-menu">
+                {% endif %}
+                <nav class="side-nav">
+                  <ul class="menu-vertical sf-arrows">
+                    {% for c in request.user|category %}
+                    {% if not c.children.all %}
+                    <li class="item-lead">
+                      <a href="{% url 'category' c.slug %}" style="padding-top:4px; padding-bottom:4px;">{{c.category_name}}</a>
+                    </li>
+                    {% else %}
+                    <li class="item-lead">
+                      <a href="{% url 'category' c.slug %}" style="padding-top:4px; padding-bottom:4px;">{{c.category_name}}</a>
+                      <ul>
+                        {% for sub_cate in c.children.all %}
+                        {% if not sub_cate.children.all %}
+                        <li class="item-lead">
+                          <a style="font-size:13px;" href="{% url 'category' sub_cate.slug %}" style="padding-top:4px; padding-bottom:4px;">{{sub_cate.category_name }}</a></li>
+                        {% else %}
+                        <li class="item-lead">
+                          <a style="font-size:13px;" href="{% url 'category' sub_cate.slug %}" style="padding-top:4px; padding-bottom:4px;">{{sub_cate.category_name }}</a>
+                          <ul>
+                            {% for sub_catet in sub_cate.children.all %}
+                            <li class="item-lead">
+                              <a style="font-size: 13px;" href="{% url 'category' sub_catet.slug %}" style="padding-top:4px; padding-bottom:4px;">{{sub_catet.category_name }}</a>
+                              <ul>
+                                {% for cat in sub_catet.children.all %}
+                                <li class="item-lead">
+                                  <a style="font-size: 13px;" href="{% url 'category' cat.slug %}" style="padding-top:4px; padding-bottom:4px;">{{ cat.category_name }}</a>
+                                </li>
+                                {% endfor %}
+                              </ul>
+                            </li>
+                            {% endfor %}
+                          </ul>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+                      </ul>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                  </ul>
+                </nav>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-8 col-lg-9 mobile-menu my-auto">
+            <nav>
+              <div class="menu-slider">
+
+                {% for cm in request|campaign_menu %}
+                <a href="{% url 'campaign-product' cm.slug %}">{{ cm.campaign_name }}</a>
+                {% endfor %}
+              </div>
+            </nav>
+          </div>
+        </div>
+      </div>
+</header><!-- End .header -->
+
+
+
+<style>
+  @media only screen and (max-width: 764px) {
+    .header-bottom a {
+      font-size: 11px;
+    }
+
+    .mobile .dropdown.category-dropdown .dropdown-toggle::after {
+      font-size: 15px;
+      font-weight: 400;
+      position: absolute;
+      margin-left: 0;
+      /* left: 1.5rem; */
+    }
+
+    .mobile .category-dropdown .dropdown-toggle:after {
+      position: absolute;
+      /* right: 1.9rem; */
+      top: 60%;
+      margin-top: -1.15rem;
+      font-weight: normal;
+      margin-left: 0;
+      float: right;
+    }
+
+    .mobile-menu a {
+      color: rgb(255, 255, 255) !important;
+      font-weight: 400;
+    }
+
+    .dropdown-menu ul li a {
+      font-size: 10px;
+    }
+
+    .barra {
+      margin-left: -30px;
+      width: 100%;
+      position: relative
+    }
+
+    .buscar {
+      text-align: center;
+      font-size: 10px;
+      float: left;
+      border: none;
+      background-color: rgb(236, 236, 236);
+      width: 380px;
+      padding: 5px;
+      height: 35px;
+      /* border-radius: 25px; */
+      outline: none;
+      color: black;
+    }
+
+    .barra i {
+      position: absolute;
+      top: 10px;
+      right: 100px;
+      width: 20px;
+      height: 36px;
+      text-align: center;
+      color: rgb(170, 167, 161);
+      font-size: 15px;
+    }
+
+    .wrap {
+      width: 30%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+
+  @media only screen and (max-width: 700px) {
+    .barra .buscar {
+      width: 360px;
+    }
+
+    .barra i {
+      right: 100px;
+    }
+  }
+
+  @media only screen and (max-width: 650px) {
+    .barra .buscar {
+      width: 320px;
+    }
+
+    .barra i {
+      right: 80px;
+    }
+  }
+
+  @media only screen and (max-width: 600px) {
+    .barra .buscar {
+      width: 280px;
+    }
+
+    .barra i {
+      right: 65px;
+    }
+  }
+
+  @media only screen and (max-width: 520px) {
+    .barra .buscar {
+      width: 230px;
+    }
+
+    .barra i {
+      right: 60px;
+    }
+  }
+
+  @media only screen and (max-width: 470px) {
+    .barra .buscar {
+      width: 205px;
+    }
+
+    .barra i {
+      right: 40px;
+    }
+  }
+
+  @media only screen and (max-width: 400px) {
+    .barra .buscar {
+      width: 200px;
+    }
+
+    .barra i {
+      right: 40px;
+    }
+
+    .header p,
+    a {
+      font-size: 12px;
+    }
+  }
+
+  @media only screen and (max-width: 375px) {
+
+    .barra input,
+    input::placeholder {
+      font: 10px/3 sans-serif;
+    }
+
+    .barra .buscar {
+      width: 160px;
+      height: 25px;
+
+    }
+
+    .barra i {
+      right: 40px;
+      top: 8px;
+      font-size: 10px;
+    }
+
+    .header p,
+    a {
+      font-size: 10px;
+    }
+
+    .header .logo img {
+      width: 35px;
+    }
+
+    .menu-slider {
+      width: 4;
+    }
+  }
+
+  @media only screen and (max-width: 345px) {
+    .barra i {
+      right: 35px;
+    }
+  }
+
+  @media only screen and (max-width: 315px) {
+    .barra i {
+      right: 30px;
+    }
+  }
+</style>
+<!-- mobile responsive start -->
+<header class="header header-10 header-intro-clearance mobile">
+
+  <div class="header-bottom col-12" style="border-top: 1px solid #ED2224;background-color: rgb(0, 0, 0)">
+    <div class="row d-flex justify-content-between align-items-center">
+      <div class="col-4 col-md-4 col-lg-4">
+        <!--<div class="dropdown category-dropdown is-on" data-visible="true">
+          <a style="font-size: 13px;" href="#" class="dropdown-toggle" role="button" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false" data-display="static" title="Browse Categories">
+            <span style="padding-left: 20px;">All Categories</span>
+          </a>
+          <div class="dropdown-menu">
+            <nav class="side-nav">
+              <ul class="menu-vertical sf-arrows">
+                {% for c in request.user|category %}
+                {% if not c.children.all %}
+                <li class="item-lead "><a href="{% url 'category' c.slug %}">{{ c.category_name }}</a>
+                </li>
+                {% else %}
+                <li class="item-lead "><a href="{% url 'category' c.slug %}">{{ c.category_name }}</a>
+                  <ul>
+
+                    {% for sub_cate in c.children.all %}
+                    {% if not sub_cate.children.all %}
+
+                    <li class="item-lead "><a style="font-size: 13px;"
+                        href="{% url 'category' sub_cate.slug %}">{{sub_cate.category_name}}</a></li>
+
+                    {% else %}
+                    <li class="item-lead "><a style="font-size: 13px;"
+                        href="{% url 'category' sub_cate.slug %}">{{sub_cate.category_name }}</a>
+                      <ul>
+
+                        {% for sub_catet in sub_cate.children.all %}
+                        <li class="item-lead "><a style="font-size: 13px;"
+                            href="{% url 'category' sub_catet.slug %}">{{sub_catet.category_name }}</a></li>
+                        {% endfor %}
+                      </ul>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                  </ul>
+                </li>
+                {% endif %}
+                {% endfor %}
+              </ul>End .menu-vertical 
+            </nav>End .side-nav 
+          </div> End .dropdown-menu -
+        </div>-->
+        <div class="dropdown user-profile cart-dropdown ">
+          <a href="javascript:void(0)" class="mobile-menu-toggler" role="button" aria-haspopup="true" aria-expanded="false"
+            data-display="static">
+            <i style="color:#faf2f2; font-size: 25px;" class="fa-solid fa-bars"></i>
+            <!-- <span class="cart-txt"> ALL Category</span> -->
+          </a>
+          <p style = "color:#fff;" class="py-3">Categories</p> 
+        </div> 
+      </div>
+      <div class="col-8 col-md-8 col-lg-8">
+        <div class="header-right">
+          <div class="wrap">
+            <div class="barra">
+              <div class="barraContainer">
+                <form action="{% url 'search' %}" method="GET">
+                  <input type="text" name="q" class="buscar" placeholder="What are you looking for" required>
+                  <i class="fa fa-search"></i>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row justify-content-end ">
+      <div class="col-8 text-right  mobile-menu my-auto">
+        <div class="menu-slider">
+          {% for cm in request|campaign_menu %}
+          <a class='text-white' href="{% url 'campaign-product' cm.slug %}">{{ cm.campaign_name }}</a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+<!-- End .header -->
+
+
+
+
+<!-- navbar-bottom -->
+<div class="bottom-menu fixed-bottom d-md-none">
+  <header class="header header-10 header-intro-clearance">
+    <div class="header-middle">
+      <div class="header-right py-4" style="background-color: rgb(241, 238, 238);">
+        <div class="container-fluid header-dropdown-link">
+          <div class="row mx-auto">
+            <div class="col-2" style="margin-top: 5px;">
+              <div class="dropdown user-profile cart-dropdown">
+                <a href="{% url 'home' %}" class="dropdown-toggle" role="button" aria-haspopup="true"
+                  aria-expanded="false" data-display="static">
+                  <i style="color:#ED2224; font-size: 15px;" class="fa-solid fa-house"></i>
+                  <span class="cart-txt">Home</span>
+                </a>
+              </div>
+            </div>
+            <div class="col-2 mx-auto">
+              <div class="dropdown user-profile cart-dropdown ">
+                <a href="" class="mobile-menu-toggler" role="button" aria-haspopup="true" aria-expanded="false"
+                  data-display="static">
+                  <i style="color:#ED2224; font-size: 15px;" class="fa-brands fa-windows"></i>
+                  <span class="cart-txt">Category</span>
+                </a>
+              </div>
+            </div>
+            <div class="col-2 mx-auto" style="margin-top: -40px;">
+              <div class="dropdown user-profile cart-dropdown ">
+                <a href="{% url 'shop' %}" class="dropdown-toggle" role="button" aria-haspopup="true"
+                  aria-expanded="false" data-display="static">
+                  <div class="shadow text-center "
+                    style="height: 45px; width: 45px; background-color: #ED2224; border-radius: 50%; border: 5px solid white;">
+                    <i style="color:#fff; font-size: 15px;" class="fa-solid fa-gift"></i>
+                  </div>
+                  <span class="cart-txt mt-1">Shop</span>
+                </a>
+              </div>
+            </div>
+            <div class="col-2 mx-auto" style="margin-top: 5px;">
+              <div class="user-profile cart-dropdown">
+                <a href="{% url 'cart-summary' %}" class="dropdown-toggle" role="button" aria-haspopup="true"
+                  aria-expanded="false" data-display="static">
+                  <span class="cart-count shadow">{{ request.user|cart_count }}</span>
+                  <i style="color:#ED2224; font-size: 15px;" class="fa-solid fa-cart-shopping"></i>
+                  <span class="cart-txt">Cart</span>
+                </a>
+              </div>
+            </div>
+            <div class="col-2 mx-auto">
+              <div class="user-profile cart-dropdown">
+                <a href="" class="mobile-menu-toggler" role="button" aria-haspopup="true" aria-expanded="false"
+                  data-display="static">
+                  <i style="color:#ED2224; font-size: 15px;" class="fa-solid fa-circle-user"></i>
+                  <span class="cart-txt">Profile</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- End .header-right -->
+    </div><!-- End .header-middle -->
+
+  </header><!-- End .header -->
+</div>

@@ -1,0 +1,8 @@
+{% comment %} 
+{% for i in query %}
+    <option value="{{ i.zone_id }}">{{ i.zone_name }}</option>
+{% endfor %} {% endcomment %}
+<!-- zones_dropdown.html -->
+{% for i in query %}
+<option value="{{ i.zone_id }}" data-name="{{ i.zone_name }}">{{ i.zone_name }}</option>
+{% endfor %}

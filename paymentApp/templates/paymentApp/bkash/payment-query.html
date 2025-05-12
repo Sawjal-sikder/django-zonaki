@@ -1,0 +1,132 @@
+{% extends 'dashboard/base.html' %}
+
+{% block dashboard %}
+
+<div class="container" style="margin-top: 100px;">
+
+</div>
+
+<div class="container my-3">
+    <div class="card col-6 mx-auto p-2">
+        
+        <h4>Payment Query Result</h4>
+        
+        {% if response.errorMessage and response.errorCode != '0000' %}
+        <h5>{{response.errorMessage}}</h5>
+       
+        {% else %}
+
+        <style>
+            .col-8 p{
+                text-align: right;
+                color: black;
+                font-weight: 400;
+            }
+            .col-4 p{
+                color: black;
+                font-weight: 400;
+            }
+        </style>
+        <div class="row">
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-4">
+                        <p>PaymentID</p>
+                    </div>
+                    <div class="col-8">
+                        <p>{{ response.paymentID }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <p>CreateTime</p>
+                    </div>
+                    <div class="col-8">
+                        {% comment %} <p>{{ response.createTime }}</p> {% endcomment %}
+                        <p>{{ response.paymentCreateTime }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <p>UpdateTime</p>
+                    </div>
+                    <div class="col-8">
+                        {% comment %} <p>{{ response.updateTime }}</p> {% endcomment %}
+                        <p>{{ response.paymentExecuteTime }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <p>TrxID</p>
+                    </div>
+                    <div class="col-8">
+                        <p>{{ response.trxID }}</p>
+                    </div>
+                </div>
+                {% comment %} <div class="row">
+                    <div class="col-4">
+                        <p>CustomerMsisdn</p>
+                    </div>
+                    <div class="col-8">
+                        <p>{{ response.customerMsisdn }}</p>
+                    </div>
+                </div> {% endcomment %}
+                <div class="row">
+                    <div class="col-4">
+                        <p>TransactionStatus</p>
+                    </div>
+                    <div class="col-8">
+                        <p>{{ response.transactionStatus }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <p>Amount</p>
+                    </div>
+                    <div class="col-8">
+                        <p>{{ response.amount }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <p>Currency</p>
+                    </div>
+                    <div class="col-8">
+                        <p>{{ response.currency }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <p>Intent</p>
+                    </div>
+                    <div class="col-8">
+                        <p>{{ response.intent }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <p>MerchantInvoiceNumber</p>
+                    </div>
+                    <div class="col-8">
+                        {% comment %} <p>{{ response.merchantInvoiceNumber }}</p> {% endcomment %}
+                        <p>{{ response.merchantInvoice }}</p>
+                    </div>
+                </div>
+                {% comment %} <div class="row">
+                    <div class="col-4">
+                        <p>RefundAmount</p>
+                    </div>
+                    <div class="col-8">
+                        <p>{{ response.refundAmount }}</p>
+                    </div>
+                </div> {% endcomment %}
+                
+            </div>
+            <!-- End .col-lg-9 -->
+        </div>
+        {% endif %}
+
+    </div>
+   
+</div>
+{% endblock dashboard %}

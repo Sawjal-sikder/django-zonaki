@@ -1,0 +1,56 @@
+{% extends 'store/base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container-fluid my-5">
+	<div class="row justify-content-between my-5">
+		{% include 'userapp/sidebar.html' %}
+		<div class="col-md-8 col-lg-9 px-5">
+			<h5>Wishlist</h5>
+			<table class="table table-wishlist table-mobile">
+				<thead>
+					<tr>
+						<th>Product</th>
+						<th>Price</th>
+						<th>Stock Status</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for p in wish_product %}
+					<tr>
+						<td class="product-col">
+							<div class="product">
+								<figure class="product-media">
+									<a href="{% url 'product_detail' p.wish_product.slug %}">
+										<img src="{{ p.wish_product.image.url }}" alt="Product image">
+									</a>
+								</figure>
+
+								<h3 class="product-title">
+									<a href="{% url 'product_detail' p.wish_product.slug %}">{{ p.wish_product.product_name }}</a>
+								</h3>
+							</div>
+						</td>
+						{% if p.wish_product.discount_price %}
+						<td class="price-col">৳{{ p.wish_product.discount_price }} </td>
+						{% else %}
+						<td class="price-col">৳{{ p.wish_product.price }} </td>
+						{% endif %}
+
+						{% if p.wish_product.stock_quantity %}
+						<td class="stock-col"><span class="in-stock">In stock</span></td>
+						{% else %}
+						<td class="stock-col"><span class="out-of-stock">Out of stock</span></td>
+						{% endif %}
+						<td class="remove-col"> <a title="delete" class="btn-remove"
+								href="{% url 'delete_wish_list' p.slug %}"><i class="icon-close"></i></a>
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+{% endblock %}

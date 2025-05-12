@@ -1,0 +1,174 @@
+{% extends 'dashboard/base.html' %}
+
+
+{% block dashboard %}
+<div class="content-wrapper mt-90">
+    <div class="container-full">
+        <div class="content-header">
+            <div class="d-flex align-items-center">
+                <div class="me-auto">
+                    <h4 class="page-title">Website Information Details</h4>
+                </div>
+            </div>
+        </div>
+        <section class="content">
+            <div class="row">
+                <div class="col-xxxl-4 col-12">
+                    <div class="box">
+                        <div class="box-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="col">
+                                    <div class="d-flex align-items-center">
+                                        <div class="vendor-img">
+                                            <img class="me-10 rounded-circle avatar avatar-xl b-2 border-primary" src="{{ website_info.image.url }}" alt="Logo">
+                                        </div>
+                                        <div class="vendor-info">
+                                            <h4 class="mb-0">{{ website_info.name }}</h4>
+                                            <span class="fs-14 text-info">{{ website_info.description|truncatewords_html:15 }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col text-end">
+                                    <a href="{% url 'website_information_update' website_info.pk %}" class="btn btn-primary">Edit</a>          
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xxxl-8 col-12">
+                    <div class="box">
+                        <div class="box-body">
+                            <table class="table table-summary">
+                                <tbody>
+                                    <tr class="summary-subtotal">
+                                        <td colspan="4" class="col-12 text-left h4">Basic Information</td>
+                                    </tr>
+                                    <tr class="col-12">
+                                        <td colspan="4">
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Company Name</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ website_info.name }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Bkash Number</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ website_info.bkash_number }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Nagad Number</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ website_info.nagad_number }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Rocket Number</p>
+                                                </div>
+                                                <div class="col-6 " style="text-align: right;">
+                                                    <p>{{ website_info.rocket_number }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Description</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right ;">
+                                                    <p>{{ website_info.description }}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="box">
+                        <div class="box-body">
+                            <table class="table table-summary">
+                                <tbody>
+                                    <tr class="summary-subtotal">
+                                        <td colspan="4" class="col-12 text-left h4">Phone Numbers</td>
+                                    </tr>
+                                    <tr class="col-12">
+                                        <td colspan="4">
+                                            {% for phone in phone_numbers %}
+                                                <div class="row">
+                                                    <div class="col-6 text-left">
+                                                        <p>Number {{ forloop.counter1 }}</p>
+                                                    </div>
+                                                    <div class="col-6" style="text-align:right;">
+                                                        <p>{{ phone.phone }}</p>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="box">
+                        <div class="box-body">
+                            <table class="table table-summary">
+                                <tbody>
+                                    <tr class="summary-subtotal">
+                                        <td colspan="4" class="col-12 text-left h4">E-mail Addresses</td>
+                                    </tr>
+                                    <tr class="col-12">
+                                        <td colspan="4">
+                                            {% for email in email_addresses %}
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Email {{ forloop.counter1 }}</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ email.email }}</p>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="box">
+                        <div class="box-body">
+                            <table class="table table-summary">
+                                <tbody>
+                                    <tr class="summary-subtotal">
+                                        <td colspan="4" class="col-12 text-left h4">Company Addresses</td>
+                                    </tr>
+                                    <tr class="col-12">
+                                        <td colspan="4">
+                                            {% for address in company_addresses %}
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Address {{ forloop.counter1 }}</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ address.address }}</p>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock dashboard %}

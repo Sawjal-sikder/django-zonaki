@@ -1,0 +1,766 @@
+﻿{% extends 'dashboard/base.html' %}
+{% load commission_earning %}
+
+{% block dashboard %}
+<style>
+	.dash-text-black {
+		color: #172b4c;
+	}
+</style>
+<div class="wrapper">
+	<div id="loader"></div>
+	<div class="content-wrapper">
+		<div class="container">
+			<section class="content">
+				{% if request.user.is_vendor and request.user.is_active and user.vendorinformation.is_verified == True %}
+				<div class="row">
+					<!-- Vendor Products -->
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<div class="d-flex align-items-center justify-content-between my-4">
+								<div class="text-start">
+									<h5>Total Product</h5>
+									<h3 class="mb-0 fw-500">{{ user_total_product_count }}</h3>
+								</div>
+								<div>
+									<div class="mx-auto w-100 position-relative"> <i style="font-size: 30px;"
+											class="fa fa-shopping-basket" aria-hidden="true"></i></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<a href="{% url 'publish_product_list' %}" class="dash-text-black">
+								<div class="d-flex align-items-center justify-content-between my-4">
+									<div class="text-start">
+										<h5>Total Accepted Product</h5>
+										<h3 class="mb-0 fw-500">{{ user_accepted_product_count }}</h3>
+									</div>
+									<div>
+										<div class="mx-auto w-100 position-relative"> <i style="font-size: 30px;"
+												class="fa fa-shopping-basket" aria-hidden="true"></i>
+										</div>
+									</div>
+								</div>
+							</a>
+						</div>
+					</div>
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<a href="{% url 'pending_product_list' %}" class="dash-text-black">
+								<div class="d-flex align-items-center justify-content-between my-4">
+									<div class="text-start">
+										<h5>Total Pending Product</h5>
+										<h3 class="mb-0 fw-500">{{ user_pending_product_count }}</h3>
+									</div>
+									<div>
+										<div class="mx-auto w-100 position-relative"> <i style="font-size: 30px;"
+											class="fa fa-shopping-basket" aria-hidden="true"></i>
+										</div>
+									</div>
+								</div>
+							</a>
+						</div>
+					</div>
+					
+					<!-- Vendor Orders -->
+					<div class="col-12"><hr></div>
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<div class="d-flex align-items-center justify-content-between my-4">
+								<div class="text-start">
+									<h5>Total Orders</h5>
+									<h3 class="mb-0 fw-500">{{ user_total_order }}</h3>
+								</div>
+								<div>
+									<div class="mx-auto w-100 position-relative"><i style="font-size: 30px;"
+											class="fa fa-th-list" aria-hidden="true"></i></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<a href="{% url 'pending_order' %}" class="dash-text-black">
+								<div class="d-flex align-items-center justify-content-between my-4">
+									<div class="text-start">
+										<h5>Total Pending Orders</h5>
+										<h3 class="mb-0 fw-500">{{ pending_order }}</h3>
+									</div>
+									<div>
+										<div class="mx-auto w-100 position-relative"><i style="font-size: 30px;"
+												class="fa fa-list-alt" aria-hidden="true"></i>
+										</div>
+									</div>
+								</div>
+							</a>
+						</div>
+					</div>
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<a href="{% url 'pending_order' %}" class="dash-text-black">
+								<div class="d-flex align-items-center justify-content-between my-4">
+									<div class="text-start">
+										<h5>Total Processing Orders</h5>
+										<h3 class="mb-0 fw-500">{{ processing_order }}</h3>
+									</div>
+									<div>
+										<div class="mx-auto w-100 position-relative"><i style="font-size: 30px;"
+												class="fa fa-list-alt" aria-hidden="true"></i></div>
+									</div>
+								</div>
+							</a>
+						</div>
+					</div>
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<a href="{% url 'pending_order' %}" class="dash-text-black">
+								<div class="d-flex align-items-center justify-content-between my-4">
+									<div class="text-start">
+										<h5>Total On the Way Orders</h5>
+										<h3 class="mb-0 fw-500">{{ on_the_way_order }}</h3>
+									</div>
+									<div>
+										<div class="mx-auto w-100 position-relative"><i style="font-size: 30px;"
+												class="fa fa-list-alt" aria-hidden="true"></i></div>
+									</div>
+								</div>
+							</a>
+						</div>
+					</div>
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<a href="{% url 'complete_order' %}" class="dash-text-black">
+								<div class="d-flex align-items-center justify-content-between my-4">
+									<div class="text-start">
+										<h5>Total Complete Orders</h5>
+										<h3 class="mb-0 fw-500">{{ complete_order }}</h3>
+									</div>
+									<div>
+										<div class="mx-auto w-100 position-relative"><i style="font-size: 30px;"
+												class="fa fa-book" aria-hidden="true"></i></div>
+									</div>
+								</div>
+							</a>
+						</div>
+					</div>
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<a href="{% url 'cancel_order' %}" class="dash-text-black">
+								<div class="d-flex align-items-center justify-content-between my-4">
+									<div class="text-start">
+										<h5>Total Cancel Orders</h5>
+										<h3 class="mb-0 fw-500">{{ cancel_order }}</h3>
+									</div>
+									<div>
+										<div class="mx-auto w-100 position-relative"><i style="font-size: 30px;"
+											class="fa fa-list-alt" aria-hidden="true"></i></div>
+									</div>
+								</div>
+							</a>
+						</div>
+					</div>
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<a href="{% url 'return_order' %}" class="dash-text-black">
+								<div class="d-flex align-items-center justify-content-between my-4">
+									<div class="text-start">
+										<h5>Total Return Orders</h5>
+										<h3 class="mb-0 fw-500">{{ return_order }}</h3>
+									</div>
+									<div>
+										<div class="mx-auto w-100 position-relative"><i style="font-size: 30px;"
+											class="fa fa-list-alt" aria-hidden="true"></i></div>
+									</div>
+								</div>
+							</a>
+						</div>
+					</div>
+
+					<!-- vendor revenue -->
+					<div class="col-12"><hr></div>
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<div class="d-flex align-items-center justify-content-between my-4">
+								<div class="text-start">
+									<h5>Total Revenue</h5>
+									<h3 class="mb-0 fw-500">৳ {{ user_total_revenue }}</h3>
+								</div>
+								<div>
+									<div class="mx-auto w-100 position-relative"><i style="font-size: 30px;"
+											class="fa fa-industry" aria-hidden="true"></i>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div> 
+					
+					<!-- Reviews -->
+					<!-- <div class="col-12"><hr></div>
+					<div class="col-xxxl-6 col-12">
+						<div class="box">
+							<div class="box-header">
+								<h4 class="box-title">Customer Review</h4>
+							</div>
+							<div class="box-body">
+								<div class="table-responsive">
+									<table class="table table-hover no-wrap product-order" data-page-size="10">
+										<thead>
+											<tr>
+												<th>Product Name</th>
+												<th>Review</th>
+												<th>Rating</th>
+												<th>Action</th>
+											</tr>
+										</thead>
+										<tbody>
+
+											{% for c in rating_review %}
+											<tr>
+												<td>{{ c.product.product_name }}</td>
+												<td>{{ c.review }}</td>
+												<td>{{ c.rating }}</td>
+												<td><a href="{% url 'rating-update' c.pk %}" class="text-info me-10"
+														data-bs-toggle="tooltip" data-bs-original-title="Edit">
+														<i class="ti-marker-alt"></i>
+													</a>
+													<a href="{% url 'rating-delete' c.pk %}" class="text-danger"
+														data-bs-original-title="Delete" data-bs-toggle="tooltip">
+														<i class="ti-trash"></i>
+													</a>
+												</td>
+											</tr>
+											{% endfor %}
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div> -->
+				</div>
+				{% elif request.user.is_superuser or request.user.is_staff and request.user.is_active %}
+				<div class="row">
+					<!-- Total Products -->
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<div class="d-flex align-items-center justify-content-between my-4">
+								<div class="text-start">
+									<h5>Total Product</h5>
+									<h3 class="mb-0 fw-500">{{ all_product_count }}</h3>
+								</div>
+								<div>
+									<div class="mx-auto w-100 position-relative"> <i style="font-size: 30px;"
+											class="fa fa-shopping-basket" aria-hidden="true"></i></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<a href="{% url 'publish_product_list' %}" class="dash-text-black">
+								<div class="d-flex align-items-center justify-content-between my-4">
+									<div class="text-start">
+										<h5>Total Accepted Product</h5>
+										<h3 class="mb-0 fw-500">{{ all_accepted_product_count }}</h3>
+									</div>
+									<div>
+										<div class="mx-auto w-100 position-relative"> <i style="font-size: 30px;"
+												class="fa fa-shopping-basket" aria-hidden="true"></i>
+										</div>
+									</div>
+								</div>
+							</a>
+						</div>
+					</div>
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<a href="{% url 'pending_product_list' %}" class="dash-text-black">
+								<div class="d-flex align-items-center justify-content-between my-4">
+									<div class="text-start">
+										<h5>Total Pending Product</h5>
+										<h3 class="mb-0 fw-500">{{ all_pending_product_count }}</h3>
+									</div>
+									<div>
+										<div class="mx-auto w-100 position-relative"> <i style="font-size: 30px;"
+												class="fa fa-shopping-basket" aria-hidden="true"></i>
+										</div>
+									</div>
+								</div>
+							</a>
+						</div>
+					</div>
+					
+					<!-- Admin or Staff Products -->
+					<div class="col-12"><hr></div>
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<div class="d-flex align-items-center justify-content-between my-4">
+								<div class="text-start">
+									<h5>My Product</h5>
+									<h3 class="mb-0 fw-500">{{ user_total_product_count }}</h3>
+								</div>
+								<div>
+									<div class="mx-auto w-100 position-relative"> <i style="font-size: 30px;"
+											class="fa fa-shopping-basket" aria-hidden="true"></i></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<a href="{% url 'publish_product_list' %}" class="dash-text-black">
+								<div class="d-flex align-items-center justify-content-between my-4">
+									<div class="text-start">
+										<h5>My Accepted Product</h5>
+										<h3 class="mb-0 fw-500">{{ user_accepted_product_count }}</h3>
+									</div>
+									<div>
+										<div class="mx-auto w-100 position-relative"> <i style="font-size: 30px;"
+												class="fa fa-shopping-basket" aria-hidden="true"></i>
+										</div>
+									</div>
+								</div>
+							</a>
+						</div>
+					</div>
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<a href="{% url 'pending_product_list' %}" class="dash-text-black">
+								<div class="d-flex align-items-center justify-content-between my-4">
+									<div class="text-start">
+										<h5>My Pending Product</h5>
+										<h3 class="mb-0 fw-500">{{ user_pending_product_count }}</h3>
+									</div>
+									<div>
+										<div class="mx-auto w-100 position-relative"> <i style="font-size: 30px;"
+												class="fa fa-shopping-basket" aria-hidden="true"></i>
+										</div>
+									</div>
+								</div>
+							</a>
+						</div>
+					</div>
+					
+					<!-- Total Orders -->
+					<div class="col-12"><hr></div>
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<div class="d-flex align-items-center justify-content-between my-4">
+								<div class="text-start">
+									<h5>Total Orders</h5>
+									<h3 class="mb-0 fw-500">{{ total_order }}</h3>
+								</div>
+								<div>
+									<div class="mx-auto w-100 position-relative"><i style="font-size: 30px;"
+											class="fa fa-th-list" aria-hidden="true"></i></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<a href="{% url 'pending_order' %}" class="dash-text-black">
+								<div class="d-flex align-items-center justify-content-between my-4">
+									<div class="text-start">
+										<h5>Total Pending Orders</h5>
+										<h3 class="mb-0 fw-500">{{ total_pending_order }}</h3>
+									</div>
+									<div>
+										<div class="mx-auto w-100 position-relative"><i style="font-size: 30px;"
+												class="fa fa-list-alt" aria-hidden="true"></i>
+											</div>
+									</div>
+								</div>
+							</a>
+						</div>
+					</div>
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<a href="{% url 'pending_order' %}" class="dash-text-black">
+								<div class="d-flex align-items-center justify-content-between my-4">
+									<div class="text-start">
+										<h5>Total Processing Orders</h5>
+										<h3 class="mb-0 fw-500">{{ total_processing_order }}</h3>
+									</div>
+									<div>
+										<div class="mx-auto w-100 position-relative"><i style="font-size: 30px;"
+												class="fa fa-list-alt" aria-hidden="true"></i></div>
+									</div>
+								</div>
+							</a>
+						</div>
+					</div>
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<a href="{% url 'pending_order' %}" class="dash-text-black">
+								<div class="d-flex align-items-center justify-content-between my-4">
+									<div class="text-start">
+										<h5>Total On the Way Orders</h5>
+										<h3 class="mb-0 fw-500">{{ total_on_the_way_order }}</h3>
+									</div>
+									<div>
+										<div class="mx-auto w-100 position-relative"><i style="font-size: 30px;"
+												class="fa fa-list-alt" aria-hidden="true"></i></div>
+									</div>
+								</div>
+							</a>
+						</div>
+					</div>
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<a href="{% url 'complete_order' %}" class="dash-text-black">
+								<div class="d-flex align-items-center justify-content-between my-4">
+									<div class="text-start">
+										<h5>Total Complete Orders</h5>
+										<h3 class="mb-0 fw-500">{{ total_complete_order }}</h3>
+									</div>
+									<div>
+										<div class="mx-auto w-100 position-relative"><i style="font-size: 30px;"
+												class="fa fa-book" aria-hidden="true"></i></div>
+									</div>
+								</div>
+							</a>
+						</div>
+					</div>
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<a href="{% url 'cancel_order' %}" class="dash-text-black">
+								<div class="d-flex align-items-center justify-content-between my-4">
+									<div class="text-start">
+										<h5>Total Cancel Orders</h5>
+										<h3 class="mb-0 fw-500">{{ total_cancel_order }}</h3>
+									</div>
+									<div>
+										<div class="mx-auto w-100 position-relative"><i style="font-size: 30px;"
+											class="fa fa-list-alt" aria-hidden="true"></i></div>
+									</div>
+								</div>
+							</a>
+						</div>
+					</div>
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<a href="{% url 'return_order' %}" class="dash-text-black">
+								<div class="d-flex align-items-center justify-content-between my-4">
+									<div class="text-start">
+										<h5>Total Return Orders</h5>
+										<h3 class="mb-0 fw-500">{{ total_return_order }}</h3>
+									</div>
+									<div>
+										<div class="mx-auto w-100 position-relative"><i style="font-size: 30px;"
+											class="fa fa-list-alt" aria-hidden="true"></i></div>
+									</div>
+								</div>
+							</a>
+						</div>
+					</div>
+					
+					<!-- Admin or Staff Orders -->
+					<div class="col-12"><hr></div>
+					<div class="col-xxxl-3 col-md-4 col-12">	
+						<div class="box box-body py-5">
+							<div class="d-flex align-items-center justify-content-between my-4">
+								<div class="text-start">
+									<h5>My Total Orders</h5>
+									<h3 class="mb-0 fw-500">{{ user_total_order }}</h3>
+								</div>
+								<div>
+									<div class="mx-auto w-100 position-relative"><i style="font-size: 30px;"
+											class="fa fa-th-list" aria-hidden="true"></i></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<div class="d-flex align-items-center justify-content-between my-4">
+								<div class="text-start">
+									<h5>My Pending Orders</h5>
+									<h3 class="mb-0 fw-500">{{ pending_order }}</h3>
+								</div>
+								<div>
+									<div class="mx-auto w-100 position-relative"><i style="font-size: 30px;"
+											class="fa fa-list-alt" aria-hidden="true"></i></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<div class="d-flex align-items-center justify-content-between my-4">
+								<div class="text-start">
+									<h5>My Processing Orders</h5>
+									<h3 class="mb-0 fw-500">{{ processing_order }}</h3>
+								</div>
+								<div>
+									<div class="mx-auto w-100 position-relative"><i style="font-size: 30px;"
+											class="fa fa-list-alt" aria-hidden="true"></i></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<div class="d-flex align-items-center justify-content-between my-4">
+								<div class="text-start">
+									<h5>My On the Way Orders</h5>
+									<h3 class="mb-0 fw-500">{{ on_the_way_order }}</h3>
+								</div>
+								<div>
+									<div class="mx-auto w-100 position-relative"><i style="font-size: 30px;"
+											class="fa fa-list-alt" aria-hidden="true"></i></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<div class="d-flex align-items-center justify-content-between my-4">
+								<div class="text-start">
+									<h5>My Complete Orders</h5>
+									<h3 class="mb-0 fw-500">{{ complete_order }}</h3>
+								</div>
+								<div>
+									<div class="mx-auto w-100 position-relative"><i style="font-size: 30px;"
+											class="fa fa-book" aria-hidden="true"></i></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<div class="d-flex align-items-center justify-content-between my-4">
+								<div class="text-start">
+									<h5>My Cancel Orders</h5>
+									<h3 class="mb-0 fw-500">{{ cancel_order }}</h3>
+								</div>
+								<div>
+									<div class="mx-auto w-100 position-relative"><i style="font-size: 30px;"
+										class="fa fa-list-alt" aria-hidden="true"></i></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<div class="d-flex align-items-center justify-content-between my-4">
+								<div class="text-start">
+									<h5>My Return Orders</h5>
+									<h3 class="mb-0 fw-500">{{ return_order }}</h3>
+								</div>
+								<div>
+									<div class="mx-auto w-100 position-relative"><i style="font-size: 30px;"
+										class="fa fa-list-alt" aria-hidden="true"></i></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<!-- Total Revenue -->
+					<div class="col-12"><hr></div>
+					{% if request.user.is_superuser %}
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<div class="d-flex align-items-center justify-content-between my-4">
+								<div class="text-start">
+									<h5>Total Revenue</h5>
+									<h3 class="mb-0 fw-500">৳ {{ total_revenue }}</h3>
+								</div>
+								<div>
+									<div class="mx-auto w-100 position-relative"><i style="font-size: 30px;"
+											class="fa fa-industry" aria-hidden="true"></i></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					{% endif %}
+					<!-- user Revenue -->
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<div class="d-flex align-items-center justify-content-between my-4">
+								<div class="text-start">
+									<h5>My Total Revenue</h5>
+									<h3 class="mb-0 fw-500">৳ {{ user_total_revenue }}</h3>
+								</div>
+								<div>
+									<div class="mx-auto w-100 position-relative"><i style="font-size: 30px;"
+											class="fa fa-industry" aria-hidden="true"></i></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- total category commission -->
+					{% if request.user.is_superuser %}
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<div class="d-flex align-items-center justify-content-between my-4">
+								<div class="text-start">
+									<h5>Total Commission</h5>
+									<h3 class="mb-0 fw-500">৳ {{ request|commission_earning_filter }}</h3>
+								</div>
+								<div>
+									<div class="mx-auto w-100 position-relative"><i style="font-size: 30px;"
+											class="fa fa-industry" aria-hidden="true"></i></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<div class="d-flex align-items-center justify-content-between my-4">
+								<div class="text-start">
+									<h5>Bkash Earning</h5>
+									<h3 class="mb-0 fw-500">৳ {{ bkash_eraning }}</h3>
+								</div>
+								<div>
+									<div class="mx-auto w-100 position-relative"><i style="font-size: 30px;"
+											class="fa fa-industry" aria-hidden="true"></i></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					{% endif %}
+					
+					<!-- Total Users -->
+					<div class="col-12"><hr></div>
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<div class="d-flex align-items-center justify-content-between my-4">
+								<div class="text-start">
+									<h5>Total Users</h5>
+									<h3 class="mb-0 fw-500">{{ total_users }}</h3>
+								</div>
+								<div>
+									<div class="mx-auto w-100 position-relative"><i style="font-size: 30px;"
+											class="fa fa-users" aria-hidden="true"></i></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<div class="d-flex align-items-center justify-content-between my-4">
+								<div class="text-start">
+									<h5>Total Customers</h5>
+									<h3 class="mb-0 fw-500">{{ total_customer }}</h3>
+								</div>
+								<div>
+									<div class="mx-auto w-100 position-relative"><i style="font-size: 30px;"
+											class="fa fa-users" aria-hidden="true"></i></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<div class="d-flex align-items-center justify-content-between my-4">
+								<div class="text-start">
+									<h5>Total Vendors</h5>
+									<h3 class="mb-0 fw-500">{{ total_vendor }}</h3>
+								</div>
+								<div>
+									<div class="mx-auto w-100 position-relative"><i style="font-size: 30px;"
+											class="fa fa-users" aria-hidden="true"></i></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<div class="d-flex align-items-center justify-content-between my-4">
+								<div class="text-start">
+									<h5>Total Staffs</h5>
+									<h3 class="mb-0 fw-500">{{ total_staff }}</h3>
+								</div>
+								<div>
+									<div class="mx-auto w-100 position-relative"><i style="font-size: 30px;"
+											class="fa fa-users" aria-hidden="true"></i></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-xxxl-3 col-md-4 col-12">
+						<div class="box box-body py-5">
+							<div class="d-flex align-items-center justify-content-between my-4">
+								<div class="text-start">
+									<h5>Total Superusers</h5>
+									<h3 class="mb-0 fw-500">{{ total_superuser }}</h3>
+								</div>
+								<div>
+									<div class="mx-auto w-100 position-relative"><i style="font-size: 30px;"
+											class="fa fa-users" aria-hidden="true"></i></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<!-- Reviews -->
+					<div class="col-12"><hr></div>
+					<div class="col-xxxl-6 col-12">
+						<div class="box">
+							<div class="box-header">
+								<h4 class="box-title">Customer Review</h4>
+							</div>
+							<div class="box-body">
+								<div class="table-responsive">
+									<table class="table table-hover no-wrap product-order" data-page-size="10">
+										<thead>
+											<tr>
+												<th>Product Name</th>
+												<th>Review</th>
+												<th>Rating</th>
+												<th>Action</th>
+											</tr>
+										</thead>
+										<tbody>
+
+											{% for c in rating_review %}
+											<tr>
+												<td>{{ c.product.product_name }}</td>
+												<td>{{ c.review }}</td>
+												<td>{{ c.rating }}</td>
+												<td><a href="{% url 'rating-update' c.pk %}" class="text-info me-10"
+														data-bs-toggle="tooltip" data-bs-original-title="Edit">
+														<i class="ti-marker-alt"></i>
+													</a>
+													<a href="{% url 'rating-delete' c.pk %}" class="text-danger"
+														data-bs-original-title="Delete" data-bs-toggle="tooltip">
+														<i class="ti-trash"></i>
+													</a>
+												</td>
+											</tr>
+											{% endfor %}
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				{% else %}
+				<div class="row justify-content-center">
+					<div class="d-flex justify-content-center align-items-center mt-20">
+						<div class="box box-body">
+							<div>
+								<h2 class="fw-bolder">{{ greeting }}, {{ request.user.vendorinformation.first_and_last_name }}</h2>
+								<h3 class="mb-0 fw-500">Dear Vendor,</h3>
+								<p>Thank you for registering with us. Your profile is currently being reviewed for
+									verification. To expedite this process, please ensure all profile information is completed accurately.</p>
+								<p>Once all required information is provided, please allow up to 24 hours for our team to review your profile and provide a response.</p>
+							</div>
+							<div class="mt-4">
+								<div class="position-relative">
+									<a href="{% url 'vendor_full_info' %}" class="btn"
+										style="background-color: #ed2224; color: #fff;">Update Profile</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				{% endif %}
+			</section>
+		</div>
+	</div>
+</div>
+{% endblock dashboard %}

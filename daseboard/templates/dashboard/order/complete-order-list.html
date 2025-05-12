@@ -1,0 +1,89 @@
+{% extends 'dashboard/base.html' %}
+
+
+{% block dashboard %}
+<div class="content-wrapper">
+  <div class="container-full">
+    <div class="content-header d-flex">
+      <div class="me-auto mt-2">
+        <h4 class="page-title">Complete Order List</h4>
+      </div>
+    </div>
+    <section class="content">
+      <div class="row">
+        <div class="col-12">
+          <div class="box">
+            <div class="box-body">
+              <div class="table-responsive">
+                <table id="productorder" class="table table-hover no-wrap product-order" data-page-size="10">
+                  <thead>
+                    <tr>
+                      <th>OrderID</th>
+                      <th>Customer Name</th>
+                      <th>Total Amount</th>
+                      <th>Order Date</th>
+                      <th>Status</th>
+                      <th>Parcel</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for p in complete_orders %}
+                    <tr>
+                      <td>{{ p.orderId }}</td>
+                      <td>{{ p.user }}</td>
+                      <td>{{p.total_order_amount }}</td>
+                      <td>{{ p.ordered_date }}</td>
+
+                      {% if p.order_status == 'Pending' %}
+                      <td><span class="badge bg-primary">{{ p.order_status }}</span></td>
+                      {% elif p.order_status == 'Processing' %}
+                      <td><span class="badge bg-info">{{ p.order_status }}</span></td>
+                      {% elif p.order_status == 'On the way' %}
+                      <td><span class="badge bg-warning">{{ p.order_status }}</span></td>
+                      {% elif p.order_status == 'Complete' %}
+                      <td><span class="badge bg-success">{{ p.order_status }}</span></td>
+                      {% elif p.order_status == 'Cancel' %}
+                      <td><span class="badge bg-danger">{{ p.order_status }}</span></td>
+                      {% endif %}
+                      <td>
+                        <span class="text-success">Pathao Transport</span>
+                        {% comment %} {% if p.others_transport_trakink_url %}
+                        Others Transport
+                        {% elif p.redx_percel_traking_number %}
+                        Steadfast Transport
+                        {% else %}
+                        <a href="{% url 'create_parcel' p.pk %}" class="text-info me-10" data-bs-toggle="tooltip"
+                          data-bs-original-title="create">
+                          Create Parcel
+                        </a>
+                        {% endif %} {% endcomment %}
+                      </td>
+                      <td>
+                        <a href="{% url 'order_detail' p.pk %}" class="text-primary" data-bs-original-title="View"
+                          data-bs-toggle="tooltip">
+                          <i class="ti-eye"></i>
+                        </a>
+                        {% if request.user.is_authenticated and request.user.is_superuser %}
+                        <a href="{% url 'order_update' p.pk %}" class="text-info me-10" data-bs-toggle="tooltip"
+                          data-bs-original-title="Edit">
+                          <i class="ti-marker-alt"></i>
+                        </a>
+                        <a href="javascript:void(0)" class="text-danger delete-link" data-url="{% url 'order_delete' p.pk %}" data-bs-original-title="Delete" data-bs-toggle="tooltip">
+                          <i class="ti-trash"></i>
+                        </a>
+                        {% endif %}
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock dashboard %}

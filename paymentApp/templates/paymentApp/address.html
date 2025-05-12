@@ -1,0 +1,214 @@
+{% extends 'store/base.html' %}
+
+
+{% block content %}
+<div class="page-wrapper">
+    <main class="main">
+        <div class="text-center py-5" style="background-color: #2F3645; padding:2rem auto !important;">
+            <div class="container">
+                <h3 class="page-title text-white">Shipping Address</h3>
+            </div>
+        </div>
+        <nav aria-label="breadcrumb" class="breadcrumb-nav">
+            <div class="container">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'shop' %}">Shop</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Shipping Address</li>
+                </ol>
+            </div>
+        </nav>
+
+        <div class="page-content">
+            <div class="checkout">
+                {% if order.items.all %}
+                <div class="container">
+                    <form action="" method="POST">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-lg-7 shadow-sm">
+                                <label>Full Name<span class="text-danger me-1">*</span></label>
+                                {{ form.full_name }}
+
+                                <label>Phone<span class="text-danger me-1">*</span></label>
+                                {{ form.phone }}
+
+                                {% comment %} <label>Shipping Area<span class="text-danger me-1">*</span></label>
+                                <div class="border bg-light px-3 pt-1 mb-1">
+                                    {{ form.shiping_area }}
+                                </div> {% endcomment %}
+
+                                <label>Delivery Type<span class="text-danger me-1">*</span></label>
+                                <div class="border bg-light px-3 pt-1 mb-1">
+                                    {{ form.delivery_type }}
+                                </div>
+
+                                <div class="row">
+                                    <!-- City -->
+                                    <div class="col-4">
+                                        <input type="hidden" name="city_name" id="city_name">
+                                        <select name="city" id="cities" class="form-control" required>
+                                            {% for i in city_datas %}
+                                            <option value="{{ i.city_id }}" data-name="{{ i.city_name }}">{{ i.city_name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <!-- Zone -->
+                                    <div class="col-4">
+                                        <input type="hidden" name="zone_name" id="zone_name">
+                                        <select name="zone" id="zones" class="form-control" required></select>
+                                    </div>
+                                    <!-- Area -->
+                                    <div class="col-4">
+                                        <input type="hidden" name="area_name" id="area_name">
+                                        <select name="area" id="areas" class="form-control" required></select>
+                                    </div>
+
+                                </div>
+
+                                <label>Full Address<span class="text-danger me-1">*</span></label>
+                                {{ form.full_address }}
+
+                                <label>Order Note [Optional]</label>
+                                {{ form.order_note }}
+                            </div>
+                            <aside class="col-lg-5">
+                                <div class="summary">
+                                    <h3 class="summary-title">Your Cart Summary</h3>
+                                    <table class="table table-summary">
+                                        <thead>
+                                            <tr>
+                                                <th class="col-6">Product</th>
+                                                <th class="col-3">Total</th>
+                                                <th class="col-3">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for p in order.items.all %}
+                                            <tr>
+                                                <td>
+                                                    <a href="javascript:void(0)" >{{ p.item.product_name }},<br>
+                                                        {% if p.product_new_price %}
+                                                            ৳{{p.product_new_price|floatformat:0}}<span style="font-size: 11px;"><del class="text-danger px-2">৳{{ p.flashsale.flashsale_price|default:p.item.discount_price|default:p.item.price }}</del>
+                                                            </span>
+                                                            {% else %}
+                                                            ৳{{ p.flashsale.flashsale_price|default:p.item.discount_price|default:p.item.price }}
+                                                            {% if p.flashsale.flashsale_price or p.item.discount_price %}
+                                                                    <span style="font-size: 11px;">
+                                                                        <del class="text-danger px-2">৳{{ p.item.price }}</del>
+                                                                    </span>
+                                                            {% endif %}
+                                                        {% endif %}
+                                                            X {{ p.quantity }}
+                                                    </a>
+                                                    {% if p.coupon %}
+                                                    <span class=" p-1">
+                                                        <span style="font-size: 10px;">Coupon<span style="color: blue;">({{ p.coupon.coupon_types }})</span></span>
+                                                    </span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ p.get_subtotal }} TK </td>
+                                                <td class="remove-col">
+                                                    <a href="{% url 'remove_form_cart' p.item.slug %}" class="btn-remove"><i class="icon-close"></i></a>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+
+                                            <tr class="summary-subtotal col-12">
+                                                <td>Total Item Price:</td>
+                                                {% if order.coupon %}
+                                                    <td colspan="4"> {{order.coupon_without_shipingcharge|floatformat:0}}TK
+                                                        <span style="font-size: 11px;"><del class="text-danger px-2">{{ order.get_total }} TK</del></span>
+                                                    </td>
+                                                {% else %}
+                                                    <td colspan="4"> {{ order.get_total }} TK</td>
+                                                {% endif %}
+                                            </tr>
+                                            <tr>
+                                                {% if order.coupon %}
+                                                <td>Coupon : {{order.coupon.code}}</td>
+                                                <td>
+                                                    {% if order.coupon.coupon_type == 'Percentage' %}
+                                                    - ৳{{ order.coupon.amount_or_percentage }}%
+                                                    {% elif order.coupon.coupon_type == 'Amount' %}
+                                                    - ৳{{ order.coupon.amount_or_percentage|floatformat:0 }}%
+                                                    {% endif %} TK
+                                                </td>
+                                                <td><a href="javascript:void(0)">X</a></td>
+                                                
+                                                {% endif %}
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    {% comment %} <h6 class="mt-2">Delivery Charge</h6>
+                                    <p class="mb-3">
+                                        <span>Inside Chittagong Minimum 120TK.<sup>(Per 1kg)</sup> </span> <br>
+                                        <span>Outside Chittagong Minimum 150TK.<sup>(Per 1kg)</sup> </span>
+                                    </p> {% endcomment %}
+                                    <div class="card">
+                                        <div class="card-header" id="heading-3">
+                                            <h2 class="card-title">
+                                                {{ payment_method.payment_option }}
+                                            </h2>
+                                        </div>
+                                        <div id="collapse-3" class="collapse" aria-labelledby="heading-3"
+                                            data-parent="#accordion-payment">
+                                            <div class="card-body">Quisque volutpat mattis eros. Lorem ipsum dolor sit
+                                                amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis
+                                                eros.
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button style="background-color: red; color: white;" type="submit"
+                                        class="btn btn-block rounded-pill">
+                                        <span>CONTINUE</span>
+                                    </button>
+                                </div>
+                            </aside>
+                        </div>
+                    </form>
+                </div>
+                {% else %}
+                <h2 class="text-center text-warning">You have no active order.</h2>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    document.getElementById('cities').addEventListener('change', function () {
+        const selectedOption = this.options[this.selectedIndex];
+        document.getElementById('city_name').value = selectedOption.dataset.name;
+
+        // Fetch zones for the selected city
+        const cityId = selectedOption.value;
+        fetch(`/fetch-zones/?city_id=${cityId}`)
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('zones').innerHTML = data;
+                document.getElementById('areas').innerHTML = '<option>Select Area</option>'; // Reset areas
+            });
+    });
+
+    document.getElementById('zones').addEventListener('change', function () {
+        const selectedOption = this.options[this.selectedIndex];
+        document.getElementById('zone_name').value = selectedOption.dataset.name;
+
+        // Fetch areas for the selected zone
+        const zoneId = selectedOption.value;
+        fetch(`/fetch-areas/?zone_id=${zoneId}`)
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('areas').innerHTML = data;
+            });
+    });
+
+    document.getElementById('areas').addEventListener('change', function () {
+        const selectedOption = this.options[this.selectedIndex];
+        document.getElementById('area_name').value = selectedOption.dataset.name;
+    });
+
+
+</script>
+{% endblock %}

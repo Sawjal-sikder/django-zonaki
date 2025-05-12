@@ -1,0 +1,705 @@
+{% extends 'store/base.html' %}
+{% load static %}
+{% load flashsale_products %}
+{% load campaign %}
+{% block content %}
+
+<style>
+    .load-product{
+            display: none;
+        }
+    .loadMore {
+        width: 150px;
+        color: #fff;
+        display: block;
+        text-align: center;
+        margin: 20px auto;
+        padding: 5px;
+        border-radius: 20px;
+        border: 1px solid transparent;
+        background-color:red;
+        transition: .3s;
+        }
+    .loadMore:hover {
+        color: red;
+        background-color: #fff;
+        border: 1px solid red;
+        text-decoration: none;
+        }
+    .noContent {
+        color: #000 !important;
+        background-color: transparent !important;
+        pointer-events: none;
+    }
+    .product{
+        box-shadow: 0 8px 16px 0 rgba(167, 165, 165, 0.2);
+    }
+    .product:hover{
+        box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    }
+
+    .product-flex {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+    }
+    .product-flex > * {
+        grid-column: span 1;
+    }
+
+    .product-image {
+        object-fit: fill !important;
+        aspect-ratio: 1 / 1 !important;
+    }
+
+    @media only screen and (max-width: 992px) {
+        .product-flex {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+    @media only screen and (max-width: 768px) {
+        .product-flex {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @media only screen and (max-width: 600px) {
+        .product-flex {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }   
+    .nav-item li{
+        padding-bottom: -30px;
+    }
+    .product-body .title::-webkit-scrollbar {
+        width: 2px;
+        background-color: transparent;
+    }
+    .product-body .title::-webkit-scrollbar-thumb {
+        width: 2px;
+        background-color: #ddd;
+        border-radius: 50%;
+    }
+</style>
+<style>
+    .categories-section h2 {
+        font-size: 1.2em;
+        margin-bottom: 20px;
+        color: #333;
+        text-align: center;
+    }
+    .categories-grid,
+    .campaign-grid {
+        display: grid;
+        gap: 20px;
+    }
+    .category-item {
+        background-color: #fff;
+        text-align: center;
+        transition: transform 0.2s ease;
+    }
+    .category-item:hover {
+        transform: scale(1.05);
+    }
+    .category-item img {
+        width: 100%;
+        /* height: 100px; */
+        aspect-ratio: 1/1;
+        object-fit: fill;
+        margin-bottom: 5px;
+        border-radius: 10px;
+    }
+    .category-item p {
+        font-size: 0.9em;
+        font-weight: 500;
+        color: #555;
+        margin: 0;
+        word-wrap: break-word;
+    }
+    a {
+        text-decoration: none;
+        color: inherit;
+    }
+    .campaign-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    /* Large screens (8 cards per row) */
+    @media (min-width: 1200px) {
+        .categories-grid {
+            grid-template-columns: repeat(8, 1fr);
+        }
+    }
+    /* Medium screens (6 cards per row) */
+    @media (min-width: 992px) and (max-width: 1199px) {
+        .categories-grid {
+            grid-template-columns: repeat(6, 1fr);
+        }
+    }
+    /* Small screens (2 cards per row) */
+    @media (max-width: 991px) {
+        .categories-grid {
+            grid-template-columns: repeat(5, 1fr);
+        }
+    }
+    /* Extra small screens (1 card per row) */
+    @media (max-width: 576px) {
+        .categories-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        /* .category-item img {
+            height: 80px;
+        } */
+    }
+</style>
+<main class="main">
+    <!-- Banner start -->
+    <div class="container-fluid mb-3" style="padding-left: 0px !important; padding-right: 0px !important;">
+        <!--desktop-view-->
+        <div class="row ">
+            <div class="col-md-3 d-none d-md-block"></div>
+            <div class="col-md-9 d-none d-md-block">
+                <div class="intro-slider owl-carousel owl-simple owl-nav-inside" data-toggle="owl" data-owl-options='{
+                        "nav": false,
+                        "loop": true,
+                        "autoplay": true,
+                        "autoplayTimeout": 3000,
+                        "lazyLoad": true,
+                        "responsive": {
+                            "992": {
+                                "nav": true
+                            }
+                        }
+                    }'>
+                    {% for b in banner %}           
+                    <div class="intro-slide">
+                        {% if b.http_url_link %}
+                        <a href="{{ b.http_url_link }}">
+                            <img src="{{ b.image.url }}" alt="{{ b.image.alt_text }}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;">
+                        </a>
+                        {% else %}
+                        <img src="{{ b.image.url }}" alt="{{ b.image.alt_text }}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;">
+                        {% endif %}                 
+                    </div><!-- End .intro-slide -->
+                    {% endfor %}
+                    
+                </div><!-- End .owl-carousel owl-simple -->
+            </div>
+        </div>
+         
+         <!--mobile view  -->
+        <div class="intro-slider owl-carousel owl-simple owl-nav-inside d-md-none" data-toggle="owl" data-owl-options='{
+                "nav": false,
+                "loop": true,
+                "autoplay": true,
+                "autoplayTimeout": 3000,
+                "lazyLoad": true,
+                "responsive": {
+                    "992": {
+                        "nav": true
+                    }
+                }
+            }'>
+            {% for b in banner %}           
+            <div class="intro-slide">
+                
+                {% if b.http_url_link %}
+                <a href="{{ b.http_url_link }}">
+                    <img src="{{ b.image.url }}" alt="" style="width: 100%; aspect-ratio: 3/1;">
+                </a>
+                {% else %}
+                <img src="{{ b.image.url }}" alt="" style="width: 100%; aspect-ratio: 3/1;">
+                {% endif %}                 
+                
+            </div><!-- End .intro-slide -->
+            {% endfor %}
+        </div><!-- End .owl-carousel owl-simple -->
+    </div><!-- End .intro-slider-container -->
+    <!-- Banner end -->   
+
+    <!-- Campaign start -->
+    {% if request|campaign_menu %}
+    <div class="d-block d-md-none container mb-5">
+        <div class="row mb-2" style='border-bottom: 0.1rem solid #ebebeb'>
+            <div class="col-12">
+                <h4 class="text-left mb-1">Campaign</h4>
+            </div>
+        </div>
+        <div class="categories-section">
+            <div class="campaign-grid">
+                {% for p in request|campaign_menu %}
+                <a href="{% url 'campaign-product' p.slug %}">
+                    <div class="category-item">
+                        <div class="d-flex justify-content-center">
+                            {% if p.img %}
+                            <img src="{{ p.img.url }}" alt="{{ p.campaign_name }}">
+                            {% else %}
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlSjpT0YPXyFzHpBKIPoedcq1J-G-9c25Jxw&s" alt="Default Image">
+                            {% endif %}
+                        </div>
+                        <p>{{ p.campaign_name }}</p>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    <!-- Campaign end -->   
+
+    <!-- Flash Sale start -->
+    {% if flashsale %}
+    <div class="container mb-3">
+        <div class="row mb-1 pb-1" style='border-bottom: 0.1rem solid #ebebeb'>
+            <div class="col-12">
+                <div class="d-sm-block d-md-flex justify-content-start" role="tablist">
+                    <h2 class="title mr-2">Flash Sale</h2>
+                    <div class="d-flex">
+                        <div class="px-2 py-1 mx-1" style="background-color:red; color: white; border-radius: 5px;"><span id="days"></span><span> DAY</span></div>
+                        <div class="px-2 py-1 mx-1" style="background-color:red; color: white; border-radius: 5px;"><span id="hours"></span><span> HOUR</span></div>
+                        <div class="px-2 py-1 mx-1" style="background-color:red; color: white; border-radius: 5px;"><span id="minutes"></span><span> MIN</span></div>
+                        <div class="px-2 py-1 mx-1" style="background-color:red; color: white; border-radius: 5px;"><span id="seconds"></span><span> SEC</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-content tab-content-carousel">
+            <div class="tab-pane p-0 fade show active" id="hot-all-tab" role="tabpanel" aria-labelledby="hot-all-link">
+                <div class="owl-carousel owl-simple carousel-equal-height carousel-with-shadow" data-toggle="owl" 
+                    data-owl-options='{
+                        "nav": false, 
+                        "dots": true,
+                        "margin": 20,
+                        "loop": false,
+                        "responsive": {
+                            "0": {
+                                "items":2
+                            },
+                            "480": {
+                                "items":2
+                            },
+                            "768": {
+                                "items":3
+                            },
+                            "992": {
+                                "items":4
+                            },
+                            "1280": {
+                                "items":5,
+                                "nav": true
+                            }
+                        }
+                    }'>
+                    {% regroup flashsale_products by product.id as flashsale_product_as %}
+                    {% for p_list in flashsale_product_as %}
+                        {% for p in p_list.list|low_price_product %}
+                        <div class="product pb-1">
+                            <figure class="product-media">
+                                {% if p.stock %}
+                                    {% if p.flashsale_price %}
+                                    <span class="product-label label-sale" style="background-color: red; color:#fff">
+                                        {{ p.sale_saving_percent|floatformat:"0" }}% Off
+                                    </span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="product-label label-sale" style="background-color: #e70f0f; color:#fff">Out Of Stock</span>
+                                {% endif %}
+                                <a href="{% url 'flashsale_detail' p.product.slug %}">
+                                    <img src="{{ p.product.image.url }}" alt="Product" class="product-image" style="">
+                                </a>
+                            </figure>
+                            <div class="product-body">
+                                <div class="title" style="height: 35px;">
+                                    <h3 class="product-title text-center"><a href="{% url 'flashsale_detail' p.product.slug %}">{{ p.product.product_name|truncatechars_html:50 }}</a></h3>
+                                </div>
+                                <div class="product-price pt-1 justify-content-center">
+                                    {% if p.flashsale_price %}
+                                    <span class="new-price">৳{{ p.flashsale_price|floatformat:0 }} </span>
+                                    <span class="old-price"><del>৳{{ p.get_product_price }} </del></span>
+                                    {% else %}
+                                    ৳{{ p.get_product_price }}
+                                    {% endif %}
+                                </div><!-- End .product-price -->
+                                <div class="ratings-container justify-content-center">
+                                    <div class="ratings">       
+                                        {% if p.product.get_avg_rating %}
+                                        <div class="ratings-val" style="width:{{ p.product.get_avg_rating }}%;"></div><!-- End .ratings-val -->           
+                                        {% endif %}
+                                        <div class="ratings-val" style="width: 0%;"></div><!-- End .ratings-val -->                                  
+                                    </div><!-- End .ratings -->
+                                    {% if p.product.get_rating_count %}
+                                    <span class="ratings-text">( {{ p.product.get_rating_count }} )</span>
+                                    {% else %}
+                                    <span class="ratings-text">(0)</span>
+                                    {% endif %}
+                                </div><!-- End .rating-container -->
+                            </div><!-- End .product-body -->
+                        </div>
+                        {% endfor %}
+                    {% endfor %}
+                </div><!-- End .owl-carousel -->
+            </div><!-- .End .tab-pane -->
+        </div><!-- End .tab-content -->
+    </div><!-- End .container -->
+    {% endif %}
+    <!-- Flash Sale end -->
+
+    <!-- categories start -->
+    {% if product_category %}
+    <div class="container mb-5">
+        <div class="row mb-2" style='border-bottom: 0.1rem solid #ebebeb'>
+            <div class="col-12">
+                <h2 class="title text-left mb-1">Categories</h2>
+            </div>
+        </div>
+        <div class="categories-section">
+            <div class="categories-grid">
+                {% for p in product_category %}
+                <a href="{% url 'category' p.slug %}">
+                    <div class="category-item">
+                        <div class="d-flex justify-content-center">
+                            {% if p.img %}
+                            <img src="{{ p.img.url }}" alt="{{ p.category_name }}">
+                            {% else %}
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlSjpT0YPXyFzHpBKIPoedcq1J-G-9c25Jxw&s" alt="Default Image">
+                            {% endif %}
+                        </div>
+                        <p>{{ p.category_name }}</p>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    <!-- categories end -->
+    
+    <!-- Free Delivery start -->
+    {% if free_delivery_product %}
+    <div class="container mb-3">
+        <div class="row mb-2" style='border-bottom: 0.1rem solid #ebebeb'>
+            <div class="col-7">
+                <h2 class="title text-left mb-1">Free Delivery Products</h2><!-- End .title -->
+            </div>
+        </div>
+        <div class="tab-content tab-content-carousel">
+            <div class="tab-pane p-0 fade show active" id="hot-all-tab" role="tabpanel" aria-labelledby="hot-all-link">
+                <div class="owl-carousel owl-simple carousel-equal-height carousel-with-shadow" data-toggle="owl" 
+                    data-owl-options='{
+                        "nav": false, 
+                        "dots": true,
+                        "margin": 20,
+                        "loop": false,
+                        "responsive": {
+                            "0": {
+                                "items":2
+                            },
+                            "480": {
+                                "items":2
+                            },
+                            "768": {
+                                "items":3
+                            },
+                            "992": {
+                                "items":4
+                            },
+                            "1280": {
+                                "items":5,
+                                "nav": true
+                            }
+                        }
+                    }'>
+                    
+                    {% for p in free_delivery_product %}
+                    <div class="product pb-1">
+                        <figure class="product-media">
+                            {% if p.stock_quantity %}
+                            {% if p.discount_price %}
+                            <span class="product-label label-sale" style="background-color: red; color:#fff">{{ p.saving_percent|floatformat:"0" }}% Off</span>
+                            {% endif %}
+                            {% else %}
+                            <span class="product-label label-sale" style="background-color: #e70f0f; color:#fff">Out Of Stock</span>
+                            {% endif %}
+                            <a href="{% url 'product_detail' p.slug %}">
+                                <img src="{{  p.image.url }}" alt="Product image" class="product-image" style="">
+                            </a>
+
+                            <div class="product-action-vertical">
+                                <a href="{% url 'add_to_wishlist' p.slug %}" class="btn-product-icon btn-wishlist btn-expandable"><span>Add To Wishlist</span></a>
+                            </div><!-- End .product-action-vertical -->
+                        </figure><!-- End .product-media -->
+                        <div class="product-body">
+                            <div class="title" style="height: 35px;">
+                                <h3 class="product-title text-center"><a href="{% url 'product_detail' p.slug %}">{{ p.product_name|truncatechars_html:50 }}</a></h3>
+                            </div>
+                            <div class="product-price pt-1 justify-content-center">
+                                {% if p.discount_price %}
+                                <span class="new-price">৳{{ p.discount_price }} </span>
+                                <span class="old-price"><del> ৳{{ p.price }} </del></span>
+                                {% else %}
+                                ৳{{ p.price }} 
+                                {% endif %}
+                            </div><!-- End .product-price -->
+                            <div class="ratings-container justify-content-center">
+                                <div class="ratings">       
+                                    {% if p.get_avg_rating %}
+                                    <div class="ratings-val" style="width:{{p.get_avg_rating}}%;"></div><!-- End .ratings-val -->           
+                                    {% endif %}
+                                    <div class="ratings-val" style="width: 0%;"></div><!-- End .ratings-val -->                                  
+                                </div><!-- End .ratings -->
+                                {% if p.get_rating_count %}
+                                <span class="ratings-text">( {{ p.get_rating_count }} )</span>
+                                    {% else %}
+                                <span class="ratings-text">(0)</span>
+                            {% endif %}
+                            </div><!-- End .rating-container -->
+                        </div><!-- End .product-body -->
+                    </div><!-- End .product -->
+                    {% endfor %}
+                        
+                </div><!-- End .owl-carousel -->
+            </div><!-- .End .tab-pane -->
+        </div><!-- End .tab-content -->
+    </div><!-- End .container -->
+    {% endif %}
+    <!-- Free Delivery end -->
+
+    <!-- deal of the day start -->
+    {% if deal_product %}
+    <div class="container mb-3">
+        <div class="row mb-2" style='border-bottom: 0.1rem solid #ebebeb'>
+            <div class="col-7">
+                <h2 class="title text-left mb-1">Deal Of The Day</h2><!-- End .title -->
+            </div>
+            <div class="col-5 text-right">
+                <a style="font-weight: 500;" href="{% url 'deal-of-the-day' %}">Show more ></a><!-- End .title -->
+            </div>
+        </div>
+        <div class="tab-content tab-content-carousel">
+            <div class="tab-pane p-0 fade show active" id="hot-all-tab" role="tabpanel" aria-labelledby="hot-all-link">
+                <div class="owl-carousel owl-simple carousel-equal-height carousel-with-shadow" data-toggle="owl" 
+                    data-owl-options='{
+                        "nav": false, 
+                        "dots": true,
+                        "margin": 20,
+                        "loop": false,
+                        "responsive": {
+                            "0": {
+                                "items":2
+                            },
+                            "480": {
+                                "items":2
+                            },
+                            "768": {
+                                "items":3
+                            },
+                            "992": {
+                                "items":4
+                            },
+                            "1280": {
+                                "items":5,
+                                "nav": true
+                            }
+                        }
+                    }'>
+                    
+                    {% for p in deal_product %}
+                    <div class="product pb-1">
+                        <figure class="product-media">
+                            {% if p.product.stock_quantity %}
+                            {% if p.product.discount_price %}
+                            <span class="product-label label-sale" style="background-color: red; color:#fff">{{ p.product.saving_percent|floatformat:"0" }}% Off</span>
+                            {% endif %}
+                            {% else %}
+                            <span class="product-label label-sale" style="background-color: #e70f0f; color:#fff">Out Of Stock</span>
+                            {% endif %}
+                            <a href="{% url 'product_detail' p.product.slug %}">
+                                <img src="{{  p.product.image.url }}" alt="Product image" class="product-image" style="">
+                            </a>
+
+                            <div class="product-action-vertical">
+                                <a href="{% url 'add_to_wishlist' p.product.slug %}" class="btn-product-icon btn-wishlist btn-expandable"><span>Add To Wishlist</span></a>
+                            </div><!-- End .product-action-vertical -->
+                        </figure><!-- End .product-media -->
+                        <div class="product-body">
+                            <div class="title" style="height: 35px;">
+                                <h3 class="product-title text-center"><a href="{% url 'product_detail' p.product.slug %}">{{ p.product.product_name|truncatechars_html:50 }}</a></h3>
+                            </div>
+                            <div class="product-price pt-1 justify-content-center">
+                                {% if p.product.discount_price %}
+                                <span class="new-price">৳{{ p.product.discount_price }} </span>
+                                <span class="old-price"><del> ৳{{ p.product.price }} </del></span>
+                                {% else %}
+                                ৳{{ p.product.price }} 
+                                {% endif %}
+                            </div><!-- End .product-price -->
+                            <div class="ratings-container justify-content-center">
+                                <div class="ratings">       
+                                    {% if p.product.get_avg_rating %}
+                                    <div class="ratings-val" style="width:{{p.product.get_avg_rating}}%;"></div><!-- End .ratings-val -->           
+                                    {% endif %}
+                                    <div class="ratings-val" style="width: 0%;"></div><!-- End .ratings-val -->                                  
+                                </div><!-- End .ratings -->
+                                {% if p.product.get_rating_count %}
+                                <span class="ratings-text">( {{ p.product.get_rating_count }} )</span>
+                                    {% else %}
+                                <span class="ratings-text">(0)</span>
+                            {% endif %}
+                            </div><!-- End .rating-container -->
+                        </div><!-- End .product-body -->
+                    </div><!-- End .product -->
+                    {% endfor %}
+                        
+                </div><!-- End .owl-carousel -->
+            </div><!-- .End .tab-pane -->
+        </div><!-- End .tab-content -->
+    </div><!-- End .container -->
+    {% endif %}
+    <!-- deal of the day end -->
+
+    <!-- Just for you start -->
+    {% if all_product %}
+    <div class="container electronics mb-3">
+        <div class="heading heading-flex heading-border mb-3">
+            <div class="heading-left">
+                <h2 class="title text-left mb-1">Just For You</h2><!-- End .title -->
+            </div><!-- End .heading-left -->
+        </div><!-- End .heading -->
+        <div class="product-flex">
+            {% for p in all_product %}
+           <div class="product mx-2 load-product h-100">
+                <figure class="product-media"> 
+                    {% if p.stock_quantity %}
+                        {% if p.discount_price %}
+                        <span class="product-label label-sale" style="background-color: red; color:#fff">{{ p.saving_percent|floatformat:"0" }}% Off</span>
+                        {% endif %}
+                    {% else %}
+                        <span class="product-label label-sale" style="background-color: #e70f0f; color:#fff">Out Of Stock</span>
+                    {% endif %}
+                    <a href="{% url 'product_detail' p.slug %}">
+                        <img src="{{  p.image.url }}" alt="Product image" class="product-image">
+                    </a>
+                    <div class="product-action-vertical">
+                        <a href="{% url 'add_to_wishlist' p.slug %}" class="btn-product-icon btn-wishlist btn-expandable"><span>Add To Wishlist</span></a>
+                    </div><!-- End .product-action-vertical -->
+                </figure><!-- End .product-media -->
+
+                <div class="product-body">
+                    <div class="title" style="height: 35px;">
+                        <h3 class="product-title text-center"><a href="{% url 'product_detail' p.slug %}">{{ p.product_name|truncatechars_html:40 }}</a></h3>
+                    </div>
+                    <div class="product-price pt-1 justify-content-center">
+                        {% if p.discount_price %}
+                        <span class="new-price">৳{{ p.discount_price }} </span>
+                        <span class="old-price"><del>৳{{ p.price }} </del></span>
+                        {% else %}
+                        ৳{{ p.price }} 
+                        {% endif %}
+                    </div><!-- End .product-price -->
+                    <div class="ratings-container justify-content-center">
+                        <div class="ratings">       
+                            {% if p.get_avg_rating %}
+                            <div class="ratings-val" style="width:{{p.get_avg_rating}}%;"></div><!-- End .ratings-val -->           
+                            {% endif %}
+                            <div class="ratings-val" style="width: 0%;"></div><!-- End .ratings-val -->                                  
+                        </div><!-- End .ratings -->
+                        
+                        {% if p.get_rating_count %}
+                            <span class="ratings-text">( {{ p.get_rating_count }} )</span>
+                                {% else %}
+                            <span class="ratings-text">(0)</span>
+                        {% endif %}
+                            
+                    </div><!-- End .rating-container -->
+                </div><!-- End .product-body -->
+           </div>
+            {% endfor %}
+        </div>
+        <a href="" class="loadMore">Load More</a>
+    </div><!-- End .container -->
+    {% endif %}
+    <!-- Just for you end -->
+</main><!-- End .main -->
+{% endblock %}
+
+
+{% block script %}
+<script>
+    $(document).ready(function() {
+      // Initially show the first 15 items
+      $(".load-product").slice(0, 15).fadeIn();
+  
+      $(".loadMore").on("click", function(e) {
+        e.preventDefault();
+        
+        // Smoothly reveal the next 5 hidden items
+        $(".load-product:hidden").slice(0, 15).each(function(index) {
+          $(this).delay(100 * index).fadeIn(500);
+        });
+  
+        // Check if there are any more hidden items
+        if ($(".load-product:hidden").length === 0) {
+          $(".loadMore").text("No Content").addClass("noContent");
+        }
+      });
+    });
+</script>
+  
+{% comment %} <script>
+    $(document).ready(function(){
+    $(".load-product").slice(0, 15).show();
+    $(".loadMore").on("click", function(e){
+      e.preventDefault();
+      $(".load-product:hidden").slice(0, 5).slideDown();
+      if($(".load-product:hidden").length == 0) {
+        $(".loadMore").text("No Content").addClass("noContent");
+      }
+    });
+    
+  })
+</script> {% endcomment %}
+
+<script>
+    // Countdown to the specified end date and time
+    var countDownDate = new Date({{ flashsale.end_time|date:"U" }} * 1000);
+
+    var x = setInterval(function() {
+        // Current time
+        var now = new Date();
+        var distance = countDownDate - now;
+
+        // Time calculations for days, hours, minutes, and seconds
+        var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        // Display the result in the respective elements
+        document.getElementById("days").innerHTML = days;
+        document.getElementById("hours").innerHTML = hours;
+        document.getElementById("minutes").innerHTML = minutes;
+        document.getElementById("seconds").innerHTML = seconds;
+
+        // If the countdown ends, reload the page
+        if (distance < 0) {
+            clearInterval(x);
+            location.reload();
+        }
+    }, 1000);
+</script>
+
+<!-- <script>
+    $(document).ready(function(){
+  $(".content").slice(0, 4).show();
+  $("#loadMore").on("click", function(e){
+    e.preventDefault();
+    $(".content:hidden").slice(0, 4).slideDown();
+    if($(".content:hidden").length == 0) {
+      $("#loadMore").text("No Content").addClass("noContent");
+    }
+  });
+  
+})
+</script> -->
+
+{% endblock script %}
+    

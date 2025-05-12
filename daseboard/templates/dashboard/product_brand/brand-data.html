@@ -1,0 +1,244 @@
+{% extends 'dashboard/base.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block dashboard %}
+<div class="content-wrapper">
+	<div class="container-full">
+		<section class="content">
+		  <div class="row">
+			  <div class="col-12">
+				<div class="box">
+				  <div class="box-body">
+                    <div class="accordion" id="accordionExample">
+                        <div class="accordion-item">
+                          <h2 class="accordion-header mt-0">
+                            <button class="accordion-button {% if not added %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="{% if added %}true{% else %}false{% endif %}" aria-controls="collapseThree">
+                              Add Brand
+                            </button>
+                          </h2>
+                          <div id="collapseThree" class="accordion-collapse collapse {% if added %}show{% endif %}" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                <form action="" method="POST" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                {{ form.name|as_crispy_field }}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                {{ form.image|as_crispy_field }}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                {{ form.is_verified|as_crispy_field }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                    </div>
+                                </form>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        </div>
+		<section class="content">
+		  <div class="row">
+			  <div class="col-12">
+				<div class="box">
+				  <div class="box-body">
+                    <div class="d-flex justify-content-between">
+                        <h1 class="fs-5">Brand List</h1>
+                        <form method="GET" class="d-flex" id="queryForm">
+                            <div class="check-form me-2">
+                                <input type="radio" name="query_data" class="form-check-input" id="all" value="All" 
+                                {% if query_data == 'All' %}checked{% endif %}
+                                onclick="document.getElementById('queryForm').submit()">
+                                <label for="all" class="form-check-label">All</label>
+                            </div>
+                            <div class="check-form me-2">
+                                <input type="radio" name="query_data" class="form-check-input" id="pending" value="Pending" 
+                                {% if query_data == 'Pending' %}checked{% endif %}
+                                onclick="document.getElementById('queryForm').submit()">
+                                <label for="pending" class="form-check-label">Pending</label>
+                            </div>
+                            <div class="check-form">
+                                <input type="radio" name="query_data" class="form-check-input" id="complete" value="Complete" 
+                                {% if query_data == 'Complete' %}checked{% endif %}
+                                onclick="document.getElementById('queryForm').submit()">
+                                <label for="complete" class="form-check-label">Complete</label>
+                            </div>
+                        </form>
+                    </div>
+                    <form id="brand-form" method="post">
+                        {% csrf_token %}
+                        <div class="table-responsive">
+                            <table id="" class="table table-hover no-wrap product-order" data-page-size="10">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <div class="align-middle d-flex">
+                                                <input class="form-check-input" type="checkbox" id="id_user" onchange="selectAllCheckboxes(this)">
+                                                <label for="id_user" class="form-label mb-0">ID</label>
+                                            </div>
+                                        </th>
+                                        <th>Name</th>
+                                        <th>Image</th>
+                                        <th>Verify</th>                                  
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for c in query %} 
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex">
+                                                <input class="form-check-input all-choices-data" 
+                                                type="checkbox"
+                                                name="selected_brands"
+                                                value="{{ c.id }}"
+                                                id="p-form-{{ forloop.counter }}">
+                                                <label class="form-check-label" for="p-form-{{ forloop.counter }}">{{ c.id }}</label>
+                                            </div>
+                                        </td>
+                                        <td>{{ c.name }}</td>
+                                        <td>{% if c.image %}<img src="{{ c.image.url }}" alt="brand" style="width: 40px; height: 30px;">{% endif %}</td>
+                                        <td>{% if c.is_verified %}<span class="btn btn-success">Verify</span>{% else %}<span class="btn btn-danger">Unverify</span>{% endif %}</td>
+                                        <td>
+                                            <a href="javascript:void" class="text-info me-10" data-bs-toggle="modal" data-bs-target="#editobj-{{ c.pk }}" data-bs-original-title="Edit">
+                                                <i class="ti-marker-alt"></i>
+                                            </a>
+                                            <!-- Modal -->
+                                            <div class="modal fade" id="editobj-{{ c.pk }}" tabindex="-1" aria-labelledby="editobj-{{ c.pk }}Label" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <form action="" method="POST" enctype="multipart/form-data">
+                                                            <div class="modal-header">
+                                                                <h1 class="modal-title fs-5" id="editobj-{{ c.pk }}Label">Edit Brand</h1>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                {% csrf_token %}
+                                                                <div class="form-body">
+                                                                    <div class="row">
+                                                                        <input type="hidden" name="obj_id" id="" value="{{ c.id }}">
+                                                                        <div class="col-md-12">
+                                                                            <div class="form-group">
+                                                                                <label for="" class="form-label">Name*</label>
+                                                                                <input type="text" name="name" id="" class="form-control" value="{{ c.name }}" required>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-12">
+                                                                            <div class="form-group">
+                                                                                <label for="" class="form-label">Image*</label>
+                                                                                <input type="file" name="image" id="" class="form-control" value="{{ c.image }}">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-12">
+                                                                            <div class="form-group">
+                                                                                <input type="checkbox" name="is_verified" id="{{ c.id }}-is_verified" class="form-control" {% if c.is_verified %}checked{% endif %}>
+                                                                                <label for="{{ c.id }}-is_verified" class="form-label">Verify</label>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                                <button type="submit" class="btn btn-primary">Save</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <a href="javascript:void(0)" class="text-danger delete-link"
+                                                data-url="{% url 'brand_delete' c.slug %}"
+                                                data-bs-original-title="Delete" data-bs-toggle="tooltip">
+                                                <i class="ti-trash"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}								
+                                </tbody>						
+                            </table>
+                            <div class="d-flex">
+                                <button type="button" class="btn btn-primary" id="verify-button" style="display: none;" onclick="submitForm('{% url 'selected_brand_verify' %}')">Verify Selected Brands</button>
+                                <button type="button" class="btn btn-danger ms-3" id="delete-button" style="display: none;" onclick="submitForm('{% url 'selected_brand_delete' %}')">Delete Selected Brands</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- pagination start -->
+                    <div class="pagination justify-content-end pt-5">
+                        <span class="step-links">
+                        {% if query.has_previous %}
+                            <a href="?query_data={{ query_data }}&page=1" class="bg-danger p-2 rounded fw-bold">&laquo;first</a>
+                            <a href="?query_data={{ query_data }}&page={{ query.previous_page_number }}" class="bg-primary p-2 rounded fw-bold">previous</a>
+                        {% endif %}
+                        <span class="current bg-secondary p-2 rounded">Page {{ query.number }} of {{ query.paginator.num_pages }}.</span>
+                        {% if query.has_next %}
+                            <a href="?query_data={{ query_data }}&page={{ query.next_page_number }}" class="bg-primary p-2 rounded fw-bold">next</a>
+                            <a href="?query_data={{ query_data }}&page={{ query.paginator.num_pages }}" class="bg-danger p-2 rounded fw-bold">last &raquo;</a>
+                        {% endif %}
+                        </span>
+                    </div>
+                    <!-- pagination end -->
+				  </div>
+				</div>
+			  </div>		  
+		  </div>
+		</section>
+	</div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+		var checkboxes = document.getElementsByName('selected_brands');
+		var verifyButton = document.getElementById('verify-button');
+		var deleteButton = document.getElementById('delete-button');
+
+		function toggleButtonVisibility() {
+			var anyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+			verifyButton.style.display = deleteButton.style.display = anyChecked ? 'block' : 'none';
+		}
+
+		function attachCheckboxListeners() {
+			Array.from(checkboxes).forEach(checkbox => {
+				checkbox.addEventListener('change', toggleButtonVisibility);
+			});
+			toggleButtonVisibility();
+		}
+
+		window.selectAllCheckboxes = function(source) {
+			Array.from(checkboxes).forEach(checkbox => {
+				checkbox.checked = source.checked;
+			});
+			toggleButtonVisibility();
+		};
+
+		window.submitForm = function(actionUrl) {
+				var form = document.getElementById('brand-form');
+				form.action = actionUrl;
+				form.submit();
+		};
+
+		attachCheckboxListeners();
+
+        function robinChecks(className) {
+            const selectAll = event.target;
+            document.querySelectorAll(`.${className}`).forEach(choice => {
+                choice.checked = selectAll.checked;
+            });
+            toggleButtonVisibility();
+        }
+	});
+</script>
+{% endblock dashboard %}
+	

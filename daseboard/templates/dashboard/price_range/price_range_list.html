@@ -1,0 +1,57 @@
+{% extends 'dashboard/base.html' %}
+
+
+{% block dashboard %}
+<div class="content-wrapper">
+	<div class="container-full">
+		<div class="content-header d-flex">
+			<div class="me-auto mt-2">
+				<h4 class="page-title">Price Range List</h4>
+			</div>
+		</div>
+		<section class="content">
+			<div class="row">
+				<div class="col-12">
+					<div class="box">
+						<div class="box-body">
+							<div class="table-responsive">
+								<table id="productorder" class="table table-hover no-wrap product-order"
+									data-page-size="10">
+									<thead>
+										<tr>
+											<th>ID</th>
+											<th>Price Range</th>
+											<th>Ordering</th>
+											<th>Actions</th>
+										</tr>
+									</thead>
+									<tbody>
+
+										{% for p in price_ranges %}
+										<tr>
+											<td>{{ p.id }}</td>
+											<td>{{ p.price_range }}</td>
+											<td>{{ p.ordering }}</td>
+											<td><a href="{% url 'price_range_update' p.pk %}" class="text-info me-10"
+													data-bs-toggle="tooltip" data-bs-original-title="Edit">
+													<i class="ti-marker-alt"></i>
+												</a>
+												<a href="javascript:void(0)" class="text-danger delete-link"
+                                                    data-url="{% url 'price_range_delete' p.pk %}"
+                                                    data-bs-original-title="Delete" data-bs-toggle="tooltip">
+                                                    <i class="ti-trash"></i>
+                                                </a>
+											</td>
+										</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+</div
+{% endblock dashboard %}

@@ -1,0 +1,118 @@
+{% extends 'dashboard/base.html' %}
+
+{% block dashboard %}
+
+<div class="container" style="margin-top: 100px;">
+    
+    
+</div>
+
+<div class="container my-3">
+    <div class="card col-6 mx-auto p-2">
+        
+        <h3>Search Transaction</h3>
+        
+        {% if response.errorMessage and response.errorCode != '0000' %}
+        <h5>{{response.errorMessage}}</h5>
+       
+        {% else %}
+
+        <style>
+            .col-8 p{
+                text-align: right;
+                color: black;
+                font-weight: 400;
+            }
+            .col-4 p{
+                color: black;
+                font-weight: 400;
+            }
+        </style>
+        <div class="row">
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-4">
+                        <p>TrxID</p>
+                    </div>
+                    <div class="col-8">
+                        <p>{{ response.trxID }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <p>InitiationTime</p>
+                    </div>
+                    <div class="col-8">
+                        <p>{{ response.initiationTime }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <p>CompletedTime</p>
+                    </div>
+                    <div class="col-8">
+                        <p>{{ response.completedTime }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <p>TransactionType</p>
+                    </div>
+                    <div class="col-8">
+                        <p>{{ response.transactionType }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <p>CustomerMsisdn</p>
+                    </div>
+                    <div class="col-8">
+                        <p>{{ response.customerMsisdn }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <p>TransactionStatus</p>
+                    </div>
+                    <div class="col-8">
+                        <p>{{ response.transactionStatus }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <p>Amount</p>
+                    </div>
+                    <div class="col-8">
+                        <p>{{ response.amount }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <p>Currency</p>
+                    </div>
+                    <div class="col-8">
+                        <p>{{ response.currency }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <p>OrganizationShortCode</p>
+                    </div>
+                    <div class="col-8">
+                        <p>{{ response.organizationShortCode }}</p>
+                    </div>
+                </div>
+                
+            </div>
+            <!-- End .col-lg-9 -->
+        </div>
+        {% endif %}
+
+        
+
+            
+
+    </div>
+   
+</div>
+{% endblock dashboard %}

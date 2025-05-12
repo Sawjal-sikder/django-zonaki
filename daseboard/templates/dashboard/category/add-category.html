@@ -1,0 +1,247 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+
+
+{% block dashboard %}
+<div class="content-wrapper">
+	<div class="container">
+		<div class="bg-white shadow p-4 rounded mt-20">
+			<form action="" method="post" class="row gx-3 gy-3 align-items-center"
+					enctype="multipart/form-data">
+					{% csrf_token %}
+					<div class="col-sm-3 col-md-4">
+						<label for="id_category_name" class="sr-only">Category Name</label>
+						<input type="text" name="category_name" class="form-control" id="id_category_name"
+							placeholder="Category Name" value="{{ form.instance.category_name }}" required>
+					</div>
+					<div class="col-sm-3 col-md-4">
+						<label for="id_img" class="sr-only">Image</label>
+						<input type="file" name="img" class="form-control" id="id_img" value="{{ form.instance.img }}">
+					</div>
+					<div class="col-sm-3 col-md-4">
+						<label for="id_parent" class="sr-only">Parent</label>
+						<select name="parent" class="form-select" id="id_parent">
+							<option value="" disabled selected>Select Parent Category</option>
+							{% for category in categories %}
+							  <option value="{{ category.id }}" {% if category.category_name == form.instance.category_name %}selected{% endif %}>{{ category.category_name }}</option>
+							{% endfor %}
+						</select>						  
+					</div>
+					{% if not request.user.is_vendor %}
+					<div class="col-sm-3 col-md-4">
+						<label for="id_commission" class="sr-only">Commission</label>
+						<input type="text" name="commission" class="form-control" id="id_commission"
+							placeholder="Commission" value="{{ form.instance.commission }}" required>
+					</div>
+					<div class="col-sm-3 col-md-4">
+						<div class="form-check">
+							<input type="checkbox" name="is_verified" class="form-check-input" id="id_is_verified" value="{{ form.instance.is_verified }}"
+								{% if form.instance.is_verified %}checked{% endif %}>
+							<label class="form-check-label" for="id_is_verified">Is Verified</label>
+						</div>
+					</div>
+					{% endif %}
+					<div class="col-sm-3 col-md-4 text-end">
+						<button type="submit" class="btn btn-primary">Submit</button>
+						<button type="reset" class="btn btn-danger">Reset</button>
+					</div>
+				</form>
+		</div>
+
+		<section class="content">
+			<div class="row">
+				<div class="col-12">
+					<div class="box">
+						<div class="box-body">
+							<div class="table-responsive">
+								<table id="productorder" class="table table-hover no-wrap product-order"
+									data-page-size="10">
+									<thead>
+										<tr>
+											<th>ID</th>
+											<th>Name</th>
+											<th>Parent</th>
+											<th>Status</th>
+											<th>Commission</th>
+											<th>Actions</th>
+										</tr>
+									</thead>
+									<tbody>
+										{% for c in categories %}
+										<tr data-category-id="{{ c.id }}">
+											<td>{{ c.id }}</td>
+											<td>{{ c.category_name }}</td>
+											<td>
+												{% if c.parent %}
+												{{ c.parent.category_name }}
+												{% else %}
+												No Parent
+												{% endif %}
+											</td>
+											<td>
+												{% if c.is_verified %}
+												<button type="button" class="btn btn-sm btn-success">Verified</button>
+												{% else %}
+												<button type="button" class="btn btn-sm btn-danger">Pending</button>
+												{% endif %}
+											</td>
+											<td>{{ c.commission }}%</td>
+											<td>
+												<!-- Update Category Modal Trigger -->
+												<!-- <a href="javascript:void(0)" data-bs-toggle="modal"
+													data-bs-target="#updateCategoryModal-{{ c.slug }}">
+													<i class="ti-marker-alt"></i>
+												</a> -->
+												<a href="{% url 'category-update' c.slug %}">
+													<i class="ti-marker-alt"></i>
+												</a>
+
+												<!-- Delete Category Link -->
+												<a href="javascript:void(0)" class="text-danger delete-link ms-5"
+													data-url="{% url 'category-delete' c.slug %}">
+													<i class="ti-trash"></i>
+												</a>
+											</td>
+										</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+</div>
+
+
+
+<!-- Add Category Modal -->
+<!-- <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content rounded">
+			<div class="modal-header">
+				<h5 class="modal-title" id="addCategoryModalLabel">Add Category</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div id="alert-container" style="height: 20px; padding: 5px 0;"></div>
+			<div class="modal-body">
+				<form id="categoryForm" method="post" class="row gx-3 gy-3 align-items-center"
+					enctype="multipart/form-data">
+					{% csrf_token %}
+					<div class="col-sm-3 col-md-6">
+						<label for="id_category_name" class="sr-only">Category Name</label>
+						<input type="text" name="category_name" class="form-control" id="id_category_name"
+							placeholder="Category Name" required>
+					</div>
+					<div class="col-sm-3 col-md-6">
+						<label for="id_img" class="sr-only">Image</label>
+						<input type="file" name="img" class="form-control" id="id_img">
+					</div>
+					<div class="col-sm-3 col-md-6">
+						<label for="id_parent" class="sr-only">Parent</label>
+						<select name="parent" class="form-select" id="id_parent">
+							{% for category in categories %}
+							<option value="{{ category.0 }}">{{ category.category_name }}</option>
+							{% endfor %}
+						</select>
+					</div>
+					{% if not request.user.is_vendor %}
+					<div class="col-sm-3 col-md-6">
+						<label for="id_commission" class="sr-only">Commission</label>
+						<input type="text" name="commission" class="form-control" id="id_commission"
+							placeholder="Commission" required>
+					</div>
+					<div class="col-12 text-start">
+						<div class="form-check">
+							<input type="checkbox" name="is_verified" class="form-check-input" id="id_is_verified"
+								checked>
+							<label class="form-check-label" for="id_is_verified">Is Verified</label>
+						</div>
+					</div>
+					{% endif %}
+					<div class="col-12 text-end">
+						<button type="submit" class="btn btn-primary">Submit</button>
+						<button type="reset" class="btn btn-danger">Reset</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div> -->
+
+
+<!-- Update Category Modal -->
+{% comment "" %}
+{% for c in categories %}
+<div class="modal fade" id="updateCategoryModal-{{ c.slug }}" tabindex="-1"
+	aria-labelledby="updateCategoryModalLabel-{{ c.slug }}" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content rounded">
+			<div class="modal-header">
+				<h5 class="modal-title" id="updateCategoryModalLabel-{{ c.slug }}">Update Category</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<form class="updateCategory" id="updateCategoryForm-{{ c.slug }}" data-slug="{{ c.slug }}" enctype="multipart/form-data">
+					{% csrf_token %}
+					<div class="row mb-3">
+						<div class="col-sm-6">
+							<label for="id_category_name_{{ c.slug }}" class="sr-only">Category Name</label>
+							<input type="text" name="category_name" class="form-control"
+								id="id_category_name_{{ c.slug }}" placeholder="Category Name"
+								value="{{ c.category_name }}" required>
+						</div>
+						<div class="col-sm-6">
+							<label for="id_img_{{ c.slug }}" class="sr-only">Image</label>
+							<input type="file" name="img" class="form-control" id="id_img_{{ c.slug }}">
+						</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col-sm-6">
+							<label for="id_parent_{{ c.slug }}" class="sr-only">Parent</label>
+							<select name="parent" class="form-select" id="id_parent_{{ c.slug }}">
+								{% for category in categories %}
+								<option value="{{ category.0 }}" {% if category.0 == c.parent_id %}selected{% endif %}>
+									{{ category.category_name }}</option>
+								{% endfor %}
+							</select>
+						</div>
+						{% if not request.user.is_vendor %}
+						<div class="col-sm-6">
+							<label for="id_commission_{{ c.slug }}" class="sr-only">Commission</label>
+							<input type="text" name="commission" class="form-control" id="id_commission_{{ c.slug }}"
+								placeholder="Commission" value="{{ c.commission }}" required>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-12">
+							<div class="form-check">
+								<input type="checkbox" name="is_verified" class="form-check-input"
+									id="id_is_verified_{{ c.slug }}" {% if c.is_verified %}checked{% endif %}>
+								<label class="form-check-label" for="id_is_verified_{{ c.slug }}">Is Verified</label>
+							</div>
+						</div>
+					</div>
+					{% endif %}
+					<div class="col-12 text-end">
+						<button type="submit" class="btn btn-primary">Submit</button>
+						<button type="reset" class="btn btn-danger">Reset</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+{% endfor %}
+{% endcomment %}
+
+{% endblock dashboard %}
+
+
+{% block script %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{% static 'dashboard/js/category.js' %}"></script>
+{% endblock script %}

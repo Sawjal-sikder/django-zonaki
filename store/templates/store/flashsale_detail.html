@@ -1,0 +1,573 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block fb_meta %}
+<meta property="og:url" content="http://eranian.com/product/detail/{{ product.slug }}" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="{{ product.product_name }}" />
+<meta property="og:description" content="{{ product.discription|striptags }}" />
+<meta property="og:image" content="{{product.image.url}}" />
+<link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/jquery.jssocials/1.4.0/jssocials.css" />
+<link type="text/css" rel="stylesheet"
+  href="https://cdn.jsdelivr.net/jquery.jssocials/1.4.0/jssocials-theme-flat.css" />
+{% endblock fb_meta %}
+
+{% block content %}
+<style>
+  .size-label {
+    border: 1px solid #bdbdbd;
+    width: 60px;
+  }
+
+  .color-label {
+    border: 1px solid #bdbdbd;
+    width: 70px;
+  }
+
+  .size-variation:checked+.size-label {
+    border: 1px solid #eb5525;
+    border-radius: 10%;
+    color: rgb(0, 0, 0);
+  }
+
+  .color-variation:checked+.color-label {
+    border: 1px solid #eb5525;
+    border-radius: 10%;
+    color: rgb(0, 0, 0);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+</style>
+
+<style>
+  .copy-text {
+    padding: 10px;
+    border-radius: 10px;
+    display: flex;
+  }
+
+  .copy-text input.text {
+    color: #555;
+    border: none;
+    outline: none;
+  }
+
+  .copy-text button {
+    background: #5784f5;
+    color: #fff;
+    border: none;
+    outline: none;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  .copy-text button:active {
+    background: #809ce2;
+  }
+
+  .copy-text button:before {
+    content: "Copied";
+    position: absolute;
+    top: -45px;
+    right: 0px;
+    background: #5c81dc;
+    padding: 3px 5px;
+    border-radius: 20px;
+    display: none;
+  }
+
+  .copy-text button:after {
+    content: "";
+    position: absolute;
+    top: -20px;
+    right: 25px;
+    width: 10px;
+    height: 10px;
+    background: #5c81dc;
+    transform: rotate(45deg);
+    display: none;
+  }
+
+  .copy-text.active button:before,
+  .copy-text.active button:after {
+    display: block;
+  }
+
+  .add-buy-btn{
+    background-color: #000 !important;
+    border: none !important;
+    transition: background-color .5s ease-in-out;
+  }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" />
+
+
+<main class="main my-5">
+  <div class="page-content">
+    <div class="container">
+      <div class="pt-0 pb-1">
+        <div class="product-details-top">
+          <div class="row">
+
+            <div class="col-md-4">
+              <div class="product-gallery product-gallery-vertical">
+                <div class="row">
+                  <!-- main image -->
+                  <figure class="product-main-image">
+                    <img id="product-zoom" src="{{ product.image.url }}" data-zoom-image="{{ product.image.url }}"
+                      alt="product image" style="width: 100%; height: 400px; object-fit: fill;">
+  
+                    <a href="#" id="btn-product-gallery" class="btn-product-gallery">
+                      <i class="icon-arrows"></i>
+                    </a>
+                  </figure>
+                  
+                  <!-- side images -->
+                  <div id="product-zoom-gallery" class="product-image-gallery" style="width: 100%; overflow-x: auto; flex-wrap: nowrap;">
+                    <a class="product-gallery-item active" href="#" data-image="{{ product.image.url }}">
+                      <img src="{{ product.image.url }}" alt="product side" style="object-fit: cover;">
+                    </a>
+                    {% for im in img %}
+                    <a class="product-gallery-item" href="#" data-image="{{ im.image.url }}"
+                      data-zoom-image="{{ im.image.url }}">
+                      <img src="{{ im.image.url }}" alt="product cross" style="object-fit: cover;">
+                    </a>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-md-5">
+              <div class="product-details">
+                <h1 class="product-title">{{ product.product_name }}</h1>
+                <div class="ratings-container justify-content-start">
+                  <div class="ratings">
+                    {% if product.get_avg_rating %}
+                    <a href="#rate_id">
+                      <div class="ratings-val" style="width: {{product.get_avg_rating}}%;"></div>
+                      <span class="ratings-text">( {{ product.get_rating_count }} Reviews )</span>
+                    </a>
+  
+                    {% else %}
+                    <div class="ratings-val" style="width:0%;"></div>
+                    <span class="ratings-text">( 0 Reviews )</span>
+                    {% endif %}
+                  </div>
+                </div>
+                <b>
+                  {% if flashsale_product %}
+                    {% for p in flashsale_product %}
+                      {% if p.flashsale_price and p.stock > p.sold %}
+                        <span class="new-price" style="font-size:30px; color:#eb5525;" id="newprice"></span>  
+                      {% endif %}
+                    {% endfor %}
+                  {% endif %}
+                </b>
+                {% if product.sort_discription %}
+                <div class="mb-1">
+                  {{ product.sort_discription|safe }}
+                </div>
+                {% endif %}
+  
+                {% if not product.stock_quantity %}
+                <div class="mb-1">
+                  <span style="font-size:15px ;" class=" badge badge-danger">Out Of Stock</span>
+                </div>
+                {% else %}
+                  <form action="" method="POST">
+                    {% csrf_token %}
+                    {% if flashsale_product %}
+                      <input type="text" name="flashsale" value="flashsale" class="m-0 p-0" hidden>
+                      {% if unique_sizes_list %}
+                      <div class="details-filter-row details-row-size">
+                        <label for="size">Size:</label>
+                        {% for p in unique_sizes_list %}
+                          {% if forloop.counter == 1 %}
+                              <input type="radio" class="size-variation" id="size{{ forloop.counter }}" hidden name="size" value="{{ p|capfirst}}" checked>
+                          {% else %}
+                              <input type="radio" class="size-variation" id="size{{ forloop.counter }}" hidden name="size" value="{{ p|capfirst }}">
+                          {% endif %}
+                          <label class="size-label text-center" for="size{{ forloop.counter }}">{{ p|capfirst }}</label><br>
+                        {% endfor %}
+                      </div>
+                      {% endif %}
+                      {% if unique_colors_list %}
+                      <div class="details-filter-row details-row-size">
+                        <label for="color">Color:</label>
+                          {% for p in unique_colors_list %}
+                            {% if forloop.counter == 1 %}
+                                <input type="radio" name="color" class="color-variation" id="color{{ forloop.counter }}" hidden name="color" value="{{ p|capfirst }}" checked>
+                            {% else %}
+                                <input type="radio" name="color" class="color-variation" id="color{{ forloop.counter }}" hidden name="color" value="{{ p|capfirst }}">
+                            {% endif %}
+                            <label class="color-label text-center" for="color{{ forloop.counter }}">{{ p|capfirst }}</label><br>
+                          {% endfor %}
+                      </div>
+                      {% endif %}
+                    {% endif %}
+
+                    <div class="details-filter-row details-row-size">
+                      <label for="qty">Quantity:</label>
+                      <div class="ml-5 product-details-quantity">
+                        <input name="quantity" type="number" id="qty" class="form-control" value="1" min="1"
+                          max="{{product.stock_quantity}}" step="1" data-decimals="0" required>
+                      </div>
+                    </div>
+    
+                    <div class="d-flex" >
+                      <input style="background-color:#eb5525; color: #fff;" class="btn-product btn-cart mx-1" type="submit"
+                        onclick="this.form.action='{{ product.get_add_to_cart_url }}'; this.form.submit(); return false;"
+                        value="Add To Cart" id="add_btn">
+                      <input class="btn-product btn-cart mx-1 bg-info text-white border-0" type="submit"
+                        onclick="this.form.action='{{product.get_buy_now_url}}'; this.form.submit(); return false;"
+                        value="Buy Now" id="buy_btn">
+                    </div>
+                  </form>
+                {% endif %}
+  
+                <div class="product-details-footer">
+                  <div class="product-cat">
+                    <h6 class='text-dark'> Category: </h6>
+                    <a href="javascript:void(0)">{{ product.categoris.category_name }}</a>,
+                  </div>
+                </div>
+  
+                <div class='d-flex align-items-center'>
+                  <h6 class='my-auto'>Share:</h6>
+                  <button type="button" class="border-0 bg-white display-6 text-dark" data-toggle="modal"
+                    data-target="#exampleModalCenter">
+                    <i class="fa-solid fa-share-nodes"></i>
+                  </button>
+                </div>
+  
+                <!-- Modal -->
+                <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
+                  aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content col-11 col-md-10 mx-auto">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Share</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body mx-auto py-5 text-center">
+                        <div id="shareIcons"></div>
+                        <div class="copy-text">
+                          <input type="text" class="text" value="{{ request.build_absolute_uri }}" />
+                          <button class="ml-3"><i class="fa fa-clone"></i></button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <div class="summary shadow">
+                <table class="table table-summary">
+                  <tbody>  
+                    <h3 class="summary-title py-3" style="text-align: center; color:#eb5525">
+                      Returns and Warranty
+                    </h3>
+                    <tr class="summary-total">
+                        <p class="col-12 text-left">
+                          <i class="fa fa-check-circle mr-2"></i> 100% original
+                        </p>
+                        <p class="col-12 text-left">
+                          <i class="fa fa-check-circle mr-2"></i> {{ product.get_return_type_display }}
+                        </p>
+                        <p class="col-12 text-left">
+                          <i class="fa fa-times-circle-o mr-2"></i> {{ product.get_warranty_type_display }}
+                        </p>  
+                    </tr>
+                    <h3 class="summary-title py-3 mt-5" style="text-align: center; color:#eb5525">Returns Policy </h3>
+                    <div class="text-center"><a style="color: #17a2b8;" href="{% url 'returns_policy' %}">Visit Returns Policy</a></div>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-details-tab">
+        <ul class="nav nav-pills justify-content-center" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link active" id="product-desc-link" data-toggle="tab" href="#product-desc-tab" role="tab"
+              aria-controls="product-desc-tab" aria-selected="true">Description</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="product-info-link" data-toggle="tab" href="#product-info-tab" role="tab"
+              aria-controls="product-info-tab" aria-selected="false">Additional Information</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="product-shipping-link" data-toggle="tab" href="#product-shipping-tab" role="tab"
+              aria-controls="product-shipping-tab" aria-selected="false">Shipping & Returns</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane fade show active" id="product-desc-tab" role="tabpanel"
+            aria-labelledby="product-desc-link">
+            <div class="product-desc-content">
+              <p style='color:black;'>{{ product.discription|safe }}</p>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="product-info-tab" role="tabpanel" aria-labelledby="product-info-link">
+            <div class="product-desc-content">
+              <p style='color:black;'>{{ product.aditional_discription|safe }}</p>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="product-shipping-tab" role="tabpanel" aria-labelledby="product-shipping-link">
+            <div class="product-desc-content">
+              <p style='color:black;'>We deliver to over 100 countries around the world. For full details
+                of the delivery options we offer, please view our <a href="#">Delivery
+                  information</a><br>
+                We hope you’ll love every purchase, but if you ever need to return an item you can do so
+                within a month of receipt. For full details of how to make a return, please view our <a href="#">Returns
+                  information</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="title text-center mb-4">You May Also Like</h2>
+
+      <div class="owl-carousel owl-simple carousel-equal-height carousel-with-shadow" data-toggle="owl"
+        data-owl-options='{
+                    "nav": false, 
+                    "dots": true,
+                    "margin": 20,
+                    "loop": false,
+                    "responsive": {
+                        "0": {
+                            "items":1
+                        },
+                        "480": {
+                            "items":2
+                        },
+                        "768": {
+                            "items":3
+                        },
+                        "992": {
+                            "items":5
+                        },
+                        "1200": {
+                            "items":5,
+                            "nav": true,
+                            "dots": false
+                        }
+                    }
+                }'>
+
+        {% for related in related_product %}
+        <div class="product product-7 text-center shadow ">
+          <figure class="product-media">
+            <span class="product-label label-new">New</span>
+            <a href="{% url 'product_detail' related.slug %}">
+              <img src="{{ related.image.url }}" alt="Product image" class="product-image" style="height: 200px; object-fit: cover;">
+            </a>
+          </figure>
+
+          <div class="product-body">
+            <div class="product-cat">
+              <a href="#">{{ related.categoris.category_name }}</a>
+            </div>
+            <h3 class="product-title"><a href="{% url 'product_detail' related.slug %}">{{related.product_name }}</a>
+            </h3>
+            <div class="product-price">
+              {% if related.discount_price %}
+              <span class="new-price">{{ related.discount_price }}৳ </span>
+              <span class="old-price"><del>Was {{ related.price }}৳ </del></span>
+              {% else %}
+              {{ related.price }}৳
+              {% endif %}
+            </div>
+            <div class="ratings-container justify-content-center">
+              <div class="ratings">
+                {% if related.get_avg_rating %}
+                <div class="ratings-val" style="width:{{related.get_avg_rating}}%;"></div>
+                {% endif %}
+                <div class="ratings-val" style="width: 0%;"></div>
+              </div>
+              {% if related.get_rating_count %}
+              <span class="ratings-text">( {{ related.get_rating_count }} )</span>
+              {% else %}
+              <span class="ratings-text">(0)</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="container" id="rate_id">
+        <h4>Product Review( {{ product.get_rating_count }} )</h4>
+        {% for p in product.get_review_list %}
+        <div class="card shadow p-3 my-3">
+          <div class="row">
+            <div class="col-6 d-flex">
+              <img src="{{ p.user.profile.image.url }}" style="height: 50px;" />
+              <p class="p-2 my-auto">by {{ p.user.first_name }}</p>
+              <p class="p-2 my-auto" style='color:#39aa5b;font-weight: 500;'><i
+                  class="fa-solid fa-shield-heart"></i></i> Verified Purchase</p>
+            </div>
+            <div class="col-6">
+              <div class="reviews float-right text-warning">
+                {% if p.rating == 1 %}
+                <i class="fas fa-star"></i>
+                <i class="far fa-star"></i>
+                <i class="far fa-star"></i>
+                <i class="far fa-star"></i>
+                <i class="far fa-star"></i>
+                {% elif p.rating == 2 %}
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="far fa-star"></i>
+                <i class="far fa-star"></i>
+                <i class="far fa-star"></i>
+                {% elif p.rating == 3 %}
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="far fa-star"></i>
+                <i class="far fa-star"></i>
+                {% elif p.rating == 4 %}
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="far fa-star"></i>
+                {% elif p.rating == 5 %}
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                {% endif %}
+
+                <p>{{ p.created_on }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="my-3">
+            <p>{{ p.review }}</p>
+          </div>
+          {% if p.image %}
+          <div class="my-3">
+            <img src="{{ p.image.url }}" alt="" style="width: 300px;">
+          </div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}
+
+
+{% block script %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var selectedColor = null;
+    var selectedSize = null;
+
+    function colorShow(color) {
+      selectedColor = color;
+      showPrice();
+    }
+    
+    function sizeShow(size) {
+      selectedSize = size;
+      showPrice();
+    }
+
+    var flashsaleProducts = JSON.parse('{{ flashsale_products|escapejs }}');
+    var productVariations = JSON.parse('{{ products_variations|escapejs }}');
+
+    var newprice = document.getElementById('newprice');
+    const add_btn = document.getElementById('add_btn');
+    const buy_btn = document.getElementById('buy_btn');
+
+    function showPrice() {
+      for (var i = 0; i < flashsaleProducts.length; i++) {
+        var product = flashsaleProducts[i];
+
+        var matchingVariation = productVariations.find(variation => 
+          variation.variation__color__name === selectedColor && 
+          variation.variation__size__name === selectedSize
+        );
+        if (matchingVariation) {
+          newprice.innerText = ''; 
+          newprice.innerText = matchingVariation.flashsale_price + ' ৳'; 
+          add_btn.disabled = false;
+          buy_btn.disabled = false;
+          add_btn.classList.remove('add-buy-btn');
+          buy_btn.classList.remove('add-buy-btn');
+          return;
+        } else {
+          newprice.innerText = ''; 
+          newprice.innerText = 'Not availabel!!';
+          add_btn.disabled = true;
+          buy_btn.disabled = true;
+          add_btn.classList.add('add-buy-btn');
+          buy_btn.classList.add('add-buy-btn');
+          return;
+        }
+      }
+    }
+    
+    // Get the initially selected color and size
+    var initialColorInput = document.querySelector('input[name="color"]:checked');
+    var initialColor = initialColorInput ? initialColorInput.value : null;
+    var initialSizeInput = document.querySelector('input[name="size"]:checked');
+    var initialSize = initialSizeInput ? initialSizeInput.value : null;
+
+    // Call showPrice with the initial selection
+    colorShow(initialColor);
+    sizeShow(initialSize);
+
+
+    // Add event listeners to color and size variations
+    document.querySelectorAll('.color-variation').forEach(el => {
+      el.addEventListener('change', function(event) {
+        colorShow(event.target.value);
+      });
+    });
+
+    document.querySelectorAll('.size-variation').forEach(el => {
+      el.addEventListener('change', function(event) {
+        sizeShow(event.target.value);
+      });
+    });
+  });                  
+</script>
+
+<script src="https://cdn.jsdelivr.net/jquery.jssocials/1.4.0/jssocials.min.js"></script>
+
+<script>
+  $("#shareIcons").jsSocials({
+    url: "https://eranian.com/product/detail/{{ product.slug }}",
+
+    showLabel: false,
+    showCount: false,
+    shares: ["email", "twitter", "facebook", "linkedin", "pinterest", "whatsapp"]
+  });
+
+  let copyText = document.querySelector(".copy-text");
+  copyText.querySelector("button").addEventListener("click", function () {
+    let input = copyText.querySelector("input.text");
+    input.select();
+    document.execCommand("copy");
+    copyText.classList.add("active");
+    window.getSelection().removeAllRanges();
+    setTimeout(function () {
+      copyText.classList.remove("active");
+    }, 2500);
+  });
+</script>
+{% endblock script %}

@@ -1,0 +1,181 @@
+{% extends 'store/base.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+    .load-product{
+            display: none;
+        }
+    .loadMore {
+        width: 150px;
+        color: #fff;
+        display: block;
+        text-align: center;
+        margin: 20px auto;
+        padding: 5px;
+        border-radius: 20px;
+        border: 1px solid transparent;
+        background-color:#ED2224;
+        transition: .3s;
+        }
+    .loadMore:hover {
+        color: #ED2224;
+        background-color: #fff;
+        border: 1px solid #ED2224;
+        text-decoration: none;
+        }
+    .noContent {
+        color: #000 !important;
+        background-color: transparent !important;
+        pointer-events: none;
+    }
+    .product{
+        box-shadow: 0 8px 16px 0 rgba(167, 165, 165, 0.2);
+    }
+    .product:hover{
+        box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    }
+
+.product-flex {
+  display:flex;
+  flex-wrap:wrap;
+}
+
+.product-flex .product {
+    flex: 1 1 calc(20% - 20px);
+    }
+
+
+@media only screen and (max-width: 992px) {
+.product-flex .product {
+    flex: 1 1 calc(25% - 20px);
+    }
+}
+@media only screen and (max-width: 768px) {
+.product-flex .product {
+  flex: 1 1 calc(33.33% - 20px);
+    }
+}
+
+@media only screen and (max-width: 600px) {
+.product-flex .product {
+    flex: 1 1 calc(50% - 20px);
+    }
+}
+</style>
+<main class="main">
+    <div class="container electronics">
+        <div class="heading heading-flex heading-border mb-3">
+            <div class="heading-center mt-3">
+                <h2 class="title mb-1">All</span>Flash Sale Product</h2><!-- End .title -->
+            </div><!-- End .heading-left -->
+        </div><!-- End .heading -->
+        <div class="product-flex">
+            {% for p in products %}
+            <div class="product mx-2 load-product">
+                <figure class="product-media">
+                    {% if p.stock_quantity %}
+                    {% if p.discount_price %}
+                    <span class="product-label label-sale" style="background-color: #ED2224; color:#fff">{{ p.saving_percent|floatformat:"0" }}% Off</span>
+                    {% endif %}
+                    {% else %}
+                    <span class="product-label label-sale" style="background-color: #e70f0f; color:#fff">Out Of Stock</span>
+                    {% endif %}
+                    <a href="{% url 'product_detail' p.slug %}">
+                        <img src="{{  p.image.url }}" alt="Product image" class="product-image">
+                    </a>
+
+                    <div class="product-action-vertical">
+                        <a href="{% url 'add_to_wishlist' p.slug %}" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
+                    </div><!-- End .product-action-vertical -->
+                </figure><!-- End .product-media -->
+
+                <div class="product-body">
+                    <h3 class="product-title text-center"><a href="{% url 'product_detail' p.slug %}">{{ p.product_name }}</a></h3><!-- End .product-title -->
+                    <div class="product-price pt-1 justify-content-center">
+                        {% if p.discount_price %}
+                        <span class="new-price">৳{{ p.discount_price }}</span>
+                        <span class="old-price"><del>৳{{ p.price }}</del></span>
+                        {% else %}
+                        ৳{{ p.price }}
+                        {% endif %}
+                    </div><!-- End .product-price -->
+                    <div class="ratings-container justify-content-center">
+                        <div class="ratings">       
+                            {% if p.get_avg_rating %}
+                            <div class="ratings-val" style="width:{{p.get_avg_rating}}%;"></div><!-- End .ratings-val -->           
+                            {% endif %}
+                            <div class="ratings-val" style="width: 0%;"></div><!-- End .ratings-val -->                                  
+                        </div><!-- End .ratings -->
+                        {% if p.get_rating_count %}
+                        <span class="ratings-text">( {{ p.get_rating_count }} )</span>
+                            {% else %}
+                        <span class="ratings-text">(0)</span>
+                    {% endif %}
+                    </div><!-- End .rating-container -->
+                </div><!-- End .product-body -->
+            </div><!-- End .product -->
+            {% endfor %}
+        </div>
+        <a href="" class="loadMore">Load More</a>
+    </div><!-- End .container -->
+</main><!-- End .main -->
+{% endblock %}
+
+
+{% block script %}
+<script>
+    $(document).ready(function(){
+    $(".load-product").slice(0, 15).show();
+    $(".loadMore").on("click", function(e){
+      e.preventDefault();
+      $(".load-product:hidden").slice(0, 5).slideDown();
+      if($(".load-product:hidden").length == 0) {
+        $(".loadMore").text("No Content").addClass("noContent");
+      }
+    });
+    
+  })
+</script>
+
+<script>
+    var countDownDate = new Date({{ flashsale.FlashSale_expire_date|date:"U" }} * 1000);
+                            // date and time to end above
+    var x = setInterval(function() {
+  var now = new Date();
+  var distance = countDownDate - now;
+
+  var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+  var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+  var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+
+    document.getElementById("days").innerHTML = days + " days ";
+    document.getElementById("hours").innerHTML = hours + " hours " ;
+    document.getElementById("minutes").innerHTML = minutes + " minutes ";
+    document.getElementById("seconds").innerHTML = seconds + " seconds ";
+
+  if (distance < 0) {
+    clearInterval(x);
+    location.reload();
+  }
+}, 1000);
+</script>
+
+
+<script>
+    $(document).ready(function(){
+  $(".content").slice(0, 4).show();
+  $("#loadMore").on("click", function(e){
+    e.preventDefault();
+    $(".content:hidden").slice(0, 4).slideDown();
+    if($(".content:hidden").length == 0) {
+      $("#loadMore").text("No Content").addClass("noContent");
+    }
+  });
+  
+})
+</script>
+
+{% endblock script %}

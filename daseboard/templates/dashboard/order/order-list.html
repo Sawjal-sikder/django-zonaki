@@ -1,0 +1,315 @@
+{% extends 'dashboard/base.html' %}
+
+
+{% block dashboard %}
+<style>
+  #api-loader.active {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+  }
+  #api-loader.active .icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+  }
+</style>
+<div id="api-loader">
+  <div class="spinner-border text-light icon" style="width: 5rem; height: 5rem;" role="status">
+      <span class="sr-only">Loading...</span>  
+  </div>
+</div>
+
+<div class="content-wrapper">
+  <div class="container-full">
+    <div class="content-header d-flex">
+      <div class="me-auto mt-2">
+        <h4 class="page-title">Order List</h4>
+      </div>
+      <div class="content-filter">
+        <div class="d-flex row justify-content-between align-items-center">
+            <div class="col">
+              <input type="search" name="search" id="search" class="form-control" placeholder="Search Id, Customer Name">
+            </div>
+            <div class="col">
+              <select class="form-select" name="order_status" id="order_status">
+                <option value="">-- All Status --</option>
+                <option value="Pickup_Requested">Pickup Requested</option>
+                <option value="Assigned_for_Pickup">Assigned for Pickup</option>
+                <option value="Picked">Picked</option>
+                <option value="Pickup_Failed">Pickup Failed</option>
+                <option value="Pickup_Cancelled">Pickup Cancelled</option>
+                <option value="At_the_Sorting_HUB">At the Sorting HUB</option>
+                <option value="In_Transit">In Transit</option>
+                <option value="Received_at_Last_Mile_HUB">Received at Last Mile HUB</option>
+                <option value="Assigned_for_Delivery">Assigned for Delivery</option>
+                <option value="Delivered">Delivered</option>
+                <option value="Partial_Delivery">Partial Delivery</option>
+                <option value="Return">Return</option>
+                <option value="Delivery_Failed">Delivery Failed</option>
+                <option value="On_Hold">On Hold</option>
+                <option value="Payment_Invoice">Payment Invoice</option>
+                <option value="paid_return">Paid Return</option>
+                <option value="exchange">Exchange</option>
+            </select>            
+            </div>
+            <div class="col">
+                <select class="form-select" name="parcel_type" id="parcel_type">
+                    <option value="">-- All Parcel --</option>
+                    <option value="Pending" selected>Pending</option>
+                    <option value="Parcel">Pathao Parcel</option>
+                    
+                </select>
+            </div>
+            <div class="col">
+                <select class="form-select" name="time_period" id="time_period">
+                    <option value="">-- All Time Periods --</option>
+                    <option value="today">Today</option>
+                    <option value="yesterday">Yesterday</option>
+                    <option value="thisweek">This Week</option>
+                    <option value="lastweek">Last Week</option>
+                    <option value="thismonth">This Month</option>
+                    <option value="lastmonth">Last Month</option>
+                    <option value="thisyear">This Year</option>
+                    <option value="lastyear">Last Year</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    </div>
+    <section class="content">
+      <div class="row">
+        <div class="col-12">
+          <div class="box">
+            <div class="box-body">
+              <div class="table-responsive">
+                <form id="product-form" method="post">
+                  {% csrf_token %}
+                  <table id="" class="table table-hover no-wrap product-order" data-page-size="10">
+                    <thead>
+                      <tr>
+                        {% comment %} <th>
+                          <div class="form-check">
+                              <input type="checkbox" id="verifyall" class="form-check-input" onclick="selectAllCheckboxes(this)">
+                              <label for="verifyall"></label>
+                          </div>
+                        </th> {% endcomment %}
+                        <th>Order ID</th>
+                        <th>Customer Name</th>
+                        <th>Total Amount</th>
+                        <th>Order Date</th>
+                        {% comment %} <th>Status</th> {% endcomment %}
+                        <th>Remark</th>
+                        <th>Parcel</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody id="filtered-products">
+                      {% for p in query %}
+                      <tr>
+                        {% comment %} <td>
+                          <div class="form-check">
+                              <input type="checkbox" id="verify{{ forloop.counter0 }}" class="form-check-input" name="selected_products" value="{{ p.pk }}">
+                              <label for="verify{{ forloop.counter0 }}"></label>
+                          </div>
+                        </td> {% endcomment %}
+                        <td>{{ p.orderId }}</td>
+                        <td>{{ p.shipping_address.full_name }}</td>
+                        <td>{{p.total_order_amount }}</td>
+                        <td>{{ p.ordered_date }}</td>
+
+                        {% comment %} <td><span class="badge bg-primary">{{p.pathao_order_status }}</span></td> {% endcomment %}
+
+                        {% comment %} {% if p.order_status == 'Pending' %}
+                        <td><span class="badge bg-primary">{{p.order_status }}</span></td>
+                        {% elif p.order_status == 'Processing' %}
+                        <td><span class="badge bg-info">{{p.order_status }}</span></td>
+                        {% elif p.order_status == 'On the way' %}
+                        <td><span class="badge bg-warning">{{p.order_status }}</span></td>
+                        {% elif p.order_status == 'Complete' %}
+                        <td><span class="badge bg-success">{{p.order_status }}</span></td>
+                        {% elif p.order_status == 'Cancel' %}
+                        <td><span class="badge bg-danger">{{p.order_status }}</span></td>
+                        {% endif %} {% endcomment %}
+
+                        <td>
+                          <!-- Remark modal button -->
+                          <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal{{ p.id }}">Remark</button>
+
+                          <!-- Remark Modal start -->
+                          <div class="modal fade" id="exampleModal{{ p.id }}" tabindex="-1" aria-labelledby="exampleModal{{ p.id }}Label" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                              <div class="modal-content">
+                                <form action="" method="post">
+                                  {% csrf_token %}
+                                  <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModal{{ p.id }}Label">Remark Box</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                  </div>
+
+                                  <div class="modal-body">
+                                    <div class="form-group">
+                                      <textarea name="remark_data" class="form-control mx-0" id="" cols="30" rows="10" placeholder="Type your remark here">{% if p.order_remark %}{{ p.order_remark }}{% endif %}</textarea>
+                                    </div>
+                                    <input type="hidden" name="order_id" value="{{ p.id }}" id="">
+                                  </div>
+                                  
+                                  <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                  </div>
+                                </form>
+                              </div>
+                            </div>
+                          </div>
+                          <!-- Remark Modal end -->
+                        </td>
+                        <td>
+                          {% if p.merchant_order_id %}
+                          <span class="text-success">Pathao Transport</span>
+                          {% else %}
+                          <a href="{% url 'create_pathao_order' p.id %}" class="text-info me-10" data-bs-toggle="tooltip"
+                            data-bs-original-title="create" onclick="showLoader(true)">
+                            Create Parcel
+                          </a>
+                          {% comment %} <a href="{% url 'create_bulk_orders' p.id %}" class="text-info me-10" data-bs-toggle="tooltip"
+                            data-bs-original-title="create" onclick="showLoader(true)">
+                            Create Parcel
+                          </a> {% endcomment %}
+                          {% endif %}
+                        </td>
+                        {% comment %} {% if p.others_transport_trakink_url %}
+                        Others Transport
+                        {% elif p.redx_percel_traking_number %}
+                        Steadfast Transport
+                        {% else %}
+                        <a href="{% url 'create_parcel' p.pk %}" class="text-info me-10" data-bs-toggle="tooltip"
+                          data-bs-original-title="create">
+                          Create Parcel
+                        </a>
+                        {% endif %} {% endcomment %}
+                        <td>
+                          <a href="{% url 'order_detail' p.pk %}" class="text-primary" data-bs-original-title="View" data-bs-toggle="tooltip">
+                            <i class="ti-eye"></i>
+                          </a>
+                          
+                          {% if request.user.is_authenticated and request.user.is_superuser %}
+                          <a href="{% url 'order_update' p.pk %}" class="text-info me-10" data-bs-toggle="tooltip" data-bs-original-title="Edit">
+                            <i class="ti-marker-alt"></i>
+                          </a>
+                          <a href="javascript:void(0)" class="text-danger delete-link" data-url="{% url 'order_delete' p.pk %}" data-bs-original-title="Delete" data-bs-toggle="tooltip">
+                            <i class="ti-trash"></i>
+                          </a>
+                          {% endif %}
+                        </td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                  {% comment %} <div class="d-flex">
+                    {% if not request.user.is_vendor %}
+                    <button type="button" class="btn btn-primary" id="verify-button" style="display: none;" onclick="submitForm('{% url 'product_verify' %}')">Verify Selected Products</button>
+                    {% endif %}
+                    <button type="button" class="btn btn-danger ms-3" id="delete-button" style="display: none;" onclick="submitForm('{% url 'product_delete' %}')">Delete Selected Products</button>
+                  </div> {% endcomment %}
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+  function showLoader(v){
+      const loader = document.getElementById('api-loader');
+      if (v){
+          loader.style.display = 'block';
+          loader.classList.add('active');
+      } else {
+          loader.style.display = 'none';
+          loader.classList.remove('active');
+      }
+  }
+  showLoader(false);
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        function attachCheckboxListeners() {
+            var checkboxes = document.getElementsByName('selected_products');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', toggleButtonVisibility);
+            });
+            toggleButtonVisibility(); // Call toggleButtonVisibility initially
+        }
+
+        function toggleButtonVisibility() {
+            var checkboxes = document.getElementsByName('selected_products');
+            var verifyButton = document.getElementById('verify-button');
+            var deleteButton = document.getElementById('delete-button');
+            var anyChecked = Array.prototype.slice.call(checkboxes).some(x => x.checked);
+            verifyButton.style.display = anyChecked ? 'block' : 'none'; // Show verify button if any checkbox is checked
+            deleteButton.style.display = anyChecked ? 'block' : 'none'; // Show delete button if any checkbox is checked
+        }
+
+        function fetchFilteredContent(search, order_status, parcel_type, time_period) {
+            $.ajax({
+                url: '',
+                type: 'GET',
+                data: {
+                    search: search,
+                    order_status: order_status,
+                    parcel_type: parcel_type,
+                    time_period: time_period
+                },
+                success: function(data) {
+                    var newContent = $(data).find('#filtered-products').html();
+                    $('#filtered-products').html(newContent);
+                    attachCheckboxListeners();
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching filtered content:', error);
+                }
+            });
+        }
+
+        $('#search').on('input', function() {
+            var search = $(this).val();
+            var order_status = $('#order_status').val();
+            var parcel_type = $('#parcel_type').val();
+            var time_period = $('#time_period').val();
+            fetchFilteredContent(search, order_status, parcel_type, time_period);
+        });
+        $('.form-select').on('change', function() {
+            var search = $('#search').val();
+            var order_status = $('#order_status').val();
+            var parcel_type = $('#parcel_type').val();
+            var time_period = $('#time_period').val();
+            fetchFilteredContent(search, order_status, parcel_type, time_period);
+        });
+
+        window.selectAllCheckboxes = function(source) {
+            var checkboxes = document.getElementsByName('selected_products');
+            for (var i = 0; i < checkboxes.length; i++) {
+                checkboxes[i].checked = source.checked;
+            }
+            toggleButtonVisibility();
+        };
+
+        window.submitForm = function(actionUrl) {
+            var form = document.getElementById('product-form');
+            form.action = actionUrl;
+            form.submit();
+        };
+
+        attachCheckboxListeners(); // Attach listeners on initial load
+    });
+</script>
+{% endblock dashboard %}

@@ -1,0 +1,77 @@
+{% extends 'store/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<main class="main">
+    <div class="page-content pb-0">
+        <div class="container">
+            <h4 class="text-dark my-5 text-center">Contact us<span class="text-white">keep in touch with us</span></h4>
+            <div class="row">
+                <div class="col-lg-5 mb-2 mb-lg-0">
+                    <h5 class=" mb-1">Contact Information</h5><!-- End .title mb-2 -->
+                    <div class="contact-info">
+                        <ul class="contact-list">
+                            <li>
+                                <i class="icon-map-marker"></i>
+                                Dhaka
+                            </li>
+                            <li>
+                                <i class="icon-phone"></i>
+                                <a href="tel:#">0191818****</a>
+                            </li>
+                            <li>
+                                <i class="icon-envelope"></i>
+                                <a href="mailto:#">support@eranian.com.bdergt</a>
+                            </li>
+                        </ul><!-- End .contact-list -->
+                    </div><!-- End .contact-info -->
+                </div><!-- End .col-lg-6 -->
+                <div class="col-lg-7">
+                    <h5 class="mb-1">Got Any Questions?</h5><!-- End .title mb-2 -->
+                    <p class="mb-2">Use the form below to get in touch with the sales team</p>
+
+                    <form action="{% url 'contact' %}" class="contact-form mb-3" method="POST">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <label for="cname" class="sr-only">Name</label>
+                                {{form.name|as_crispy_field}}
+                            </div><!-- End .col-sm-6 -->
+
+                            <div class="col-sm-6">
+                                <label for="cemail" class="sr-only">Email</label>
+                                {{form.email|as_crispy_field}}
+                            </div><!-- End .col-sm-6 -->
+                        </div><!-- End .row -->
+
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <label for="cphone" class="sr-only">Phone</label>
+                                {{form.phone|as_crispy_field}}
+                            </div><!-- End .col-sm-6 -->
+
+                            <div class="col-sm-6">
+                                <label for="csubject" class="sr-only">Subject</label>
+                                {{form.subject|as_crispy_field}}
+                            </div><!-- End .col-sm-6 -->
+                        </div><!-- End .row -->
+
+                        <label for="cmessage" class="sr-only">Message</label>
+                        {{form.message|as_crispy_field}}
+
+                        <button type="submit" class="btn btn-outline-primary-2 btn-minwidth-sm">
+                            <span>SUBMIT</span>
+                            <i class="icon-long-arrow-right"></i>
+                        </button>
+                    </form><!-- End .contact-form -->
+                </div>
+                <!-- End .col-lg-6 -->
+            </div><!-- End .row -->
+        </div><!-- End .container -->
+        <!-- <div id="map"></div> -->
+    </div><!-- End .page-content -->
+    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3652.6540150862297!2d90.42505851498181!3d23.761180384593366!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755c6b1645b2ee9%3A0x3c1bda3a12da15de!2sDhaka%20University%20of%20Engineering%20%26%20Technology!5e0!3m2!1sen!2sbd!4v1646965019712!5m2!1sen!2sbd" width="100%" height="350" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+</main><!-- End .main -->
+
+{% endblock %}

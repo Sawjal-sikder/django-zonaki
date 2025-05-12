@@ -1,0 +1,76 @@
+
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    .size-label{
+        border: 1px solid #bdbdbd;
+        width: 40px;
+    }
+    .color-label{
+        border: 1px solid #bdbdbd;
+        width: 70px;
+    }
+    .size-variation:checked + .size-label{
+    border: 1px solid #ED2224;
+    border-radius: 10%;
+    color:rgb(0, 0, 0);
+    }
+    .color-variation:checked + .color-label{
+    border: 1px solid #ED2224;
+    border-radius: 10%;
+    color:rgb(0, 0, 0);
+    }
+</style>
+
+<main class="main my-5">
+    <div class="page-content">
+        <div class="container">
+            <style>
+                    .size-variation:checked + .size-label{
+                       background-color: #ED2224;
+                        border-radius: 10%;
+                        color:#fff;
+                    }
+            </style>
+            <div class="card mt-5 col-md-6 mx-auto py-3 shadow">
+                <h3>Send Your Review</h3>
+                <form action="" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+   
+                    <div class="form-group">
+                        
+                        <div class="details-filter-row details-row-size">
+                            <label for="">Rating</label>                             
+                            {% for rating  in form.rating %}
+                            {% if forloop.counter == 5 %}
+                              <input type="radio" class="size-variation" id="size{{ forloop.counter }}" hidden  name="rating" value="{{ forloop.counter }}" checked>
+                              {% else %}
+                                <input type="radio" class="size-variation" id="size{{ forloop.counter }}" hidden  name="rating" value="{{ forloop.counter }}">
+                            {% endif %}
+                              <label class="size-label text-center" for="size{{ forloop.counter }}">{{ forloop.counter }} <i class="fa-solid fa-star"></i></label><br>
+                            {% endfor %}
+                        </div>
+                       
+                    </div>
+                    <div class="form-group">
+                        <label for="">Review</label>
+                        {{ form.review }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="formFileMultiple" class="form-label">Image(optional)</label>
+                        <input name="image" class="form-control" type="file" id="formFileMultiple" multiple>
+                      </div>
+        
+                    <button style="background-color: #ED2224; color: white; float: right;" class="btn btn-sm">Send</button>
+                </form>
+            </div>
+        </div><!-- End .container -->
+    </div><!-- End .page-content -->
+</main><!-- End .main -->
+
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block dashboard %}
+<div class="content-wrapper">
+	<div class="container">
+		<div class="bg-white shadow p-4 rounded mt-20">
+			<form action="" method="post" class="row gx-3 gy-3 align-items-center"
+					enctype="multipart/form-data">
+					{% csrf_token %}
+					<div class="col-12 col-md-6">
+						<label for="id_category_name" class="form-label">Brand Name<span class="ms-2 text-danger font-weight-bolder">*</span></label>
+						<input type="text" name="name" class="form-control" id="id_brand_name"
+							placeholder="Brand Name" required>
+					</div>
+					<div class="col-12 col-md-6">
+						<label for="id_img" class="form-label">Image<span class="ms-2 text-danger font-weight-bolder">*</span></label>
+						<input type="file" name="image" class="form-control" id="id_img">
+					</div>
+					{% if not request.user.is_vendor %}
+					<div class="col-12">
+						<div class="form-check">
+							<input type="checkbox" name="is_verified" class="form-check-input" id="id_is_verified" checked>
+							<label class="form-check-label" for="id_is_verified">Is Verified</label>
+						</div>
+					</div>
+					{% endif %}
+					<div class="col-12 text-end">
+						<button type="reset" class="btn btn-danger px-4">Reset</button>
+						<button type="submit" class="btn btn-primary px-4 ms-5">Submit</button>
+					</div>
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock dashboard %}

@@ -1,0 +1,146 @@
+{% load static %}
+{% load logo %}
+<style>
+    .footer-middle {
+        background-color: #383333 !important;
+    }
+    .footer-middle h4 {
+        color: white !important;
+    }
+    .footer-middle a,
+    .footer-middle p {
+        color: white;
+        font-size: 11px;
+        font-weight: 400;
+    }
+    .footer-bottom p {
+        color: black !important;
+        font-weight: 400;
+        font-size: 11px;
+    }
+    .payment-img img {
+        height: 20px;
+        padding-top: 2px;
+        margin-right: 2px;
+    }
+</style>
+
+<footer class="footer footer-2">
+    <div class="footer-middle pb-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-6 col-lg-3">
+                    <h4 class="widget-title">Contact Us</h4>
+                    <p>Call us 11am-11pm (Everyday)</p>
+                    
+                    {% if logo.phones.all %}
+                        {% for company in logo.phones.all %}
+                        <a href="tel:{{ company.phone }}">Phone : {{ company.phone }}</a>
+                        {% endfor %}  
+                    {% else %}
+                    <p>Phone: Not set yet.</p>
+                    {% endif %}
+                    <br>
+                    {% if logo.emails.all %}
+                        {% for company in logo.emails.all %}
+                        <a href="mailto:{{ company.email }}">Email : {{ company.email }}</a>
+                        {% endfor %}  
+                    {% else %}
+                    <p>Email: Not set yet.</p>
+                    {% endif %}
+                    <br>
+                    {% if logo.addresses.all %}
+                        {% for company in logo.addresses.all %}
+                            <p>Location: {{ company.address }}</p>
+                        {% endfor %}
+                    {% else %}
+                        <p>Location: Not set yet.</p>
+                    {% endif %}
+                    
+                    {% if logo.bkash_number %}
+                    <p class="d-flex payment-img">
+                        <img class="my-auto" src="{% static 'store/images/bkash.jpg' %}" alt="Bkash"> 
+                        Bkash (Personal) {{ logo.bkash_number }}
+                    </p>
+                    {% endif %}
+                    {% if logo.nagad_number %}
+                    <p class="d-flex payment-img">
+                        <img class="my-auto" src="{% static 'store/images/nagad.jpg' %}" alt="Nagad"> 
+                            Nagad (Personal) {{ logo.nagad_number }}
+                    </p>
+                    {% endif %}
+                    {% if logo.rocket_number %}
+                    <p class="d-flex payment-img">
+                        <img class="my-auto" src="{% static 'store/images/rocket.jpg' %}" alt="Rocket"> 
+                        Rocket (Personal) {{ logo.rocket_number }}
+                    </p>
+                    {% endif %}
+                </div>
+                <!-- End .col-sm-6 -->
+
+                <div class="col-6 col-lg-3">
+                    <div class="widget">
+                        <h4 class="widget-title">Information</h4>
+
+                        <ul class="widget-list">
+                            <li><a href="{% url 'about_us' %}">About Us</a></li>
+                            <li><a href="{% url 'privacy-policy' %}">Privacy Policy</a></li>
+                            <li><a href="{% url 'terms_conditions' %}">Terms & Conditions</a></li>
+                            <li><a href="{% url 'mission' %}">Our Mission</a></li>
+                            <li><a href="{% url 'vision' %}">Our Vision</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-6 col-lg-3">
+                    <div class="widget">
+                        <h4 class="widget-title">Customer Service</h4>
+                        <ul class="widget-list">
+                            <li><a href="{% url 'contact' %}">Contact Us</a></li>
+                            <li><a href="{% url 'returns_policy' %}">Return Policy</a></li>
+                            <li><a href="{% url 'shipping_delivery' %}">Shipping & Delivery</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="widget">
+                        <h4 class="widget-title">Earn With Zonaki</h4>
+                        <ul class="widget-list">
+                            <li><a href="{% url 'vendor_registration' %}">Sell on Zonaki</a></li>
+                            <li><a href="javascript:void(0)">Buy Wholesale</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    </div>
+
+    <div class="footer-bottom mb-5 mb-md-1">
+        <div class="container">
+            <p class="footer-copyright">
+                Copyright &copy; {% now 'Y' %} Zonaki, All Rights Reserved. Developed By Universe Soft Tech
+            </p>
+                <!-- End .footer-copyright -->
+            <div class="social-icons social-icons-color">
+                <p class="social-label">Social Media</p>
+                {% if logo.facebook %}
+                <a href="{{ logo.facebook }}" class="social-icon social-facebook" title="Facebook" target="_blank"><i class="icon-facebook-f"></i></a>
+                {% endif %}
+                {% if logo.twitter %}
+                <a href="{{ logo.twitter }}" class="social-icon social-twitter" title="Twitter" target="_blank"><i class="icon-twitter"></i></a>
+                {% endif %}
+                {% if logo.instagram %}
+                <a href="{{ logo.instagram }}" class="social-icon social-instagram" title="Instagram" target="_blank"><i class="icon-instagram"></i></a>
+                {% endif %}
+                {% if logo.youtube %}
+                <a href="{{ logo.youtube }}" class="social-icon social-youtube" title="Youtube" target="_blank"><i class="icon-youtube"></i></a>
+                {% endif %}
+                {% if logo.linkedin %}
+                <a href="{{ logo.linkedin }}" class="social-icon social-linkdin" title="Linkdin" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
+                {% endif %}
+            </div><!-- End .soial-icons -->
+        </div>
+    </div><!-- End .footer-bottom -->
+</footer><!-- End .footer -->

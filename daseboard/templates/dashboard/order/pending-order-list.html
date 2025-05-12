@@ -1,0 +1,170 @@
+{% extends 'dashboard/base.html' %}
+
+
+{% block dashboard %}
+<style>
+  #api-loader.active {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+  }
+  #api-loader.active .icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+  }
+</style>
+<div id="api-loader">
+  <div class="spinner-border text-light icon" style="width: 5rem; height: 5rem;" role="status">
+      <span class="sr-only">Loading...</span>  
+  </div>
+</div>
+
+<div class="content-wrapper">
+  <div class="container-full">
+    <div class="content-header d-flex">
+      <div class="me-auto mt-2">
+        <h4 class="page-title">Pending Order List</h4>
+      </div>
+    </div>
+    <section class="content">
+      <div class="row">
+        <div class="col-12">
+          <div class="box">
+            <div class="box-body">
+              <div class="table-responsive">
+                <table id="productorder" class="table table-hover no-wrap product-order" data-page-size="10">
+                  <thead>
+                    <tr>
+                      <th>Order ID</th>
+                      <th>Customer Name</th>
+                      <th>Total Amount</th>
+                      <th>Order Date</th>
+                      <th>Status</th>
+                      <th>Remark</th>
+                      <th>Parcel</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for p in pending_orders %}
+                    <tr>
+                      <td>{{ p.orderId }}</td>
+                      <td>{{ p.user }}</td>
+                      <td>{{p.total_order_amount }}</td>
+                      <td>{{ p.ordered_date }}</td>
+                      {% if p.order_status == 'Pending' %}
+                      <td><span class="badge bg-primary">{{p.order_status }}</span></td>
+                      {% elif p.order_status == 'Processing' %}
+                      <td><span class="badge bg-info">{{p.order_status }}</span></td>
+                      {% elif p.order_status == 'On the way' %}
+                      <td><span class="badge bg-warning">{{p.order_status }}</span></td>
+                      {% elif p.order_status == 'Complete' %}
+                      <td><span class="badge bg-success">{{p.order_status }}</span></td>
+                      {% elif p.order_status == 'Cancel' %}
+                      <td><span class="badge bg-danger">{{p.order_status }}</span></td>
+                      {% endif %}
+
+                      <td>
+                        <!-- Remark modal button -->
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal{{ p.id }}">Remark</button>
+
+                        <!-- Remark Modal start -->
+                        <div class="modal fade" id="exampleModal{{ p.id }}" tabindex="-1" aria-labelledby="exampleModal{{ p.id }}Label" aria-hidden="true">
+                          <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                              <form action="" method="post">
+                                {% csrf_token %}
+                                <div class="modal-header">
+                                  <h5 class="modal-title" id="exampleModal{{ p.id }}Label">Remark Box</h5>
+                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+
+                                <div class="modal-body">
+                                  <div class="form-group">
+                                    <textarea name="remark_data" class="form-control mx-0" id="" cols="30" rows="10" placeholder="Type your remark here">{% if p.order_remark %}{{ p.order_remark }}{% endif %}</textarea>
+                                  </div>
+                                  <input type="hidden" name="order_id" value="{{ p.id }}" id="">
+                                </div>
+                                
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                  <button type="submit" class="btn btn-primary">Submit</button>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- Remark Modal end -->
+                      </td>
+
+
+                      <td>
+                        {% if p.merchant_order_id %}
+                        <span class="text-success">Pathao Transport</span>
+                        {% else %}
+                        <a href="{% url 'create_pathao_order' p.id %}" class="text-info me-10" data-bs-toggle="tooltip"
+                          data-bs-original-title="create" onclick="showLoader(true)">
+                          Create Parcel
+                        </a>
+                        {% comment %} <a href="{% url 'create_bulk_orders' p.id %}" class="text-info me-10" data-bs-toggle="tooltip"
+                          data-bs-original-title="create" onclick="showLoader(true)">
+                          Create Parcel
+                        </a> {% endcomment %}
+                        {% endif %}
+                      </td>
+                      {% comment %} {% if p.others_transport_trakink_url %}
+                      Others Transport
+                      {% elif p.redx_percel_traking_number %}
+                      Steadfast Transport
+                      {% else %}
+                      <a href="{% url 'create_parcel' p.pk %}" class="text-info me-10" data-bs-toggle="tooltip"
+                        data-bs-original-title="create">
+                        Create Parcel
+                      </a>
+                      {% endif %} {% endcomment %}
+                      <td>
+                        <a href="{% url 'order_detail' p.pk %}" class="text-primary" data-bs-original-title="View" data-bs-toggle="tooltip">
+                          <i class="ti-eye"></i>
+                        </a>
+                        
+                        {% if request.user.is_authenticated and request.user.is_superuser %}
+                        <a href="{% url 'order_update' p.pk %}" class="text-info me-10" data-bs-toggle="tooltip" data-bs-original-title="Edit">
+                          <i class="ti-marker-alt"></i>
+                        </a>
+                        <a href="javascript:void(0)" class="text-danger delete-link" data-url="{% url 'order_delete' p.pk %}" data-bs-original-title="Delete" data-bs-toggle="tooltip">
+                          <i class="ti-trash"></i>
+                        </a>
+                        {% endif %}
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+  function showLoader(v){
+      const loader = document.getElementById('api-loader');
+      if (v){
+          loader.style.display = 'block';
+          loader.classList.add('active');
+      } else {
+          loader.style.display = 'none';
+          loader.classList.remove('active');
+      }
+  }
+  showLoader(false);
+</script>
+{% endblock dashboard %}

@@ -1,0 +1,61 @@
+{% extends 'dashboard/base.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block dashboard %}
+<style>
+    .white-space {
+        white-space: nowrap;
+    }
+</style>
+<div class="content-wrapper">
+    <div class="container-full">
+        <section class="content">
+            <div class="row">
+                <div class="col-12">
+                    <div class="box">
+                        <div class="box-body">
+                            <div class="table-responsive">
+                                <div class="d-flex justify-content-end">
+                                    <a href="{% url 'fetch_stores' %}" class="btn btn-primary">Get New Stores From Pathao</a>
+                                </div>
+                                <hr>
+                                <table id="productorder" class="table table-hover no-wrap product-order" data-page-size="10">
+                                    <thead>
+                                        <tr>
+                                            <th class="white-space">Store Id</th>
+                                            <th class="white-space">Store Name</th>
+                                            <th class="white-space">Store Address</th>
+                                            <th class="white-space">Hub Id</th>
+                                            <th class="white-space">City Id</th>
+                                            <th class="white-space">Zone Id</th>
+                                            <th class="white-space">Active</th>
+                                            <th class="white-space">Default Return Store</th>
+                                            <th class="white-space">Default Store</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for c in query %}
+                                        <tr>
+                                            <td>{{ c.store_id }}</td>   
+                                            <td>{{ c.store_name }}</td>
+                                            <td>{{ c.store_address }}</td>
+                                            <td>{{ c.hub_id }}</td>
+                                            <td>{{ c.city_id }}</td>
+                                            <td>{{ c.zone_id }}</td>
+                                            <td>{{ c.is_active }}</td>
+                                            <td>{{ c.is_default_return_store }}</td>
+                                            <td>{{ c.is_default_store }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock dashboard %}

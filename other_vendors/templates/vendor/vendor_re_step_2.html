@@ -1,0 +1,45 @@
+{% extends "store/base.html" %}
+{% load crispy_forms_tags %}
+{% comment %} {% load socialaccount %} {% endcomment %}
+{% comment %} {% providers_media_js %} {% endcomment %}
+{% load static %}
+
+
+{% block content %}
+<section class="vh-100" style="background-color: #eee;">
+  <div class="container h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-lg-12 col-xl-11">
+        <div class="card text-black" style="border-radius: 25px;">
+          <div class="card-body p-md-5">
+            <div class="row justify-content-center">
+              <div class="col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
+                <p class="text-center h2 fw-bold mb-3 mx-1 mx-md-4 mt-4">Vendor Registration</p>
+                <form method="POST" class="uniForm">
+                  <fieldset class="form-group">
+                    <div class="mb-1">
+                      <label for="exampleFormControlInput1" class="form-label">Verify code</label>
+                      <input type="text" class="form-control" id="exampleFormControlInput1">
+                    </div>
+                  </fieldset>
+                  <div class="form-group mx-auto">
+                    <button style="background-color: #ED2224; color: white;" class="btn col-12"
+                      ><a style="color: aliceblue;" href="">submit</a></button>
+                  </div>
+                </form>
+              </div>
+              <div class="col-md-10 col-lg-6 col-xl-7 d-flex align-items-center order-1 order-lg-2">
+
+                <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-registration/draw1.webp"
+                  class="img-fluid" alt="Sample image">
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock content %}

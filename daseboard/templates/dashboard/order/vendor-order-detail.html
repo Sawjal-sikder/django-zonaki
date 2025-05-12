@@ -1,0 +1,283 @@
+{% extends 'dashboard/base.html' %}
+{% load commission %}
+
+{% block dashboard %}
+<div class="content-wrapper">
+    <div class="container-full">
+        <div class="content-header">
+            <div class="d-flex align-items-center">
+                <div class="me-auto">
+                    <h4 class="page-title">Order Details</h4>
+                </div>
+            </div>
+        </div>
+        <section class="content">
+            <div class="row">
+                <div class="col-xxxl-4 col-12">
+                    <div class="box">
+                        <div class="box-body">
+                            <div class="d-flex align-items-center">
+                                <img class="me-10 rounded-circle avatar avatar-xl b-2 border-primary"
+                                    src="{{ order.user.profile.image.url }}" alt="Customer">
+                                <div>
+                                    <h4 class="mb-0">{{ order.user.first_name }} {{ order.user.last_name }}</h4>
+                                    <span class="fs-14 text-info">
+                                        {% if order.user.is_superuser %}
+                                        Superuser
+                                        {% elif order.user.is_staff %}
+                                        Staff
+                                        {% else %}
+                                        Customer
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xxxl-8 col-12">
+                    <div class="box">
+                        <div class="box-body">
+                            <div class="table-responsive-xl">
+                                <table class="table product-overview">
+                                    <thead>
+                                        <tr>
+                                            <th>ProductID</th>
+                                            <th>Image</th>
+                                            <th>Product Name</th>
+                                            <th>Color</th>
+                                            <th>Size</th>
+                                            <th>Price</th>
+                                            <th>Quantity</th>
+                                            <th style="text-align:center">Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for p in order_items %}
+                                        <tr>
+                                            <td>{{ p.item.pk }}</td>
+                                            <td>
+                                                <img src="{{ p.item.image.url }}" alt="Product" width="50">
+                                            </td>
+                                            <td>{{ p.item.product_name }}</td>
+                                            {% for q in p.variation.all %}
+                                                <td>
+                                                    <div>
+                                                        {% if q.color.name %}
+                                                        <span class="color-col">{{ q.color.name }}</span>
+                                                        {% else %}
+                                                        <span class="color-col">None</span>
+                                                        {% endif %}
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div>
+                                                        {% if q.size.name  %}
+                                                            <span class="size-col">{{ q.size.name }}</span>
+                                                        {% else %}
+                                                            <span class="size-col">None</span>
+                                                        {% endif %}
+                                                    </div>
+                                                </td>
+                                            {% empty %}
+                                                <td>
+                                                    <div>
+                                                        <span class="color-col">None</span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div>
+                                                        <span class="size-col">None</span>
+                                                    </div>
+                                                </td>
+                                            {% endfor %}
+
+                                            <td>
+                                                {% if p.flashsale.flashsale_price %}
+                                                ৳{{p.flashsale.flashsale_price}}
+                                                {% elif p.item.discount_price %}
+                                                ৳{{ p.item.discount_price }}
+                                                {% else %}
+                                                ৳{{ p.item.price }}
+                                                {% endif %}
+                                            </td>
+                                            <td width="70">
+                                                {{ p.quantity }}
+                                            </td>
+                                            <td width="100" class="fw-900">
+                                                {% if request.user.is_superuser or request.user.is_staff  %}
+                                                ৳{{order.total}}
+                                                {% else %}
+                                                ৳{{ p.get_subtotal }}
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="box">
+                        <div class="box-body">
+                            <table class="table table-summary">
+                                <tbody>
+                                    <tr class="summary-subtotal">
+                                        <td colspan="4" class="col-12 text-left h4">Order Summary</td>
+                                    </tr>
+                                    <tr class="col-12">
+                                        <td colspan="4">
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Total Item Price</p>
+                                                </div>
+                                                
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>৳{{ order.id|vendor_total_price_filter:user_id }} </p>
+                                                </div>       
+                                                
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Total Commission</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right ;">
+                                                    <p>৳{{ order.id|commission_filter:user_id|floatformat:1 }}</p>
+                                                </div>
+                                            </div>
+                                        
+                                            
+                                           
+                                            {% comment %} <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Delivery Fee</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right ;">
+                                                    <p>+ ৳{{ order.only_shiping_charge_payment }} </p>
+                                                </div>
+                                            </div> {% endcomment %}
+                                                
+                                            
+                                                
+                                            {% comment %} {% if order.coupon %}
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Coupon</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right ;">
+                                                    <p>- ৳{{ order.coupon.amount }} </p>
+                                                </div>
+                                            </div>
+                                            {% endif %} {% endcomment %}
+                                        </td>
+                                    </tr>
+                                  
+                                    <tr class="summary-total">
+                                        <td>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    Total Amount
+                                                </div>
+                                                <div class="col-6 " style="text-align:right ;">
+                                                    <p>৳{{ order.id|vendor_commission_from_total:user_id }} </p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    
+                                    {% comment %} <tr class="summary-total">
+                                        <td style="color: green;">
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    Total Paid Amount
+                                                </div>
+                                                <div class="col-6" style="text-align:right ;">
+                                                    ৳{{ order.paid_amount }}
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr> {% endcomment %}
+                                    
+                                    {% comment %} <tr class="summary-total">
+                                        <td style="color: red;">
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    Total Due Amount
+                                                </div>
+                                                <div class="col-6" style="text-align:right ;">
+                                                    <p>৳{{ order.id|vendor_total_price_filter:user_id }} </p>
+                                                </div>
+                                        </td>
+                                    </tr> {% endcomment %}
+                             
+                                </tbody>
+                            </table>
+                            <p style="color:black; text-align: center;">Payment Method - {{order.payment_option}}</p>
+                        </div>
+                    </div>
+                    <div class="box">
+                        <div class="box-body">
+                            <table class="table table-summary">
+                                <tbody>
+                                    <tr class="summary-subtotal">
+                                        <td colspan="4" class="col-12 text-left h4">Shipping Information</td>
+                                    </tr>
+                                    <tr class="col-12">
+                                        <td colspan="4">
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Name </p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ order.shipping_address.full_name }} </p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Phone number</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{order.shipping_address.phone}}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Full address</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{order.shipping_address.full_address}} </p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Shipping area</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    
+                                                    <p>{{order.shipping_address}}</p>
+                                                </div>
+                                            </div>
+                                            {% if order.shipping_address.order_note %}
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Order note</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{order.shipping_address.order_note}}</p>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock dashboard %}

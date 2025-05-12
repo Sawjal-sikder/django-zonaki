@@ -1,0 +1,628 @@
+{% extends 'dashboard/base.html' %}
+{% load commission %}
+{% block dashboard %}
+<style>
+    .sliding {
+      display: flex;
+      flex-wrap: nowrap;
+      overflow-x: scroll;
+      overflow-y: hidden;
+      border-bottom: none;
+      padding-bottom: 10px;
+    }
+    .sliding li a {
+      color: #000 !important;
+      font-weight: 500;
+      border: none !important;
+      border-bottom: 1px solid #eee !important;
+    }
+    .sliding li a.active {
+      font-weight: 800;
+      font-size: 16px;
+      color: #000 !important;
+      background: linear-gradient(90deg, #ffddee, #00ffee);
+    }
+    .sliding::-webkit-scrollbar {
+      background: #fff;
+    }
+    .sliding::-webkit-scrollbar-thumb {
+      background: linear-gradient(90deg, #ffddee, #00ffee);
+      border-radius: 10px;
+    }
+    .css-width{
+      width: auto !important;
+    }
+  </style>
+<div class="content-wrapper">
+  <div class="container-full">
+    <div class="content-header d-flex">
+      <div class="me-auto mt-2">
+        <h4 class="page-title">Vendor Filter List</h4>
+      </div>
+    </div>
+    <section class="content">
+      <div class="row">
+        <div class="col-12">
+          <div class="box">
+            <div class="box-body">
+
+              <!-- Navigation Tabs start -->
+              <ul class="nav nav-tabs sliding" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <a
+                    class="nav-link {% if nav_active_item == 'product' %}active{% endif %}"
+                    id="products-tab"
+                    onclick="showHideItem('product')"
+                    data-bs-toggle="tab"
+                    href="#products"
+                    role="tab"
+                    aria-controls="products"
+                    aria-selected="{% if nav_active_item == 'product' %} true{% else %}false{% endif %}">
+                    Products
+                  </a>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <a
+                    class="nav-link {% if nav_active_item == 'order' %}active{% endif %}"
+                    id="orders-tab"
+                    onclick="showHideItem('order')"
+                    data-bs-toggle="tab"
+                    href="#orders"
+                    role="tab"
+                    aria-controls="orders"
+                    aria-selected="{% if nav_active_item == 'order' %} true {% else %}false {% endif %}">
+                    Orders
+                  </a>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <a
+                    class="nav-link {% if nav_active_item == 'payment' %}active{% endif %}"
+                    id="payments-tab"
+                    onclick="showHideItem('payment')"
+                    data-bs-toggle="tab"
+                    href="#payments"
+                    role="tab"
+                    aria-controls="payments"
+                    aria-selected="{% if nav_active_item == 'payment' %}true{% else %} false{% endif %}">
+                    Payments
+                  </a>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <a
+                    class="nav-link {% if nav_active_item == 'return_product' %}active{% endif %}"
+                    id="returnproducts-tab"
+                    onclick="showHideItem('return_product')"
+                    data-bs-toggle="tab"
+                    href="#returnproducts"
+                    role="tab"
+                    aria-controls="returnproducts"
+                    aria-selected="{% if nav_active_item == 'return_product' %}true{% else %}false{% endif %}">
+                    Return Product
+                  </a>
+                </li>
+              </ul>
+              <!-- Navigation Tabs end -->
+
+              <!-- filter section start -->
+              <form method="get" id="js-query-form"
+                class="d-flex align-items-center justify-content-start sliding">
+                <input type="hidden" name="form_type" id="form_type_value"
+                  value="return_product">
+
+                <div class="form-group me-1 js-product">
+                  <select name="approval" id class="form-select css-width">
+                    <option value="Complete" {% if approval == 'Complete' %}selected{% endif %}>Approved </option>
+                    <option value="Pending" {% if approval == 'Pending' %}selected{% endif %}>Unapproved</option>
+                  </select>
+                </div>
+                <div class="form-group me-1 js-order">
+                  <select name="order-status" id class="form-select css-width">
+                    <option value="Pending" {% if order_status == 'Pending' %}selected{% endif %}>Pending</option>
+                    <option value="Processing" {% if order_status == 'Processing' %}selected{% endif %}>Processing</option>
+                    <option value="Complete" {% if order_status == 'Complete' %}selected{% endif %}>Complete</option>
+                    <option value="Cancel" {% if order_status == 'Cancel' %}selected{% endif %}>Cancel</option>
+                  </select>
+                </div>
+                <div class="form-group me-1 js-payment">
+                  <select name="payment-status" id
+                    class="form-select css-width">
+                    <option value="Pending" {% if payment_status == 'Pending' %}selected{% endif %}>Pending</option>
+                    <option value="Processing" {% if payment_status == 'Processing' %}selected{% endif %}>Processing</option>
+                    <option value="Complete" {% if payment_status == 'Complete' %}selected{% endif %}>Complete</option>
+                    <option value="Cancel" {% if payment_status == 'Cancel' %}selected{% endif %}>Cancel</option>
+                  </select>
+                </div>
+
+                <div class="form-group me-1 js-return_product">
+                  <select name="return-product-status" id
+                    class="form-select css-width">
+                    <option value="Pending" {% if return_product_status == 'Pending' %}selected{% endif %}>Pending</option>
+                    <option value="Processing" {% if return_product_status == 'Processing' %}selected{% endif %}>Processing</option>
+                    <option value="Complete" {% if return_product_status == 'Complete' %}selected{% endif %}>Complete</option>
+                    <option value="Cancel" {% if return_product_status == 'Cancel' %}selected{% endif %}>Cancel</option>
+                  </select>
+                </div>
+
+                <div class="form-group me-1">
+                  <input type="text" class="form-control css-width" id="search"
+                    name="search" placeholder="Search Here"
+                    value="{% if search %}{{ search }}{% endif %}">
+                </div>
+                <div class="form-group me-1">
+                  <input type="datetime-local" class="form-control css-width"
+                    id="from_date" name="from_date"
+                    value="{% if from_date %}{{ from_date|date:'Y-m-d\\TH:i' }}{% endif %}">
+                </div>
+                <div class="form-group me-1">
+                  <input type="datetime-local" class="form-control css-width"
+                    id="to_date" name="to_date"
+                    value="{% if to_date %}{{ to_date|date:'Y-m-d\\TH:i' }}{% endif %}">
+                </div>
+
+                <div class="form-group me-1">
+                  <input type="submit" class="btn btn-primary" value="Filter">
+                </div>
+
+              </form>
+              <!-- filter section end -->
+
+              <!-- Tab Content -->
+              <div class="tab-content" id="myTabContent">
+
+                <!-- Products Tab -->
+                <div
+                  class="tab-pane {% if nav_active_item == 'product' %}fade show active{% endif %}"
+                  id="products" role="tabpanel" aria-labelledby="products-tab">
+                  <!-- Product Table -->
+                  <div class="table-responsive">
+                    <!-- datas -->
+                    <table id class="table table-hover no-wrap product-order"
+                      data-page-size="10">
+                      <thead>
+                        <tr>
+                          <th>ProductID</th>
+                          <th>Photo</th>
+                          <th>Product</th>
+                          <th>Stock</th>
+                          <th>Status</th>
+                          <th>Date</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for p in products %}
+                        <tr>
+                          <td>{{ forloop.counter }}</td>
+                          <td>
+                            <img src="{{ p.image.url }}" alt="product"
+                              style="width: 30px;" />
+                          </td>
+                          <td>{{ p.product_name }}</td>
+
+                          {% if p.stock_quantity == 0 %}
+                          <td>
+                            <span
+                              class="badge badge-pill badge-danger">Out</span>
+                          </td>
+                          {% else %}
+                          <td>
+                            <span class="badge badge-pill badge-success">{{ p.stock_quantity }}</span>
+                          </td>
+                          {% endif %}
+                          <td>{% if p.is_verified %}<span class="btn btn-success">Approved</span>{% else %}<span class="btn btn-danger">Unapproved</span>{% endif %}
+                          </td>
+                          <td>{{ p.created_at }}</td>
+                          <td>
+                            <a href="{% url 'product-update' p.pk %}"
+                              class="text-info me-10" data-bs-toggle="tooltip"
+                              data-bs-original-title="Edit"><i
+                                class="ti-marker-alt"></i></a>
+                            <a href="{% url 'dashboard_product_delete' p.pk %}"
+                              class="text-danger delete-link"
+                              data-url="{% url 'dashboard_product_delete' p.pk %}"
+                              data-bs-original-title="Delete"
+                              data-bs-toggle="tooltip"><i
+                                class="ti-trash"></i></a>
+                          </td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                    <!-- pagination start -->
+                    <div class="pagination justify-content-end pt-5">
+                      <span class="step-links">
+                        {% if products.has_previous %}
+                        <a href="?order_page=product&page=1"
+                          class="bg-danger p-2 rounded fw-bold">&laquo;
+                          first</a>
+                        <a
+                          href="?order_page=product&page={{ products.previous_page_number }}"
+                          class="bg-primary p-2 rounded fw-bold">previous</a>
+                        {% endif %}
+                        <span class="current bg-secondary p-2 rounded">Page {{ products.number }} of {{ products.paginator.num_pages }}.</span>
+                        {% if products.has_next %}
+                        <a
+                          href="?order_page=product&page={{ products.next_page_number }}"
+                          class="bg-primary p-2 rounded fw-bold">next</a>
+                        <a
+                          href="?order_page=product&page={{ products.paginator.num_pages }}"
+                          class="bg-danger p-2 rounded fw-bold">last &raquo;</a>
+                        {% endif %}
+                      </span>
+                    </div>
+                    <!-- pagination end -->
+                  </div>
+                </div>
+
+                <!-- Orders Tab -->
+                <div
+                  class="tab-pane {% if nav_active_item == 'order' %}fade show active{% endif %}"
+                  id="orders" role="tabpanel" aria-labelledby="orders-tab">
+                  <!-- Orders content -->
+                  <div class="table-responsive">
+                    <table id class="table table-hover no-wrap product-order"
+                      data-page-size="10">
+                      <thead>
+                        <tr>
+                          <th>Order ID</th>
+                          <th>Customer Name</th>
+                          <th>Total Amount</th>
+                          <th>Order Date</th>
+                          <th>Status</th>
+                          <th>Parcel</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for p in orders %}
+                        <tr>
+                          <td>{{ p.orderId }}</td>
+                          <td>{{ p.user.full_name }}</td>
+                          <td>{{ p.id|vendor_total_price_filter:user_id }}</td>
+                          <td>{{ p.ordered_date }}</td>
+                          {% if p.order_status == 'Pending' %}
+                          <td>
+                            <span class="badge bg-primary">{{ p.order_status }}</span>
+                          </td>
+                          {% elif p.order_status == 'Processing' %}
+                          <td>
+                            <span class="badge bg-info">{{ p.order_status }}</span>
+                          </td>
+                          {% elif p.order_status == 'On the way' %}
+                          <td>
+                            <span class="badge bg-warning">{{ p.order_status }}</span>
+                          </td>
+                          {% elif p.order_status == 'Complete' %}
+                          <td>
+                            <span class="badge bg-success">{{ p.order_status }}</span>
+                          </td>
+                          {% elif p.order_status == 'Cancel' %}
+                          <td>
+                            <span class="badge bg-danger">{{ p.order_status }}</span>
+                          </td>
+                          {% endif %}
+                          <td>
+                            {% if p.others_transport_trakink_url %}
+                            Others Transport
+                            {% elif p.redx_percel_traking_number %}
+                            Steadfast Transport
+                            {% else %}
+                            <a href="{% url 'create_parcel' p.pk %}"
+                              class="text-info me-10" data-bs-toggle="tooltip"
+                              data-bs-original-title="create">Create Parcel</a>
+                            {% endif %}
+                          </td>
+                          <td>
+                            <a href="{% url 'order_update' p.pk %}"
+                              class="text-info me-10" data-bs-toggle="tooltip"
+                              data-bs-original-title="Edit"><i
+                                class="ti-marker-alt"></i></a>
+
+                            <a
+                              href="{% url 'vendor_all_details' p.pk %}?user_id={{user_id}}"
+                              class="text-primary" data-bs-original-title="View"
+                              data-bs-toggle="tooltip"><i
+                                class="ti-eye"></i></a>
+
+                            {% if request.user.is_authenticated and request.user.is_superuser %}
+                            <a href="javascript:void(0)"
+                              class="text-danger delete-link"
+                              data-url="{% url 'order_delete' p.pk %}"
+                              data-bs-original-title="Delete"
+                              data-bs-toggle="tooltip"><i
+                                class="ti-trash"></i></a>
+                            {% endif %}
+                          </td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                    <!-- pagination start -->
+                    <div class="pagination justify-content-end pt-5">
+                      <span class="step-links">
+                        {% if orders.has_previous %}
+                        <a href="?order_page=order&page=1"
+                          class="bg-danger p-2 rounded fw-bold">&laquo;
+                          first</a>
+                        <a
+                          href="?order_page=order&page={{ orders.previous_page_number }}"
+                          class="bg-primary p-2 rounded fw-bold">previous</a>
+                        {% endif %}
+                        <span class="current bg-secondary p-2 rounded">Page {{ orders.number }} of {{ orders.paginator.num_pages }}.</span>
+                        {% if orders.has_next %}
+                        <a
+                          href="?order_page=order&page={{ orders.next_page_number }}"
+                          class="bg-primary p-2 rounded fw-bold">next</a>
+                        <a
+                          href="?order_page=order&page={{ orders.paginator.num_pages }}"
+                          class="bg-danger p-2 rounded fw-bold">last &raquo;</a>
+                        {% endif %}
+                      </span>
+                    </div>
+                    <!-- pagination end -->
+                  </div>
+                </div>
+
+                <!-- payments Tab -->
+                <div
+                  class="tab-pane {% if nav_active_item == 'payment' %}fade show active{% endif %}"
+                  id="payments" role="tabpanel" aria-labelledby="payments-tab">
+                  <!-- payments content -->
+                  <div class="table-responsive">
+                    <table id class="table table-hover no-wrap product-order"
+                      data-page-size="10">
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>Vendor Name</th>
+                          <th>Order ID</th>
+                          <th>Items</th>
+                          <th>message</th>
+                          <th>Payment Amount</th>
+                          <th>Date</th>
+                          <th>Status</th>
+                          {% if request.user.is_authenticated and request.user.is_superuser %}
+                          <th>Actions</th>
+                          {% endif %}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for p in payments %}
+                        <tr>
+                          <td>{{ p.id }}</td>
+                          <td>{{ p.user.full_name }}</td>
+                          <td>
+                            {% for i in p.product.all %}
+                            {% for o in i.order.all %}
+                            {{ o.id }}
+                            {% endfor %}
+                            {% if not forloop.last %},<br />{% endif %}
+                            {% endfor %}
+                          </td>
+                          <td>
+                            {% for i in p.product.all %}
+                            {{ i }}{% if not forloop.last %},<br />{% endif %}
+                            {% endfor %}
+                          </td>
+                          <td>{{ p.message|truncatewords_html:3 }}</td>
+                          <td>
+                            <del>{{ p.get_amount }}</del>
+                            <span style="font-size: 12px; color: red;">({{
+                              p.get_commission }}%)</span>
+                            = {{ p.after_commision_total|floatformat:2 }}
+                          </td>
+
+                          {% if p.status == 'Pending' %}
+                          <td>
+                            <span class="badge bg-primary">{{ p.status }}</span>
+                          </td>
+                          {% elif p.status == 'Processing' %}
+                          <td>
+                            <span class="badge bg-info">{{ p.status }}</span>
+                          </td>
+                          {% elif p.status == 'Complete' %}
+                          <td>
+                            <span class="badge bg-success">{{ p.status }}</span>
+                          </td>
+                          {% elif p.status == 'Cancel' %}
+                          <td>
+                            <span class="badge bg-danger">{{ p.status }}</span>
+                          </td>
+                          {% endif %}
+                          <td>{{ p.request_date }}</td>
+                          <td>
+                            {% if request.user.is_authenticated and request.user.is_superuser %}
+                            <a href="{% url 'vandor_payment_update' p.pk %}"
+                              class="text-info me-10" data-bs-toggle="tooltip"
+                              data-bs-original-title="Edit"><i
+                                class="ti-marker-alt"></i></a>
+                            <a href="{% url 'vandor_payment_details' p.pk %}"
+                              class="text-info me-10" data-bs-toggle="tooltip"
+                              data-bs-original-title="view"><i
+                                class="fa fa-eye"></i></a>
+                            <a href="javascript:void(0)"
+                              class="text-danger delete-link"
+                              data-url="{% url 'vandor_payment_delete' p.pk %}"
+                              data-bs-original-title="Delete"
+                              data-bs-toggle="tooltip"><i
+                                class="ti-trash"></i></a>
+                            {% endif %}
+                          </td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                    <!-- pagination start -->
+                    <div class="pagination justify-content-end pt-5">
+                      <span class="step-links">
+                        {% if payments.has_previous %}
+                        <a href="?order_page=payment&page=1"
+                          class="bg-danger p-2 rounded fw-bold">&laquo;
+                          first</a>
+                        <a
+                          href="?order_page=payment&page={{ payments.previous_page_number }}"
+                          class="bg-primary p-2 rounded fw-bold">previous</a>
+                        {% endif %}
+                        <span class="current bg-secondary p-2 rounded">Page {{ payments.number }} of {{ payments.paginator.num_pages }}.</span>
+                        {% if payments.has_next %}
+                        <a
+                          href="?order_page=payment&page={{ payments.next_page_number }}"
+                          class="bg-primary p-2 rounded fw-bold">next</a>
+                        <a
+                          href="?order_page=payment&page={{ payments.paginator.num_pages }}"
+                          class="bg-danger p-2 rounded fw-bold">last &raquo;</a>
+                        {% endif %}
+                      </span>
+                    </div>
+                    <!-- pagination end -->
+                  </div>
+                </div>
+
+                <!-- returnproducts Tab -->
+                <div
+                  class="tab-pane {% if nav_active_item == 'return_product' %}fade show active{% endif %}"
+                  id="returnproducts" role="tabpanel"
+                  aria-labelledby="returnproducts-tab">
+                  <!-- returnproducts content -->
+                  <div class="table-responsive">
+                    <table id class="table table-hover no-wrap product-order"
+                      data-page-size="10">
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>Customer Informations</th>
+                          <th>Return Product</th>
+                          <th>Return Reason</th>
+                          <th>Status</th>
+                          <th>Created on</th>
+                          <th>Product Owner</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for c in returnproducts %}
+                        <tr>
+                          <td>{{ c.id }}</td>
+                          <td>{{ c.customer }}</td>
+                          <td>{{c.items.item.product_name}}</td>
+                          <td>{{ c.get_return_reason_display }}</td>
+
+                          {% if c.status == 'Pending' %}
+                          <td>
+                            <span class="badge bg-primary">{{ c.status }}</span>
+                          </td>
+                          {% elif c.status == 'Processing' %}
+                          <td>
+                            <span class="badge bg-info">{{ c.status }}</span>
+                          </td>
+                          {% elif c.status == 'On the way' %}
+                          <td>
+                            <span class="badge bg-warning">{{ c.status }}</span>
+                          </td>
+                          {% elif c.status == 'Complete' %}
+                          <td>
+                            <span class="badge bg-success">{{ c.status }}</span>
+                          </td>
+                          {% elif c.status == 'Cancel' %}
+                          <td>
+                            <span class="badge bg-danger">{{ c.status }}</span>
+                          </td>
+                          {% endif %}
+
+                          <td>{{ c.created_on }}</td>
+                          <td>{{c.items.item.user}}</td>
+                          <td>
+                            <a href="{% url 'returns_product-update' c.pk %}"
+                              class="text-info me-10" data-bs-toggle="tooltip"
+                              data-bs-original-title="Edit"><i
+                                class="ti-marker-alt"></i></a>
+                            <a href="{% url 'returns_product-details' c.pk %}"
+                              class="text-primary" data-bs-original-title="View"
+                              data-bs-toggle="tooltip">
+                              <i class="ti-eye"></i>
+                            </a>
+                            <a href="javascript:void(0)"
+                              class="text-danger delete-link"
+                              data-url="{% url 'returns_product-delete' c.pk %}"
+                              data-bs-original-title="Delete"
+                              data-bs-toggle="tooltip"><i
+                                class="ti-trash"></i></a>
+                          </td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                    <!-- pagination start -->
+                    <div class="pagination justify-content-end pt-5">
+                      <span class="step-links">
+                        {% if returnproducts.has_previous %}
+                        <a href="?order_page=returnproduct&page=1"
+                          class="bg-danger p-2 rounded fw-bold">&laquo;
+                          first</a>
+                        <a
+                          href="?order_page=returnproduct&page={{ returnproducts.previous_page_number }}"
+                          class="bg-primary p-2 rounded fw-bold">previous</a>
+                        {% endif %}
+                        <span class="current bg-secondary p-2 rounded">Page {{ returnproducts.number }} of {{ returnproducts.paginator.num_pages }}.</span>
+                        {% if returnproducts.has_next %}
+                        <a
+                          href="?order_page=returnproduct&page={{ returnproducts.next_page_number }}"
+                          class="bg-primary p-2 rounded fw-bold">next</a>
+                        <a
+                          href="?order_page=returnproduct&page={{ returnproducts.paginator.num_pages }}"
+                          class="bg-danger p-2 rounded fw-bold">last &raquo;</a>
+                        {% endif %}
+                      </span>
+                    </div>
+                    <!-- pagination end -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+  const productItems = document.querySelector('.js-product');
+  const orderItems = document.querySelector('.js-order');
+  const PaymentItems = document.querySelector('.js-payment');
+  const ReturnProductItems = document.querySelector('.js-return_product');
+  const formTypeValue = document.getElementById('form_type_value');
+
+  function showHideItem(value){
+    if (value == 'product'){
+      formTypeValue.value = value;
+      productItems.classList.remove('d-none');
+      orderItems.classList.add('d-none');
+      PaymentItems.classList.add('d-none');
+      ReturnProductItems.classList.add('d-none');
+    } else if (value == 'order') {
+      formTypeValue.value = '';
+      formTypeValue.value = value;
+      orderItems.classList.remove('d-none');
+      productItems.classList.add('d-none');
+      PaymentItems.classList.add('d-none');
+      ReturnProductItems.classList.add('d-none');
+    } else if (value == 'payment') {
+      formTypeValue.value = '';
+      formTypeValue.value = value;
+      PaymentItems.classList.remove('d-none');
+      orderItems.classList.add('d-none');
+      productItems.classList.add('d-none');
+      ReturnProductItems.classList.add('d-none');
+    } else if (value == 'return_product') {
+      formTypeValue.value = '';
+      formTypeValue.value = value;
+      ReturnProductItems.classList.remove('d-none');
+      PaymentItems.classList.add('d-none');
+      orderItems.classList.add('d-none');
+      productItems.classList.add('d-none');
+    }
+  }
+  showHideItem('{{ nav_active_item }}');
+</script>
+{% endblock %}

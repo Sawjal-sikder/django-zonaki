@@ -1,0 +1,139 @@
+{% extends 'dashboard/base.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block dashboard %}
+<div class="content-wrapper">
+	<div class="container-full">
+		<section class="content">
+		  <div class="row">
+			  <div class="col-12">
+				<div class="box">
+				  <div class="box-body">
+                    <div class="accordion" id="accordionExample">
+                        <div class="accordion-item">
+                          <h2 class="accordion-header mt-0">
+                            <button class="accordion-button {% if not added %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="{% if added %}true{% else %}false{% endif %}" aria-controls="collapseThree">
+                              Add Color
+                            </button>
+                          </h2>
+                          <div id="collapseThree" class="accordion-collapse collapse {% if added %}show{% endif %}" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                <form action="" method="POST" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                {{ form.name|as_crispy_field }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                    </div>
+                                </form>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        </div>
+		<section class="content">
+		  <div class="row">
+			  <div class="col-12">
+				<div class="box">
+				  <div class="box-body">
+                    <div class="d-flex justify-content-between">
+                        <h1 class="fs-5">Color List</h1>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="" class="table table-hover no-wrap product-order" data-page-size="10">
+                            <thead>
+                                <tr>
+                                    <th class="align-middle d-flex">
+                                        ID
+                                    </th>
+                                    <th>Name</th>                
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for c in query %} 
+                                <tr>
+                                    <td>
+                                        {{ c.id }}
+                                    </td>
+                                    <td>{{ c.name }}</td>
+                                    <td>
+                                        <a href="javascript:void" class="text-info me-10" data-bs-toggle="modal" data-bs-target="#editobj-{{ c.pk }}" data-bs-original-title="Edit">
+                                            <i class="ti-marker-alt"></i>
+                                        </a>
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="editobj-{{ c.pk }}" tabindex="-1" aria-labelledby="editobj-{{ c.pk }}Label" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <form action="" method="POST" enctype="multipart/form-data">
+                                                        {% csrf_token %}
+                                                        <div class="modal-header">
+                                                            <h1 class="modal-title fs-5" id="editobj-{{ c.pk }}Label">Edit Color</h1>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <div class="form-body">
+                                                                <div class="row">
+                                                                    <input type="hidden" name="obj_id" id="" value="{{ c.id }}">
+                                                                    <div class="col-md-12">
+                                                                        <div class="form-group">
+                                                                            <label for="" class="form-label">Name*</label>
+                                                                            <input type="text" name="name" id="" class="form-control" value="{{ c.name }}" required>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                            <button type="submit" class="btn btn-primary">Save</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <a href="javascript:void(0)" class="text-danger delete-link"
+                                            data-url="{% url 'color_delete' c.id %}"
+                                            data-bs-original-title="Delete" data-bs-toggle="tooltip">
+                                            <i class="ti-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}								
+                            </tbody>						
+                        </table>
+                    </div>
+                    <!-- pagination start -->
+                    <div class="pagination justify-content-end pt-5">
+                        <span class="step-links">
+                        {% if query.has_previous %}
+                            <a href="?query_data={{ query_data }}&page=1" class="bg-danger p-2 rounded fw-bold">&laquo;first</a>
+                            <a href="?query_data={{ query_data }}&page={{ query.previous_page_number }}" class="bg-primary p-2 rounded fw-bold">previous</a>
+                        {% endif %}
+                        <span class="current bg-secondary p-2 rounded">Page {{ query.number }} of {{ query.paginator.num_pages }}.</span>
+                        {% if query.has_next %}
+                            <a href="?query_data={{ query_data }}&page={{ query.next_page_number }}" class="bg-primary p-2 rounded fw-bold">next</a>
+                            <a href="?query_data={{ query_data }}&page={{ query.paginator.num_pages }}" class="bg-danger p-2 rounded fw-bold">last &raquo;</a>
+                        {% endif %}
+                        </span>
+                    </div>
+                    <!-- pagination end -->
+				  </div>
+				</div>
+			  </div>		  
+		  </div>
+		</section>
+	</div>
+</div>
+{% endblock dashboard %}
+	

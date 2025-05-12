@@ -1,0 +1,65 @@
+{% extends 'dashboard/base.html' %}
+
+
+{% block dashboard %}
+<div class="content-wrapper">
+	<div class="container-full">
+		<div class="content-header d-flex">
+			<div class="me-auto mt-2">
+				<h4 class="page-title">Banner List</h4>
+			</div>
+			<div>
+				<a class="btn btn-primary" href="{% url 'banner-add' %}">Add Banner</a>
+			</div>
+		</div>
+		<section class="content">
+		  <div class="row">
+			  <div class="col-12">
+				<div class="box">
+				  <div class="box-body">
+					<div class="table-responsive">
+						<table id="productorder" class="table table-hover no-wrap product-order" data-page-size="10">
+							<thead>
+								<tr>
+                                    <th>ID</th>
+									<th>Title</th>
+									<th>Image</th>
+                                    <th>Brand</th>                                  
+                                    <th>Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+							{% for c in banner %} 
+								<tr>
+                                    <td>{{ c.id }}</td>                                                                      
+									<td>{{ c.title }}</td>
+									<td><img src="{{ c.image.url }}" alt="brand" style="width: 30px;" ></td>
+									<td>
+										{% if c.http_url_link %}
+											{{ c.http_url_link }}
+										{% endif %}								
+									</td>
+						
+									<td><a href="{% url 'banner-update' c.pk %}" class="text-info me-10" data-bs-toggle="tooltip" data-bs-original-title="Edit">
+											<i class="ti-marker-alt"></i>
+										</a>
+										<a href="javascript:void(0)" class="text-danger delete-link"
+											data-url="{% url 'banner-delete' c.pk %}"
+											data-bs-original-title="Delete" data-bs-toggle="tooltip">
+											<i class="ti-trash"></i>
+                                        </a>
+									</td>
+								</tr>
+								{% endfor %}								
+							</tbody>						
+						</table>
+					</div>
+				  </div>
+				</div>
+			  </div>		  
+		  </div>
+		</section>
+	</div>
+</div>
+{% endblock dashboard %}
+	

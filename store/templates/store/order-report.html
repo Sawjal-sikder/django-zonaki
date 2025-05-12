@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {% load static %}
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eranian Online shopping in Bangladesh | Order Now From Eranian.com</title>
+</head>
+
+<body>
+
+  <div class="logo" style="margin-bottom: 30px;text-align: center;">
+    <img src="{{logo.image.path}}" alt="" style="height: 80px; width:auto">
+  </div>
+  <table repeat="1">
+    <tr>
+      <th style="text-align: left; font-size: 15px;">Eranian Online shopping in Bangladesh </th>
+      <th style="text-align: right; font-size: 15px;">Invoice</th>
+    </tr>
+    <tr>
+      <th style="text-align: left;">Contact Number - </th>
+      <th style="text-align: right;">Order ID - {{ order.orderId }}</th>
+    </tr>
+    <tr>
+      <th style="text-align: left;">Office Address - </th>
+      <th style="text-align: right;">Order Date - {{ order.ordered_date }}</th>
+    </tr>
+    <tr>
+      <th style="text-align: left;"></th>
+      <th style="text-align: right;">Order Status - {{ order.order_status }}</th>
+    </tr>
+    <tr>
+      <th style="text-align: left;"></th>
+      <th style="text-align: right;">Payment Method - {{ order.payment_option }}</th>
+    </tr>
+  </table>
+
+
+  <hr style="background-color: rgb(160, 153, 153);">
+  <table class="table">
+    <thead>
+      <tr style="padding-bottom: 5px;">
+        <th scope="col">SN</th>
+        <th scope="col" style="text-align: left;">Product</th>
+        <th scope="col" style="text-align: left;">Color</th>
+        <th scope="col" style="text-align: left;">Size</th>
+        <th scope="col" style="text-align: left;">Qty</th>
+        <th scope="col" style="text-align: left;">Price</th>
+        <th scope="col" style="text-align: left;">Charge</th>
+        <th scope="col" style="text-align: left;"> Total Price</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      {% for p in order.items.all %}
+      <tr style="margin-top: 20px; border-bottom: 0.1px solid rgb(238, 227, 227); padding-top: 5px; ">
+        <th scope="row">#{{ forloop.counter }}</th>
+        <td><img src="{{ p.item.image.path }}" alt="" style="height: 32px; width: 32px;">{{p.item.product_name }}</td>
+        {% for q in p.variation.all %}
+        <td>
+          <div>
+            {% if q.color %}
+            <span class="color-col">{{ q.color.name }}</span>
+            {% endif %}
+          </div>
+        </td>
+        <td>
+          <div>
+            {% if q.size  %}
+            <span class="color-col">{{ q.size.name }}</span>
+            {% endif %}
+          </div>
+        </td>
+        {% endfor %}
+        <td>
+          <p style="">{{ p.quantity }}</p>
+        </td>
+        {% if p.item.discount_price %}
+        <td class="price-col">{{ p.item.discount_price|floatformat:1 }}</td>
+        {% else %}
+        <td class="price-col">{{ p.item.price|floatformat:1 }}</td>
+        {% endif %}
+        <td>
+          <p style="">{{ p.shipping_charge|floatformat:1 }}</p>
+        </td>
+        <td>TK {{ p.get_subtotal|floatformat:1 }}</td>
+      </tr>
+      {% endfor %}
+
+    </tbody>
+  </table>
+
+  <div></div>
+
+  <table repeat="1">
+    <h3 style="text-align: center; margin-top: 40px ;">Order Summary</h3>
+    <tr>
+      <th style="border-right: 1px solid #2222; text-align: left;">Total Item Price</th>
+      <th style="text-align: right;">{{ order.get_total|floatformat:2 }} tk </th>
+    </tr>
+    <tr>
+      <th style="border-right: 1px solid #2222; text-align: left;">Delivery Fee</th>
+      <th style="text-align: right;">
+        {% if order.total_shipping_amount %}
+        + {{order.total_shipping_amount|floatformat:2}} tk
+        {% elif order.shipping_address.shiping_area == 'Inside Chittagong' %}
+        + 130 tk
+        {% elif order.shipping_address.shiping_area == 'Outside Chittagong' %}
+        + 130 tk
+        {% endif %}
+      </th>
+    </tr>
+    {% if order.coupon %}
+    <tr>
+      <th style="border-right: 1px solid #2222; text-align: left;">Coupon Discount Amount</th>
+      <th style="text-align: right;">- {{ order.coupon.coupon_types }} </th>
+    </tr>
+    {% endif %}
+    <tr>
+      <th style="border-right: 1px solid #2222; text-align: left;">Total Amount</th>
+      <th style="text-align: right;"> {{ order.total_order_amount|floatformat:2 }} tk </th>
+    </tr>
+    <tr>
+      <th style="border-right: 1px solid #2222; text-align: left;">Paid Amount</th>
+      <th style="text-align: right;"> {{ order.paid_amount|floatformat:2 }} tk </th>
+    </tr>
+    <tr>
+      <th style="border-right: 1px solid #2222; text-align: left;">Due Amount</th>
+      <th style="text-align: right;"> {{ order.due_amount|floatformat:2 }} tk</th>
+    </tr>
+    <tr>
+      <th style="border-right: 1px solid #2222; text-align: left;">Payment Method</th>
+      <th style="text-align: right;"> {{order.payment_option}}</th>
+    </tr>
+  </table>
+
+  <table repeat="1">
+    <h3 style="text-align: center; margin-top: 40px ;">Shiping Information</h3>
+    <tr>
+      <th style="border-right: 1px solid #2222; text-align: left;">Name</th>
+      <th style="text-align: right;">{{ order.shipping_address.full_name}}</th>
+    </tr>
+    <tr>
+      <th style="border-right: 1px solid #2222; text-align: left;">Phone</th>
+      <th style="text-align: right;">{{order.shipping_address.phone}}</th>
+    </tr>
+    <tr>
+      <th style="border-right: 1px solid #2222; text-align: left;">Full Address</th>
+      <th style="text-align: right;">{{order.shipping_address.full_address}}</th>
+    </tr>
+    <tr>
+      <th style="border-right: 1px solid #2222; text-align: left;">Order Note</th>
+      <th style="text-align: right;">{{order.shipping_address.order_note}}</th>
+    </tr>
+  </table>
+
+  <h1 style="text-align: center; margin-top: 50px;">Thank Your For Shopping</h1>
+</body>
+
+</html>

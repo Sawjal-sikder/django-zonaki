@@ -1,0 +1,418 @@
+{% extends "dashboard/base.html" %}
+{% load static %}
+
+
+{% block dashboard %}
+<section class="content-wrapper">
+  <div class="container">
+    <div class="row justify-content-center mt-30">
+      <div class="col-12 col-md-7 col-lg-7 card rounded shadow">
+        <form method="POST" id="registration" enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type="hidden" name="store_id" id="" value="{{ form.instance.store_id }}">
+          <nav class="px-10 py-30">
+            <div class="nav nav-pills nav-fill" id="nav-tab" role="tablist">
+              <a class="nav-link rounded active" id="step1-tab" data-bs-toggle="tab"
+                href="#step1">Business Address</a>
+              <a class="nav-link rounded" id="step2-tab" data-bs-toggle="tab" href="#step2">Verify ID
+                Information</a>
+              <a class="nav-link rounded" id="step3-tab" data-bs-toggle="tab" href="#step3">Bannk Information</a>
+            </div>
+          </nav>
+          <div class="tab-content p-10">
+            <div class="tab-pane fade show active" id="step1">
+              <div class="form-group row">
+                <label for="from_division" class="col-sm-4 col-form-label">Address</label>
+                <div class="col-sm-8">
+                  <input type="text" name="address" class="form-control is-invalid"
+                    placeholder="Write name according to NID" value="{{ form.instance.address }}" required minlength="15" maxlength="120">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="from_division" class="col-sm-4 col-form-label">Country</label>
+                <div class="col-sm-8">
+                  <input type="text" name="country" class="form-control is-invalid" value="{{ form.instance.country }}" placeholder="Country name"
+                    required>
+                </div>
+              </div>
+              {% comment %} <div class="form-group row">
+                <label for="from_division" class="col-sm-4 col-form-label">Division</label>
+                <div class="col-sm-8">
+                  <input type="text" name="division" class="form-control is-invalid" value="{{ form.instance.division }}" placeholder="Division">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="from_division" class="col-sm-4 col-form-label">District</label>
+                <div class="col-sm-8">
+                  <input type="text" name="district" class="form-control is-invalid" value="{{ form.instance.district }}" placeholder="District">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="from_division" class="col-sm-4 col-form-label">Upazila</label>
+                <div class="col-sm-8">
+                  <input type="text" name="upazila" class="form-control is-invalid" value="{{ form.instance.upazila }}" placeholder="Upazila">
+                </div>
+              </div> {% endcomment %}
+              <div class="form-group row">
+                <label for="from_division" class="col-sm-4 col-form-label">Division</label>
+                <div class="col-sm-8">
+                  <select name="division" id="cities" class="form-control is-invalid">
+                    {% for i in city_datas %}
+                      <option value="{{ i.city_id }}" {% if form.instance.division == i.city_id|floatformat:'s' %}selected{% endif %}>{{ i.city_name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="from_division" class="col-sm-4 col-form-label">District</label>
+                <div class="col-sm-8">
+                  <select name="district" id="zones" class="form-control is-invalid" data-id="{{ form.instance.district }}">
+                    
+                  </select>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="from_division" class="col-sm-4 col-form-label">Upazila</label>
+                <div class="col-sm-8">
+                  <select name="upazila" id="areas" class="form-control is-invalid" data-id="{{ form.instance.upazila }}">
+
+                  </select>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="from_division" class="col-sm-4 col-form-label">Shop Name</label>
+                <div class="col-sm-8">
+                  <input type="text" name="shop_name" class="form-control is-invalid" value="{{ form.instance.shop_name }}" placeholder="Shop name">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="from_division" class="col-sm-4 col-form-label">Warehouse Address</label>
+                <div class="col-sm-8">
+                  <div class="form-check">
+                    <input class="form-check-input" name="warehouse_address" type="checkbox"
+                      id="sameAsWareHouseAddress" style="margin-top: 7.5px;" value="True" checked>
+                    <label class="form-check-label ml-3" for="sameAsWareHouseAddress">Same as Business Address</label>
+                  </div>
+                </div>
+              </div>
+              <div class="wareHouseAddress" style="display: none;">
+                <div class="form-group row">
+                  <label for="from_division" class="col-sm-4 col-form-label">Address</label>
+                  <div class="col-sm-8">
+                    <input type="text" name="w_address" class="form-control is-invalid" value="{{ form.instance.w_address }}" placeholder="Country name"
+                      required>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="from_division" class="col-sm-4 col-form-label">Division</label>
+                  <div class="col-sm-8">
+                    <input type="text" name="w_division" class="form-control" value="{{ form.instance.w_division }}" placeholder="Warehouse Division">
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="from_division" class="col-sm-4 col-form-label">District</label>
+                  <div class="col-sm-8">
+                    <input type="text" name="w_district" class="form-control" value="{{ form.instance.w_district }}" placeholder="Warehouse District">
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="from_division" class="col-sm-4 col-form-label">Upazila</label>
+                  <div class="col-sm-8">
+                    <input type="text" name="w_upazila" class="form-control" value="{{ form.instance.w_upazila }}" placeholder="Warehouse Upazila">
+                  </div>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="from_division" class="col-sm-4 col-form-label">Return Address</label>
+                <div class="col-sm-8">
+                  <div class="form-check">
+                    <input class="form-check-input" name="return_address" type="checkbox"
+                      id="sameAsReturnAddress" style="margin-top: 7.5px;" value="True" checked>
+                    <label class="form-check-label ml-3" for="sameAsReturnAddress">Same as Warehouse Address</label>
+                  </div>
+                </div>
+              </div>
+              <div class="returnAddress" style="display: none;">
+                <div class="form-group row">
+                  <label for="from_division" class="col-sm-4 col-form-label">Address</label>
+                  <div class="col-sm-8">
+                    <input type="text" name="r_address" class="form-control is-invalid" value="{{ form.instance.r_address }}"  placeholder="Return address" 
+                      required>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="from_division" class="col-sm-4 col-form-label">Division</label>
+                  <div class="col-sm-8">
+                    <input type="text" name="r_division" class="form-control" value="{{ form.instance.r_division }}" placeholder="Return Division">
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="from_division" class="col-sm-4 col-form-label">District</label>
+                  <div class="col-sm-8">
+                    <input type="text" name="r_district" class="form-control" value="{{ form.instance.r_district }}" placeholder="Return District+">
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="from_division" class="col-sm-4 col-form-label">Upazila</label>
+                  <div class="col-sm-8">
+                    <input type="text" name="r_upazila" class="form-control" value="{{ form.instance.r_upazila }}" placeholder="Return Upazila">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="tab-pane fade" id="step2">
+              <div class="form-group row">
+                <label for="from_division" class="col-sm-5 col-form-label">ID Type</label>
+                <div class="col-sm-7">
+                  <select name="id_type" class="form-control is-invalid">
+                    {% for x in id_types %}
+                      <option value="{{ x.0 }}">{{ x.1 }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="phone1" class="col-sm-5 col-form-label">Mobile Banking Phone Number (e.g., Bkash, Nagad, Rocket, or others)</label>
+                <div class="col-sm-7">
+                    <input type="text" class="form-control" id="phone1" name="phone1" maxlength="15" value="{{ form.instance.phone1 }}" placeholder="Enter your mobile banking phone number" aria-describedby="phoneHelp">
+                    <small id="phoneHelp" class="form-text text-muted">Enter your mobile banking phone number for Bkash, Nagad, Rocket, or any other service.</small>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="phone2" class="col-sm-5 col-form-label">Mobile Banking Phone Number (e.g., Bkash, Nagad, Rocket, or others)</label>
+                <div class="col-sm-7">
+                    <input type="text" class="form-control" id="phone2" name="phone2" maxlength="15" value="{{ form.instance.phone2 }}" placeholder="Enter your mobile banking phone number" aria-describedby="phoneHelp">
+                    <small id="phoneHelp" class="form-text text-muted">Enter your mobile banking phone number for Bkash, Nagad, Rocket, or any other service.</small>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="from_division" class="col-sm-5 col-form-label">Profile Image</label>
+                <div class="col-sm-7">
+                  <input type="file" name="vendor_image" class="form-control" value="{{ form.instance.vendor_image }}">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="from_division" class="col-sm-5 col-form-label">(NID/Passport) Number</label>
+                <div class="col-sm-7">
+                  <input type="text" name="Nid_number" class="form-control is-invalid" value="{{ form.instance.Nid_number }}" placeholder="National Identity Card Number">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="from_division" class="col-sm-5 col-form-label">Upload NID Front Side Image</label>
+                <div class="col-sm-7">
+                  <input type="file" name="NID_copy_1" class="form-control" value="{{ form.instance.NID_copy_1 }}">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="from_division" class="col-sm-5 col-form-label">Upload NID Back Side Image</label>
+                <div class="col-sm-7">
+                  <input type="file" name="NID_copy_2" class="form-control" value="{{ form.instance.NID_copy_2 }}">
+                </div>
+              </div>
+            </div>
+            <div class="tab-pane fade" id="step3">
+              <div class="form-group row">
+                <label for="from_division" class="col-sm-4 col-form-label">Account Title</label>
+                <div class="col-sm-8">
+                  <input type="text" name="account_title" class="form-control is-invalid"
+                    placeholder="Eranian" value="{{ form.instance.account_title }}" aria-label="default input example">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="from_division" class="col-sm-4 col-form-label">Account Number</label>
+                <div class="col-sm-8">
+                  <input type="text" name="account_number" class="form-control is-invalid" value="{{ form.instance.account_number }}" placeholder="1234 567 890123">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="from_division" class="col-sm-4 col-form-label">Bank Name</label>
+                <div class="col-sm-8">
+                  <input type="text" name="bank_name" class="form-control is-invalid" value="{{ form.instance.bank_name }}" placeholder="Islamic Bank Bangladesh Limited (IBBL)">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="from_division" class="col-sm-4 col-form-label">Branch Name</label>
+                <div class="col-sm-8">
+                  <input type="text" name="bank_branch_name" class="form-control is-invalid" value="{{ form.instance.bank_branch_name }}"
+                    placeholder="Banasree Branch">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="from_division" class="col-sm-4 col-form-label">Routing Number</label>
+                <div class="col-sm-8">
+                  <input type="text" name="routing_number" class="form-control" value="{{ form.instance.routing_number }}" placeholder="xxxxxxxxx">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="from_division" class="col-sm-4 col-form-label">Upload cheque copy</label>
+                <div class="col-sm-8">
+                  <input type="file" name="cheque_copy" class="form-control" value="{{ form.instance.cheque_copy }}" placeholder="xxxxxxxxx">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row justify-content-between p-10">
+            <div class="col-auto">
+              <button type="button" class="btn btn-secondary rounded" data-enchanter="previous">Previous</button>
+            </div>
+            <div class="col-auto mb-5">
+              <button type="button" class="btn btn-primary rounded" data-enchanter="next">Next</button>
+              <button type="submit" class="btn btn-primary rounded" data-enchanter="finish">Finish</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<script>
+  const city = document.getElementById('cities');
+  const zone = document.getElementById('zones');
+  const area = document.getElementById('areas');
+
+  // Function to fetch zones or areas
+  function Promisefetch(url) {
+      return new Promise((resolve, reject) => {
+          fetch(url)
+              .then(response => response.text())
+              .then(data => resolve(data))
+              .catch(error => reject(error));
+      });
+  }
+
+  // Function to load zones based on the selected city
+  async function loadZones(cityId, selectedDistrictId) {
+      const url = `/fetch-zones/?city_id=${cityId}`;
+      try {
+          const zoneData = await Promisefetch(url);
+          zone.innerHTML = zoneData;
+          if (selectedDistrictId) {
+              zone.value = selectedDistrictId; // Set selected district if available
+          }
+      } catch (error) {
+          console.error('Error fetching zones:', error);
+      }
+  }
+
+  // Function to load areas based on the selected zone
+  async function loadAreas(zoneId, selectedUpazilaId) {
+      const url = `/fetch-areas/?zone_id=${zoneId}`;
+      try {
+          const areaData = await Promisefetch(url);
+          area.innerHTML = areaData;
+          if (selectedUpazilaId) {
+              area.value = selectedUpazilaId; // Set selected upazila if available
+          }
+      } catch (error) {
+          console.error('Error fetching areas:', error);
+      }
+  }
+
+  // Event listener for city dropdown change
+  city.addEventListener('change', async function() {
+      const cityId = this.value;
+      await loadZones(cityId);
+      area.innerHTML = '<option>---  Select ---</option>'; // Reset areas dropdown
+  });
+
+  // Event listener for zone dropdown change
+  zone.addEventListener('change', async function() {
+      const zoneId = this.value;
+      await loadAreas(zoneId);
+  });
+
+  // Initial load based on data-id attributes (if present)
+  window.addEventListener('DOMContentLoaded', async () => {
+      const selectedDistrictId = zone.getAttribute('data-id');
+      const selectedUpazilaId = area.getAttribute('data-id');
+      const cityId = city.value;
+
+      if (cityId) {
+          await loadZones(cityId, selectedDistrictId);
+      }
+      if (selectedDistrictId) {
+          await loadAreas(selectedDistrictId, selectedUpazilaId);
+      }
+  });
+
+</script>
+{% endblock dashboard %}
+
+
+{% block script %}
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
+<script src="{% static 'store/enchanter.js' %}"></script>
+
+<script>
+  var registrationForm = $('#registration');
+  var formValidate = registrationForm.validate({
+    errorClass: 'is-invalid',
+    errorPlacement: () => false
+  });
+
+  const wizard = new Enchanter('registration', {}, {
+    onNext: () => {
+      if (!registrationForm.valid()) {
+        formValidate.focusInvalid();
+        return false;
+      }
+    }
+  });
+
+  // Function to check and apply green color to fields with data
+  function applyGreenColorToFields() {
+    registrationForm.find('input, select').each(function() {
+      if ($(this).val().trim() !== '') {
+        $(this).removeClass('is-invalid').addClass('is-valid');
+      }
+    });
+
+    // Handle file input separately as it doesn't support the 'input' event
+    registrationForm.find('input[type="file"]').each(function() {
+      // Check if the file input has a file selected
+      if ($(this).prop('files').length > 0) {
+        $(this).removeClass('is-invalid').addClass('is-valid');
+      }
+    });
+  }
+
+  // Call the function initially
+  applyGreenColorToFields();
+
+  // Bind the function to form input events for real-time validation
+  registrationForm.find('input, select').on('input change', applyGreenColorToFields);
+</script>
+
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var sameAsWareHouseAddress = document.getElementById('sameAsWareHouseAddress');
+    var wareHouseAddress = document.querySelector('.wareHouseAddress');
+
+    sameAsWareHouseAddress.addEventListener("change", function () {
+      if (sameAsWareHouseAddress.checked) {
+        wareHouseAddress.style.display = "none";
+      } else {
+        wareHouseAddress.style.display = "block";
+      }
+    });
+  });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var sameAsReturnAddress = document.getElementById('sameAsReturnAddress');
+    var returnAddress = document.querySelector('.returnAddress');
+
+    sameAsReturnAddress.addEventListener("change", function () {
+      if (sameAsReturnAddress.checked) {
+        returnAddress.style.display = "none";
+      } else {
+        returnAddress.style.display = "block";
+      }
+    });
+  });
+</script>
+{% endblock script %}

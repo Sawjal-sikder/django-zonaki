@@ -1,0 +1,191 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+
+{% block dashboard %}
+
+<style>
+	.pagination-container {
+    text-align: center;
+    margin-top: 20px;
+	}
+
+	.pagination {
+			display: inline-block;
+			padding: 0;
+			margin: 0;
+	}
+
+	.pagination li {
+			display: inline;
+	}
+
+	.pagination a {
+			color: #333;
+			float: left;
+			padding: 8px 16px;
+			text-decoration: none;
+			border: 1px solid #ddd;
+			margin: 0 4px;
+	}
+
+	.pagination a.active {
+			background-color: #4CAF50;
+			color: white;
+			border: 1px solid #4CAF50;
+	}
+
+	.pagination a:hover:not(.active) {
+			background-color: #ddd;
+	}
+
+</style>
+
+<div class="content-wrapper">
+	<div class="container">
+		<section class="content">
+			<div class="row">
+				<div class="col-12 text-lg-end mb-10">
+					<div class="d-flex justify-content-end align-items-center gap-4">
+							<div class="form-check">
+								<input class="form-check-input" type="radio" name="status" id="statusAll" value="All" checked>
+								<label class="form-check-label" for="statusAll">
+									All
+								</label>
+							</div>
+							<div class="form-check">
+								<input class="form-check-input" type="radio" name="status" id="statusPending" value="Pending">
+								<label class="form-check-label" for="statusPending">
+									Pending
+								</label>
+							</div>
+							<div class="form-check">
+								<input class="form-check-input" type="radio" name="status" id="statusVerified" value="Verified">
+								<label class="form-check-label" for="statusVerified">
+									Verified
+								</label>
+							</div>
+						<a href="{% url 'brand_create' %}" class="btn btn-primary px-3 py-2">Add Brand</a>
+					</div>
+				</div>
+
+				<div class="col-12">
+					<div class="box">
+						<div class="box-body">
+							<form id="brand-form" method="post">
+								{% csrf_token %}
+								<div class="table-responsive">
+									<table id="productorder" class="table table-hover no-wrap product-order"
+										data-page-size="10">
+										<thead>
+											<tr>
+												<th class="align-middle">
+													<div class="form-check">
+														<input type="checkbox" id="Allbrand" class="form-check-input" onclick="selectAllCheckboxes(this)">
+														<label for="Allbrand"></label>
+													</div>
+												</th>
+												<th>ID</th>
+												<th>Name</th>
+												<th>Image</th>
+												<th class="text-center">Status</th>
+												<th class="text-center">Actions</th>
+											</tr>
+										</thead>
+										<tbody>
+											{% comment %} {% for c in brands %}
+												<tr>
+													<td>
+													<div class="form-check">
+														<input type="checkbox" id="Brand{{ forloop.counter0 }}" class="form-check-input" name="selected_brands" value="{{ c.pk }}">
+														<label for="Brand{{ forloop.counter0 }}"></label>
+													</div>
+													</td>
+													<td>{{ c.id }}</td>
+													<td>{{ c.name }}</td>
+													{% if c.image %}
+													<td>
+														<img src="{{ c.image.url }}" alt="brand" style="width: 30px;" />
+													</td>
+													{% else %}
+													<td>no image</td>
+													{% endif %}
+													{% if user.is_superuser == True and user.is_staff == True %}
+													<td>
+														<a href="{% url 'brand_update' c.slug %}" class="text-info me-10" data-bs-toggle="tooltip" data-bs-original-title="Edit"><i class="ti-marker-alt"></i></a>
+														<a href="javascript:void(0)" class="text-danger delete-link" data-url="{% url 'brand_delete' c.slug %}" data-bs-original-title="Delete" data-bs-toggle="tooltip"><i class="ti-trash"></i></a>
+													</td>
+													{% endif %}
+												</tr>
+											{% endfor %} {% endcomment %}
+										</tbody>
+									</table>
+									<div class="d-flex">
+										<button type="button" class="btn btn-primary" id="verify-button" style="display: none;" onclick="submitForm('{% url 'selected_brand_verify' %}')">Verify Selected Brands</button>
+										<button type="button" class="btn btn-danger ms-3" id="delete-button" style="display: none;" onclick="submitForm('{% url 'selected_brand_delete' %}')">Delete Selected Brands</button>
+									</div>
+								</div>
+
+								<div class="pagination-container">
+										<ul class="pagination">
+											<!-- Previous Page Button -->
+											<li class="page-item disabled" id="previous-page">
+													<a class="page-link" href="#">Previous</a>
+											</li>
+
+											<!-- Next Page Button -->
+											<li class="page-item" id="next-page">
+													<a class="page-link" href="#">Next</a>
+											</li>
+										</ul>
+								</div>
+							
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+</div>
+{% endblock dashboard %}
+
+{% block script %}
+<script src="{% static 'dashboard/js/brand.js' %}"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		var checkboxes = document.getElementsByName('selected_brands');
+		var verifyButton = document.getElementById('verify-button');
+		var deleteButton = document.getElementById('delete-button');
+
+		function toggleButtonVisibility() {
+			var anyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+			verifyButton.style.display = deleteButton.style.display = anyChecked ? 'block' : 'none';
+		}
+
+		function attachCheckboxListeners() {
+			Array.from(checkboxes).forEach(checkbox => {
+					checkbox.addEventListener('change', toggleButtonVisibility);
+			});
+			toggleButtonVisibility();
+		}
+
+		window.selectAllCheckboxes = function(source) {
+			Array.from(checkboxes).forEach(checkbox => {
+				checkbox.checked = source.checked;
+			});
+			toggleButtonVisibility();
+		};
+
+		window.submitForm = function(actionUrl) {
+				var form = document.getElementById('brand-form');
+				form.action = actionUrl;
+				form.submit();
+		};
+
+		attachCheckboxListeners();
+	});
+</script>
+
+{% endblock script %}

@@ -1,0 +1,236 @@
+{% extends 'store/base.html' %}
+
+{% block head %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/datetime/1.1.2/css/dataTables.dateTime.min.css">
+
+{% endblock head %}
+
+
+{% block content %}
+<div class="page-wrapper">
+  <main class="main">
+    <div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
+      <div class="container">
+        <h1 class="page-title">Order Detail<span>#Order ID : {{ order.orderId }}</span></h1>
+      </div>
+    </div>
+    <nav aria-label="breadcrumb" class="breadcrumb-nav">
+      <div class="container">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'shop' %}">Shop</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Shopping Cart</li>
+        </ol>
+      </div>
+    </nav>
+
+    <div class="page-content">
+      <div class="cart">
+        <div class="container">
+          <div class="row ">
+            <div class="col-lg-7">
+              <table class="table table-cart">
+                <thead>
+                  <tr>
+                    <th class="pr-4 pr-lg-5">Image</th>
+                    <th class="pr-3 pr-lg-5">Name</th>
+                    <th class="pr-3 pr-lg-5">Color</th>
+                    <th class="pr-3 pr-lg-5">Size</th>
+                    <th class="pr-3 pr-lg-5">Quantity</th>
+                    <th class="pr-3 pr-lg-5">Price</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {% for p in order.items.all %}
+                  <tr>
+                    <td class="product-col">
+                      <div class="product">
+                        <figure class="product-media">
+                          <a href="{{ p.item.get_absolute_url }}">
+                            <img src="{{ p.item.image.url }}" alt="Product">
+                          </a>
+                        </figure>
+                      </div>
+                    </td>
+                    <td>
+                      <h6><a href="{{ p.item.get_absolute_url }}">{{ p.item.product_name }}</a></h6>
+                    </td>
+
+                    {% for q in p.variation.all %}
+                    <td>
+                      <div>
+                        {% if q.category == 'color' %}
+                        <span class="color-col">{{ q.title }}</span>
+                        {% endif %}
+                      </div>
+                    </td>
+                    <td>
+                      <div>
+                        {% if q.category == 'size' %}
+                        <span class="color-col">{{ q.title }}</span>
+                        {% endif %}
+                      </div>
+                    </td>
+                    {% endfor %}
+
+                    <td class="quantity-col">
+                      <div class="cart-product-quantity">
+                        <p style="color:black; text-align: center;">{{ p.quantity }}</p>
+                      </div>
+                    </td>
+                    {% if p.flashsale.flashsale_price %}
+                    <td class="price-col">{{ p.flashsale.flashsale_price }}</td>
+                    {% elif p.item.discount_price %}
+                    <td class="price-col">{{ p.item.discount_price }}</td>
+                    {% else %}
+                    <td class="price-col">{{ p.item.price }}</td>
+                    {% endif %}
+
+                    <td class="total-col text-dark">
+                      {{ p.get_subtotal }}<br>
+                      <span>
+                        {% if p.item.discount_price %}
+                        saving(Tk{{ p.saving_price }})<br>{{ p.saving_percent|floatformat:"2"}}%
+                        {% endif %}
+                      </span>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            <aside class="col-lg-5">
+              <div class="summary summary-cart">
+                <table class="table table-summary">
+                  <tbody>
+                    <tr class="summary-subtotal">
+                      <td colspan="4" class="col-12 text-left">Order Summary</td>
+                    </tr>
+                    <tr class="col-12">
+                      <td colspan="4">
+                        <div class="row">
+                          <div class="col-6 text-left">
+                            <p>Total Price</p>
+                          </div>
+                          <div class="col-6">
+                            <p>{{ order.get_total|floatformat:2 }} Tk</p>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-6 text-left">
+                            <p>Delivery Fee</p>
+                          </div>
+                          <div class="col-6">
+                            <p>{{ order.get_delivery_amount|floatformat:2 }} Tk</p>
+                          </div>
+                        </div>
+                        {% if order.coupon %}
+                        <div class="row">
+                          <div class="col-6 text-left">
+                            <p>Coupon</p>
+                          </div>
+                          <div class="col-6">
+                            <p>{{ order.coupon.amount|floatformat:2 }} Tk</p>
+                          </div>
+                        </div>
+                        {% endif %}
+                      </td>
+                    </tr>
+                    <tr class="summary-total">
+                      <td>
+                        <div class="row">
+                          <div class="col-4 text-left">
+                            <p>Total Amount</p>
+                          </div>
+                          <div class="col-8">
+                            <p>{{ order.total_order_amount }} Tk</p>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr class="summary-total">
+                      <td style="color: green;">
+                        <div class="row">
+                          <div class="col-5 text-left">
+                            <p>Total Paid Amount</p>
+                          </div>
+                          <div class="col-7">
+                            <p>{{ order.paid_amount }} Tk</p>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr class="summary-total">
+                      <td style="color: red;">
+                        <div class="row">
+                          <div class="col-5 text-left">
+                            <p>Total Due Amount</p>
+                          </div>
+                          <div class="col-7">
+                            <p>{{ order.due_amount }} Tk</p>
+                          </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <p style="color:black;">Payment Method : {{order.payment_option}}</p>
+              </div>
+              <div class="summary summary-cart">
+                <h6>Shipping Information</h6>
+                <hr>
+                <div class="row">
+                  <div class="col-12">
+                    <div class="row">
+                      <div class="col-6">
+                        <p>Full Name</p>
+                      </div>
+                      <div class="col-6">
+                        <p>{{ order.shipping_address.full_name }}</p>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-6">
+                        <p>Phone Number</p>
+                      </div>
+                      <div class="col-6">
+                        <p>{{ order.shipping_address.phone }}</p>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-6">
+                        <p>Full Address</p>
+                      </div>
+                      <div class="col-6">
+                        <p>{{ order.shipping_address.full_address }}</p>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-6">
+                        <p>Shiping area</p>
+                      </div>
+                      <div class="col-6">
+                        <p>{{ order.shipping_address.area_name }}, {{ order.shipping_address.zone_name }}, {{ order.shipping_address.city_name }}</p>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-6">
+                        <p>Order Note</p>
+                      </div>
+                      <div class="col-6">
+                        <p>{{ order.shipping_address.order_note }}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+{% endblock %}

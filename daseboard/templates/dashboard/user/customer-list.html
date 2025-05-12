@@ -1,0 +1,219 @@
+{% extends 'dashboard/base.html' %}
+
+
+{% block dashboard %}
+<div class="content-wrapper">
+	<div class="container-full">
+		<div class="content-header d-flex">
+			<div class="me-auto mt-2">
+				<h4 class="page-title">Customer List</h4>
+			</div>
+			<div>
+				<a class="btn btn-primary" href="{% url 'user-add' %}">Add Customer</a>
+			</div>
+		</div>
+		<section class="content">
+			<div class="row">
+				<div class="col-12">
+					<div class="box">
+						<div class="box-body">
+							<div class="d-flex justify-content-end">
+								<form action="" method="get" class="d-flex align-items-center js-filter-form">
+									<div class="from-group d-flex align-items-center me-2">
+										<label for="from_date">From</label>
+										<input type="datetime-local" name="from_date" id="from_date" class="ms-2 form-control" value="{{ from_date|date:'Y-m-d\TH:i' }}">
+									</div>
+									<div class="from-group d-flex align-items-center me-2">
+										<label for="to_date">To</label>
+										<input type="datetime-local" name="to_date" id="to_date" class="ms-2 form-control" value="{{ to_date|date:'Y-m-d\TH:i' }}">
+									</div>
+									<div class="me-2">
+										<select name="sort_by" id="" class="form-select">
+											<option value="max_order" {% if sort_by == "max_order" %}selected{% endif %}>Max Order</option>
+											<option value="min_order" {% if sort_by == "min_order" %}selected{% endif %}>Min Order</option>
+											<option value="max_buy" {% if sort_by == "max_buy" %}selected{% endif %}>Max Payment</option>
+											<option value="min_buy" {% if sort_by == "min_buy" %}selected{% endif %}>Min Payment</option>
+										</select>
+									</div>
+									<div class="">
+										<input type="submit" name="" id="" value="Filter" class="btn btn-primary">
+									</div>
+								</form>
+                            </div>
+							<form action="" method="post">
+								{% csrf_token %}
+								<div class="d-none d-flex js-coupon-form">
+									<div class="me-2">
+										<select name="coupon_id" id="" class="form-select">
+											{% for c in user_coupon_list %}
+											<option value="{{ c.id }}">{{ c.code }}</option>
+											{% endfor %}
+										</select>
+									</div>
+									<div class="">
+										<input type="submit" name="" id="" value="Give Coupon" class="btn btn-primary">
+									</div>
+								</div>
+								<div class="table-responsive">
+									{% comment %} <table id="productorder" class="table table-hover no-wrap product-order" data-page-size="10"> {% endcomment %}
+									<table id="" class="table table-hover no-wrap product-order" data-page-size="10">
+										<thead>
+											<tr>
+												<th>
+													<div class="d-flex">
+														<div class="form-gropu">
+															<input type="checkbox" class="form-control" id="user-btn">
+															<label for="user-btn" class="form-label"></label>
+														</div>
+														ID
+													</div>
+												</th>
+												<th>Name</th>
+												<th>E-mail</th>
+												<th>Order count</th>
+												<th>Buying amount</th>
+												<th>Activity</th>
+												<th>Role</th>
+												<th>Image</th>
+												<th>Actions</th>
+											</tr>
+										</thead>
+										<tbody>
+											{% for c in query %}
+											<tr>
+												<td>
+													<div class="d-flex">
+														<div class="form-gropu">
+															<input type="checkbox" class="form-control js-user-ids" name="user_ids" value="{{ c.id }}" id="{{ c.id }}">
+															<label for="{{ c.id }}" class="form-label"></label>
+														</div>
+														<a href="javascript:void(0)"><strong>{{ c.id }}</strong></a>
+													</div>
+												</td>
+												<td>{{ c.full_name }}</td>
+												<td>{{ c.email }}</td>
+												<td>{{ c.max_order }}</td>
+												<td>{{ c.total_buys }}</td>
+												<td><a href="{% url 'customer_filter_page_list' c.pk %}" class="btn btn-primary">View</a></td>
+												<td>
+													{% if c.is_superuser and c.is_staff and c.is_active %}
+													Superuser
+													{% elif c.is_admin %}
+													Admin
+													{% elif c.is_vendor %}
+													Vendor
+													{% elif c.is_customer %}
+													Customer
+													{% elif c.is_staff %}
+													Staff
+													{% endif %}
+												</td>
+												<td>
+													{% if c.profile.image %}
+													<img src="{{ c.profile.image.url }}" alt="User" style="width: 40px; height: 40px;">	
+													{% endif %}
+												</td>
+												<td>
+													<a href="{% url 'user_detail' c.pk %}" class="text-primary me-10"
+														data-bs-toggle="tooltip" data-bs-original-title="View">
+														<i class="fa fa-eye"></i>
+													</a>
+													<a href="{% url 'user-update' c.pk %}" class="text-info me-10"
+														data-bs-toggle="tooltip" data-bs-original-title="Edit">
+														<i class="ti-marker-alt"></i>
+													</a>
+													<a href="javascript:void(0)" class="text-danger delete-link"
+														data-url="{% url 'user-delete' c.pk %}"
+														data-bs-original-title="Delete" data-bs-toggle="tooltip">
+														<i class="ti-trash"></i>
+													</a>
+												</td>
+											</tr>
+											{% endfor %}
+										</tbody>
+									</table>
+									<!-- pagination start -->
+									<div class="pagination justify-content-end pt-5">
+										<span class="step-links">
+										{% if query.has_previous %}
+										<a href="?order_page=product&page=1"
+											class="bg-danger p-2 rounded fw-bold">&laquo;
+											first</a>
+										<a
+											href="?order_page=product&page={{ query.previous_page_number }}"
+											class="bg-primary p-2 rounded fw-bold">previous</a>
+										{% endif %}
+										<span class="current bg-secondary p-2 rounded">Page {{ query.number }} of {{ query.paginator.num_pages }}.</span>
+										{% if query.has_next %}
+										<a
+											href="?order_page=product&page={{ query.next_page_number }}"
+											class="bg-primary p-2 rounded fw-bold">next</a>
+										<a
+											href="?order_page=product&page={{ query.paginator.num_pages }}"
+											class="bg-danger p-2 rounded fw-bold">last &raquo;</a>
+										{% endif %}
+										</span>
+									</div>
+									<!-- pagination end -->
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+</div>
+<script>
+	function couponFormVisibility(value) {
+		const couponForm = document.querySelector('.js-coupon-form');
+		if (value) {
+			couponForm.classList.remove('d-none'); // Show the form
+		} else {
+			couponForm.classList.add('d-none'); // Hide the form
+		}
+	}
+
+	function checkForCheckedBox() {
+		const checkboxes = document.querySelectorAll('.js-user-ids');
+		let anyChecked = false;
+		
+		checkboxes.forEach(checkbox => {
+			if (checkbox.checked) {
+				anyChecked = true;
+			}
+		});
+		
+		couponFormVisibility(anyChecked); // Show form if any checkbox is checked
+	}
+
+	function toggleList(checked) {
+		document.querySelectorAll('.js-user-ids').forEach(checkbox => {
+			checkbox.checked = checked; // Check or uncheck all checkboxes
+		});
+		couponFormVisibility(checked); // Toggle form visibility based on the toggle button
+	}
+
+	function addEventListenersToUserCheckboxes() {
+		document.querySelectorAll('.js-user-ids').forEach(checkbox => {
+			checkbox.addEventListener('change', function() {
+				checkForCheckedBox(); // Check if any checkbox is checked when a single checkbox is clicked
+			});
+		});
+	}
+
+	// Attach event listener to the main toggle button/checkbox
+	document.getElementById('user-btn').addEventListener('change', function () {
+		let btnChecked = this.checked;
+		toggleList(btnChecked); // Toggle the checkboxes and form visibility
+	});
+
+	// Add click listeners to all individual checkboxes (after page load)
+	addEventListenersToUserCheckboxes();
+
+	// Check the state of checkboxes on page load to toggle form visibility
+	checkForCheckedBox();
+
+	
+</script>
+{% endblock dashboard %}

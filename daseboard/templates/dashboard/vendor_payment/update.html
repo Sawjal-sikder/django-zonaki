@@ -1,0 +1,94 @@
+{% extends 'dashboard/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block dashboard %}
+<style>
+    .product_box {
+        width: 100%;
+        height: 200px;
+        background-color: #f0f0f0;
+        overflow-y: scroll;
+    }
+</style>
+
+<div class="content-wrapper">
+    <div class="container-full">
+        <section class="content">
+            <div class="row">
+                <div class="col-12">
+                    <div class="box">
+                        <div class="box-body">
+                            <form action="" method="POST" enctype="multipart/form-data">
+                                <div class="content-header d-flex justify-content-end">
+                                    <div class="form-actions mt-10">
+                                        <button type="submit" class="btn btn-primary col-12">
+                                            <i class="fa fa-check"></i> Request
+                                        </button>
+                                    </div>
+                                </div>
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="user">User*</label>
+                                    <select name="user" class="form-control" id="user">
+                                        {% for user_choice in form.user.field.choices %}
+                                            <option value="{{ user_choice.0 }}" {% if user_choice.0 == form.user.value %}selected{% endif %}>{{ user_choice.1 }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <h5>Request Items*</h5>
+                                <div class="my-3 p-2 product_box">
+                                    {% for item in item_list %}
+                                        <div class="form-group">
+                                            <input type="checkbox" name="product" id="checkbox{{ forloop.counter }}" value="{{ item.id }}" {% if item in payment.product.all %}checked{% endif %} {% if not item in payment.product.all %}disabled{% endif %}>
+                                            <label for="checkbox{{ forloop.counter }}">{{ item }}</label>
+                                        </div>
+                                    {% endfor %}  
+                                 </div>
+                                <div class="form-group">
+                                    <label for="message">Message*</label>
+                                    <textarea name="message" class="form-control" id="message" cols="30" rows="10" required>{{ form.message.value }}</textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="status">Status*</label>
+                                    <select name="status" class="form-control" id="status">
+                                        {% for key, value in form.fields.status.choices %}
+                                            <option value="{{ key }}" {% if key == form.status.value %}selected{% endif %}>{{ value }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <h3 class="text-primary">Below Section for Staff/Admin</h3>
+                                </div>
+                                <div class="form-group">
+                                    {{ form.remark|as_crispy_field }}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.transaction_informations|as_crispy_field }}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.document_file|as_crispy_field }}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.image|as_crispy_field }}
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="request_date">Request Date</label>
+                                    <input type="text" class="form-control" id="request_date" value="{{ payment.request_date }}" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="complete_date">Complete Date</label>
+                                    <input type="text" class="form-control" id="complete_date" value="{% if payment.complete_date %}{{ payment.complete_date }}{% endif %}" readonly>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+{% endblock dashboard %}

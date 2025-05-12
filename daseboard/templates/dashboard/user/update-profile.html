@@ -1,0 +1,32 @@
+{% extends 'dashboard/base.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block dashboard %}
+<div class="content-wrapper mt-140">
+    <div class="container">
+        <section class="content">
+            <div class="row justify-content-center align-items-center">
+                <div class="col-12 col-md-9 col-lg-9 col-sm-6">
+                    <div class="card border mt-2">
+                        <div class="px-4 py-5 my-5">
+                            
+                            <form action="" method="POST" enctype="multipart/form-data">
+                                {% csrf_token %}
+
+                                {{ u_form|crispy }}
+                                {{ p_form|crispy }}
+
+                                <div class="form-group float-right">
+                                    <input style="background-color: #ED2224;" class="btn rounded text-white"
+                                        type="submit" value="Update">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock dashboard %}

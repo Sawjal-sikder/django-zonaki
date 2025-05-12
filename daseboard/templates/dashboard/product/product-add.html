@@ -1,0 +1,320 @@
+{% extends 'dashboard/base.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block dashboard %}
+  <div class="content-wrapper">
+	  <div class="container-full">
+		<section class="content">
+			<div class="row">
+			  <div class="col-12">
+				<div class="box">
+				  <div class="box-body">
+                    <h4 class="page-title">Add/Edit Product</h4>
+					<form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ form.media }} 
+						<div class="form-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                    {{ form.product_name|as_crispy_field }}
+                                    </div>
+                                </div>
+                            </div>
+							<div class="row">
+                                {% comment %} <div class="col-md-4">
+									<div class="form-group">
+									  {{ form.slug|as_crispy_field }}
+									</div>
+								</div> {% endcomment %}
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                    {{ form.parent_code|as_crispy_field }}
+                                    </div>
+                                </div>
+								<div class="col-md-4">
+									<div class="form-group">
+									  {{ form.weight|as_crispy_field }}
+									</div>
+								</div>
+								<div class="col-md-4">
+									<div class="form-group">
+                                        {{ form.categoris|as_crispy_field }}
+									</div>
+								</div>
+							</div>
+							<div class="row">
+                                <div class="col-md-4">
+									<div class="form-group">
+                                        {{ form.brand|as_crispy_field }}
+									</div>
+								</div>
+								<div class="col-md-4">
+									<div class="form-group">
+                                        {{ form.price|as_crispy_field }}
+									</div>
+								</div>
+								<div class="col-md-4">
+									<div class="form-group">
+                                        {{ form.discount_price|as_crispy_field }}
+									</div>
+								</div>
+							</div>
+                            <div class="row">
+                                <div class="col-md-4">
+									<div class="form-group">
+                                        {{ form.product_purchase_price|as_crispy_field }}
+									</div>
+								</div>
+                                {% comment %} <div class="col-md-4">
+									<div class="form-group">
+                                        {{ form.stock_quantity|as_crispy_field }}
+									</div>
+								</div> {% endcomment %}
+								<div class="col-md-4">
+									<div class="form-group">
+                                        {{ form.price_range|as_crispy_field }}
+									</div>
+								</div>
+							</div>
+                            <div class="row">
+                                <div class="col-md-6">
+									<div class="form-group">
+                                        {{ form.return_type|as_crispy_field }}
+									</div>
+								</div>
+                                <div class="col-md-6">
+									<div class="form-group">
+                                        {{ form.warranty_type|as_crispy_field }}
+									</div>
+								</div>
+							</div>
+                            <div class="row">
+								<div class="col-md-6">
+									<div class="form-group">
+                                        {{ form.image|as_crispy_field }}
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+                                        {{ form.hover_image|as_crispy_field }}
+									</div>
+								</div>
+							</div>
+                            <div class="row">
+								<div class="col-md-12">
+									<div class="form-group">
+                                        {{ form.sort_discription|as_crispy_field }}
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-12">
+									<div class="form-group">
+                                        {{ form.discription|as_crispy_field }}
+									</div>
+								</div>
+							</div>
+                            <div class="row">
+								<div class="col-md-12">
+									<div class="form-group">
+                                        {{ form.aditional_discription|as_crispy_field }}
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-6">
+									<div class="form-group">
+                                        {{ form.meta_title|as_crispy_field }}
+                                    </div>
+								</div>
+
+								<div class="col-md-6">
+									<div class="form-group">
+                                        {{ form.meta_keyword|as_crispy_field }}
+                                    </div>
+								</div>
+							</div>
+                            <div class="row no-gutters">
+                            <!-- inline form for Images start -->
+                            <!-- EXPLAINING with named_formsets.images as formset -->
+                            <!-- Note: named_formsets is used in get_context_data function in views.py -->
+                            <!-- Note: here images is our ImageFormSet name, used in get_named_formsets function in views.py -->
+                            {% with named_formsets.images as formset %}  
+                                {{ formset.management_form }}
+                                <script type="text/html" id="images-template">
+                                    <tr id="images-__prefix__" class= hide_all>
+                                        {% for fields in formset.empty_form.hidden_fields %}
+                                            {{ fields }}
+                                        {% endfor %}
+                                    
+                                        {% for fields in formset.empty_form.visible_fields %}
+                                            <td>{{fields}}</td>
+                                        {% endfor %}
+                                    </tr>
+                                </script>
+
+                                <div class="table-responsive card mt-4">
+                                    <div class="card-header card-header-secondary">
+                                        <h4 class="card-title">Add Images</h4>
+                                    </div>
+                                    <table class="table card-body">
+                                        <thead class="text-secondary">
+                                            <th>Image <span style="color: red;" class="required">*</span></th>
+                                            <th>Delete</th>
+                                        </thead>
+                                        <tbody id="item-images">
+                                            {% for error in formset.non_form_errors %}
+                                                <span style="color: red">{{ error }}</span>
+                                            {% endfor %}
+                                            {% for formss in formset %}
+                                                {{ formss.management_form }}
+                                                <tr id="images-{{ forloop.counter0 }}" class= hide_all>  <!-- id="inlineformsetname-counter" -->
+                                                    {{ formss.id }}
+                                                    {% for field in formss.visible_fields %}
+                                                        <td>
+                                                            {{field}}
+                                                            {% for error in field.errors %}
+                                                                <span style="color: red">{{ error }}</span>
+                                                            {% endfor %}
+                                                        </td>
+                                                    {% endfor %}
+                                                    {% if formss.instance.pk %}
+                                                        <td>
+                                                            <a href="{% url 'delete_image' formss.instance.pk %}" type="button" class="btn btn-primary">Delete</a>
+                                                        </td>            
+                                                    {% endif %}
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    <a href="javascript:void(0)" id="add-image-button" class="btn btn-secondary add-images mb-3">Add More</a>
+                                </div>
+                            {% endwith %}
+                            <!-- inline form for Images end -->
+
+                            <!-- inline form for Variant start -->
+                            <!-- EXPLAINING with named_formsets.variants as formset -->
+                            <!-- Note: named_formsets is used in get_context_data function in views.py -->
+                            <!-- Note: here variants is our VariantFormSet name, used in get_named_formsets function in views.py -->
+                            {% with named_formsets.variants as formset %}
+                            {{ formset.management_form }}
+                            <script type="text/html" id="variants-template">
+                                <tr id="variants-__prefix__" class= hide_all>
+                                    {% for fields in formset.empty_form.hidden_fields %}
+                                        {{ fields }}
+                                    {% endfor %}
+                                
+                                    {% for fields in formset.empty_form.visible_fields %}
+                                        <td>{{fields}}</td>
+                                    {% endfor %}
+                                </tr>
+                            </script>
+                            <div class="table-responsive card mt-4">
+                                <div class="card-header card-header-secondary">
+                                    <h4 class="card-title">Add Variants</h4>
+                                </div>
+                                <table class="table">
+                                    <thead class="text-secondary">
+                                        <th>Color</th>
+                                        <th>Size</th>
+                                        <th>Variation Code</th>
+                                        <th>Image</th>
+                                        <th>Video URL</th>
+                                        <th>Quantity <span style="color: red;" class="required">*</span></th>
+                                        {% comment %} <th>Is Active?</th> {% endcomment %}
+                                        <th>Delete</th>
+                                    </thead>
+                                    <tbody id="item-variants">
+                                        {% for error in formset.non_form_errors %}
+                                            <span style="color: red">{{ error }}</span>
+                                        {% endfor %}
+                                        {% for formss in formset %}
+                                            {{ formss.management_form }}
+                                            <tr id="variants-{{ forloop.counter0 }}" class= hide_all>
+                                                {{ formss.id }}
+                                                {% for field in formss.visible_fields %}
+                                                    <td>
+                                                        {{field}}
+                                                        {% for error in field.errors %}
+                                                            <span style="color: red">{{ error }}</span>
+                                                        {% endfor %}
+                                                    </td>
+                                                {% endfor %}
+                                                {% if formss.instance.pk %}
+                                                    <td>
+                                                        <a href="{% url 'delete_variant' formss.instance.pk %}" type="button" class="btn btn-danger">Delete</a>
+                                                    </td>         
+                                                {% endif %}
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                <a href="javascript:void(0)" id="add-variant-button" class="btn btn-secondary add-variants mb-3">Add More</a>
+                            </div>
+                            {% endwith %}
+							</div>
+
+                            
+                            <div class="row {% if request.user.is_vendor %}d-none{% endif %}">
+								<div class="col-md-12">
+									<div class="form-group">
+                                        {{ form.is_verified|as_crispy_field }}
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div class="form-group">
+                                        {{ form.free_delivery|as_crispy_field }}
+									</div>
+								</div>
+							</div>
+                            
+						</div>
+                        <div class="form-actions mt-10 text-end">
+                            <button type="submit" class="btn btn-primary"><i class="fa fa-check me-2"></i>Save</button>
+                        </div>
+					</form>
+				  </div>
+				</div>
+			  </div>		  
+		  </div>
+		</section>
+	</div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // when user clicks add more btn of images
+    $('.add-images').click(function(ev) {
+        ev.preventDefault();
+        var count = $('#item-images').children().length;
+        var tmplMarkup = $('#images-template').html();
+        var compiledTmpl = tmplMarkup.replace(/__prefix__/g, count);
+        $('#item-images').append(compiledTmpl);
+
+        // update form count
+        $('#id_images-TOTAL_FORMS').attr('value', count+1);
+    });
+});
+
+$(document).ready(function() {
+    // when user clicks add more btn of variants
+    $('.add-variants').click(function(ev) {
+        ev.preventDefault();
+        var count = $('#item-variants').children().length;
+        var tmplMarkup = $('#variants-template').html();
+        var compiledTmpl = tmplMarkup.replace(/__prefix__/g, count);
+        $('#item-variants').append(compiledTmpl);
+
+        // update form count
+        $('#id_variants-TOTAL_FORMS').attr('value', count+1);
+    });
+});
+</script>
+  {% endblock dashboard %}
+
+
+
+

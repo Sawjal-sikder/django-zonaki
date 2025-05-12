@@ -1,0 +1,70 @@
+{% extends 'dashboard/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block css %}
+<style>
+    /* .formset-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .formset-table th, .formset-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+
+    .formset-table th {
+        background-color: #f2f2f2;
+        text-align: left;
+    }
+
+    .formset-row {
+        background-color: #fff;
+    }
+
+    .formset-row:nth-child(even) {
+        background-color: #f9f9f9;
+    } */
+    .table > thead > tr > td, .table > thead > tr > th {
+        padding: 0.3rem 2rem 0.3rem 0;
+        vertical-align: middle;
+    }
+
+    .table > tbody > tr > td, .table > tbody > tr > th {
+        padding: 0.3rem 1rem 0.3rem 0;
+        vertical-align: middle;
+    }
+
+    .remove-form {
+        cursor: pointer;
+        color: red;
+        padding: 4px 10px;
+    }
+</style>
+{% endblock css %}
+
+{% block dashboard %}
+<div class="content-wrapper">
+    <div class="container-full">
+        <section class="content">
+            <div class="row justify-content-center align-items-center">
+                <div class="col-12 col-md-12 col-lg-12">
+                    <div class="box">
+                        <div class="box-body">
+                            <h4 class="page-title">Add/Edit Return Product</h4>
+                            <form method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+								{{ form|crispy }}
+                                <div class="text-end">
+								<button type="submit" class="btn btn-primary">Save</button>  
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>		  
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock dashboard %}
+

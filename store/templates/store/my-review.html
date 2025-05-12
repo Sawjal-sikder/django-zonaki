@@ -1,0 +1,49 @@
+{% extends 'store/base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container-fluid my-5">
+    <div class="row justify-content-between my-5">
+        {% include 'userapp/sidebar.html' %}
+        <div class="col-md-8 col-lg-9 px-5">
+            <h5>My Review</h5>
+			<div class="row ">
+				<div class="col-lg-12 mx-auto">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Product</th>
+								<th>Review</th>
+							</tr>
+						</thead>
+
+						<tbody>
+						{% for p in cartitems %}
+						<tr>
+							<td class="product-col">
+								<div class="product">
+									<figure class="product-media">
+										<a href="{% url 'product_detail' p.item.slug %}">
+											<img src="{{ p.item.image.url }}" alt="Product image">
+										</a>
+									</figure>
+
+									<h3 class="product-title">
+										<a href="{% url 'product_detail' p.item.slug %}">{{ p.item.product_name }}</a>
+									</h3>
+								</div>
+							</td>	
+							<td>
+								<a style="background-color:red ; color: white;" class="btn-lg" href="{% url 'order_item_review' p.pk %}">Review</a>
+							</td>
+						</tr> 
+						{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+    

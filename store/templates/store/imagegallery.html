@@ -1,0 +1,23 @@
+
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container my-4">
+    <div class="row">
+        {% for i in img %}
+        <div class="col-6 col-md-4 col-lg-3 my-2">
+            <div class="card">
+                <img src=" {{ i.image.url }}" alt="">
+                <div class="card-body">
+                    <p style="color: black;">{{ i.title }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+{% endblock %}

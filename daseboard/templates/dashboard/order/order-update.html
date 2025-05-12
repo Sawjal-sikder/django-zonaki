@@ -1,0 +1,177 @@
+{% extends 'dashboard/base.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block dashboard %}
+<style>
+	.dis-hidden {
+		display: none;
+	}
+</style>
+<div class="content-wrapper">
+	<div class="container-full">
+		<section class="content">
+			<div class="row">
+				<div class="col-12">
+					<div class="box">
+						<div class="box-body">
+							<div class="d-flex">
+								<div class="me-auto">
+									<h4 class="page-title">Edit Order - : {{ order.id}}</h4>
+								</div>
+								<div class="form-actions">
+									<a class="btn btn-primary"
+										href="{% url 'shipping_address_update' order.pk %}">Edit Shipping Address</a>
+								</div>
+							</div>
+							<form action="" method="post" enctype="multipart/form-data">
+								{% csrf_token %}
+								<div class="form-body">
+									<div class="form-group">
+										<label for="user">User:</label>
+										<select class="form-select" id="user" name="user">
+										  {% for user in users %}
+										  <option value="{{ user.id }}" {% if order.user and order.user.id == user.id %} selected {% endif %}>
+											{{ user.phone }}
+										  </option>
+										  {% endfor %}
+										</select>
+									</div>
+									<div class="form-group dis-hidden">
+										<label for="items">Items:</label>
+										<select multiple class="form-select" id="items" name="items">
+											{% for item in order.items.all %}
+											<option value="{{ item.id }}" selected>{{ item }}</option>
+											{% endfor %}
+										</select>
+									</div>
+									<div class="border border-1 p-2">
+										<h4 class="border-bottom">Items</h4>
+										<table class="table table-responsive">
+											<thead>
+												<tr>
+													<th>Id</th>
+													<th>Name</th>
+													<th>Quantity</th>
+													<th>Size</th>
+													<th>Color</th>
+												</tr>
+											</thead>
+											<tbody>
+												{% for item in order.items.all %}
+												<tr>
+													<td>{{ item.id }}</td>
+													<td>{{ item.item }}</td>
+													<td>{{ item.quantity }}</td>
+													<td>
+														{% for i in item.variation.all %}
+															{{ i.size.name }}
+														{% endfor %}
+													</td>
+													<td>
+														{% for i in item.variation.all %}
+															{{ i.color.name }}
+														{% endfor %}
+													</td>
+												</tr>
+												{% endfor %}
+											</tbody>
+										</table>
+									</div>
+									{% comment %} <div class="form-group">
+										<label for="items">Items:</label>
+										<select multiple class="form-select" id="items" name="items">
+										  {% for item in items %}
+										  <option value="{{ item.id }}" {% if item in order.items.all %} selected {% endif %}>
+											{{ item }}
+										  </option>
+										  {% endfor %}
+										</select>
+									</div> {% endcomment %}
+									<div class="form-group">
+										<label for="ordered_date">Ordered Date:</label>
+										<input type="datetime-local" class="form-control" id="ordered_date" name="ordered_date" value="{{ order.ordered_date }}">
+									</div>
+									<div class="form-group">
+										<label for="order_complate_date">Order Complete Date:</label>
+										<input type="datetime-local" class="form-control" id="order_complate_date" name="order_complate_date" value="{{ order.order_complate_date }}">
+									</div>
+									<div class="form-group">
+										<label for="order_status">Order Status:</label>
+										<select class="form-select" id="order_status" name="order_status">
+										  {% for status in order.ORDER_STATUS %}
+										  <option value="{{ status.0 }}" {% if order.order_status == status.0 %} selected {% endif %}>{{ status.1 }}</option>
+										  {% endfor %}
+										</select>
+									</div>
+									<div class="form-group">
+										<label for="total_order_amount">Total Order Amount:</label>
+										<input type="text" class="form-control" id="total_order_amount" name="total_order_amount" value="{{ order.total_order_amount }}">
+									</div>
+									<div class="form-group">
+										<label for="paid_amount">Paid Amount:</label>
+										<input type="text" class="form-control" id="paid_amount" name="paid_amount" value="{{ order.paid_amount }}">
+									</div>
+									<div class="form-group">
+										<label for="due_amount">Due Amount:</label>
+										<input type="text" class="form-control" id="due_amount" name="due_amount" value="{{ order.due_amount }}">
+									</div>
+									<div class="form-group">
+										<label for="orderId">Order ID:</label>
+										<input type="text" class="form-control" id="orderId" name="orderId" value="{{ order.orderId }}">
+									</div>
+									<div class="form-group">
+										<label for="paymentId">Payment ID:</label>
+										<input type="text" class="form-control" id="paymentId" name="paymentId" value="{{ order.paymentId }}">
+									</div>
+									<div class="form-group">
+										<label for="coupon">Coupon:</label>
+										<select class="form-select id="coupon" name="coupon">
+										  <option value="">-- Select Coupon --</option>
+										  {% for coupon in coupons %}
+										  <option value="{{ coupon.id }}" {% if order.coupon and order.coupon.id == coupon.id %} selected {% endif %}>
+											{{ coupon }}
+										  </option>
+										  {% endfor %}
+										</select>
+									</div>
+									<div class="form-group">
+										<label for="shipping_address">Shipping Address:</label>
+										<select class="form-select" id="shipping_address" name="shipping_address">
+										  <option value="">Select Address</option>
+										  {% for address in shipping_addresses %}
+										  <option value="{{ address.id }}" {% if order.shipping_address and order.shipping_address.id == address.id %} selected {% endif %}>
+											{{ address }}
+										  </option>
+										  {% endfor %}
+										</select>
+									</div>
+									<div class="form-group">
+										<label for="payment_option">Payment Option:</label>
+										<input type="text" class="form-control" id="payment_option" name="payment_option" value="{{ order.payment_option }}">
+									</div>
+									<div class="form-group">
+										{% comment %} <label for="order_read_status">Order Read Status:</label> {% endcomment %}
+										<input type="checkbox" class="form-check-input" id="order_read_status" name="order_read_status" {% if order.order_read_status %} checked {% endif %}>
+									</div>
+									{% comment %} <div class="form-group">
+										<label for="redx_percel_traking_number">Redx Parcel Tracking Number:</label>
+										<input type="text" class="form-control" id="redx_percel_traking_number" name="redx_percel_traking_number" value="{{ order.redx_percel_traking_number }}">
+									</div>
+									<div class="form-group">
+										<label for="others_transport_trakink_url">Other Transport Tracking URL:</label>
+										<input type="url" class="form-control" id="others_transport_trakink_url" name="others_transport_trakink_url">
+									</div> {% endcomment %}
+								</div>
+								<div class="text-end">
+									<button type="submit" class="btn btn-primary"><i class="fa fa-check me-2"></i>Save</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+</div>
+{% endblock dashboard %}

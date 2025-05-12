@@ -1,0 +1,69 @@
+
+  {% extends 'dashboard/base.html' %}
+    
+  {% block dashboard %}
+    
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+      <div class="container-full">
+      <!-- Content Header (Page header) -->
+      <div class="content-header d-flex">
+        <div class="me-auto mt-2">
+          <h4 class="page-title">Bkash Payment Refund List</h4>
+        </div>
+      </div>
+  
+      <!-- Main content -->
+      <section class="content">
+  
+        <div class="row">
+          <div class="col-12">
+          <div class="box">
+            <div class="box-body">
+            <div class="table-responsive">
+              <table id="productorder" class="table table-hover no-wrap product-order" data-page-size="10">
+                <thead>
+                    <tr>                                    
+                        <th>User</th> 
+                        <th>OriginalTrxID</th>                                 
+                        <th>RefundTrxID</th>                                 
+                        <th>Refund Amount</th>
+                        <th>TransactionStatus</th>
+                        <th>completedTime</th>
+                        <th>charge</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    {% for p in payment_list %}
+                    <tr>
+                        <td>{{ p.user }}</td>         
+                        <td>{{p.originalTrxID }}</td>
+                        <td>{{p.refundTrxID }}</td>
+                        <td>{{ p.amount }}</td>
+                        <td>{{ p.transactionStatus }}</td>                    
+                        <td>{{ p.completedTime }}</td>                    
+                        <td>{{ p.charge }}</td>                    
+
+                    </tr>
+                    {% endfor %}
+                </tbody>					
+              </table>
+            </div>
+            </div>
+          </div>
+          </div>		  
+        </div>
+  
+      </section>
+      <!-- /.content -->
+      </div>
+    </div>
+    <!-- /.content-wrapper -->
+  
+  
+  
+    {% endblock dashboard %}
+    
+  
+	

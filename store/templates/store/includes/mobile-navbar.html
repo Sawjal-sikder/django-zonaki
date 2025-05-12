@@ -1,0 +1,145 @@
+{% load static %}
+{% load top_category %}
+{% load desktop_menu %}
+<style>
+  .mobile-cats-nav i {
+    margin-right: 6px;
+  }
+
+
+</style>
+
+<div class="mobile-menu-container mobile-menu-light" >
+  <div class="mobile-menu-wrapper">
+    <span class="mobile-menu-close"><i class="icon-close"></i></span>
+
+    <form action="{% url 'search' %}" method="GET" class="mobile-search">
+      <label for="mobile-search" class="sr-only">Search</label>
+      <input type="search" class="form-control" name="q" id="q" placeholder="Search in..." required>
+      <button type="submit" class="btn btn-primary"><i class="icon-search" style="padding: 3.4px 0;"></i></button>
+    </form>
+
+    <ul class="nav nav-pills-mobile nav-border-anim" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link" id="mobile-cats-link" data-toggle="tab" href="#mobile-cats-tab" role="tab"
+          aria-controls="mobile-cats-tab" aria-selected="false">Profile</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" id="mobile-menu-link" data-toggle="tab" href="#mobile-menu-tab" role="tab"
+          aria-controls="mobile-menu-tab" aria-selected="true">Filter Data</a>
+      </li>
+
+    </ul>
+    <div class="tab-content">
+      <div class="tab-pane fade" id="mobile-cats-tab" role="tabpanel" aria-labelledby="mobile-cats-link">
+        {% if request.user.is_authenticated %}
+        <nav class="mobile-cats-nav">
+          <ul class="mobile-cats-menu">
+            <li>
+              <a href="{% url 'customer_dashboard' %}"><i class="fa-solid fa-house"></i>Dashboard</a>
+            </li>
+            <li>
+              <a href="{% url 'cart_summary' %}"><i class="fa-solid fa-cart-shopping"></i>Cart History</a>
+            </li>
+            <li>
+              <a href="{% url 'order_summary' %}"><i class="fa-solid fa-book"></i>Purchase History</a>
+            </li>
+            <li>
+              <a href="{% url 'wishlist' %}"><i class="fa-solid fa-heart"></i>Wishlist</a>
+            </li>
+            <li>
+              <a href="{% url 'my_review' %}"><i class="fa-solid fa-list"></i>My Review</a>
+            </li>
+            <li>
+              <a href="{% url 'profile_update' %}"><i class="fa-solid fa-circle-user"></i>Manage Profile</a>
+            </li>
+          </ul><!-- End .mobile-cats-menu -->
+        </nav><!-- End .mobile-cats-nav -->
+
+        <nav class="mobile-cats-nav fixed-bottom">
+          <ul class="mobile-cats-menu">
+            <li><a href="{% url 'signout' %}"><i class="fa-solid fa-file-export"></i>Logout</a></li>
+          </ul><!-- End .mobile-cats-menu -->
+        </nav>
+        {% else %}
+        <nav class="mobile-cats-nav">
+          <ul class="mobile-cats-menu">
+            <li>
+              <a href="{% url 'vendor_registration' %}">Vendor Register</a>
+            </li>
+            <li>
+              <a href="{% url 'signup' %}">Customer Register</a>
+            </li>
+            <li>
+              <a href="{% url 'signin' %}">Login</a>
+            </li>
+          </ul><!-- End .mobile-cats-menu -->
+        </nav><!-- End .mobile-cats-nav -->
+        {% endif %}
+      </div><!-- .End .tab-pane -->
+
+      <!-- Filter Data -->
+      <div class="tab-pane fade show active" id="mobile-menu-tab" role="tabpanel" aria-labelledby="mobile-menu-link">
+        <nav class="mobile-nav">
+          <ul class="mobile-menu">
+            <!-- categories -->
+            <li {% if cate %}class="open"{% endif %}>
+              <a href="javaScript:void(0)" style="color:{% if cate %}#ED2224{% endif %};">Categories</a>
+              <ul {% if cate %}style="display: block;"{% endif %}>
+                {% for c in request.user|category %}
+                {% if not c.children.all %}
+                <li><a href="{% url 'category' c.slug %}">{{ c.category_name }}</a></li>
+                {% else %}
+                <li><a href="{% url 'category' c.slug %}">{{ c.category_name }}</a>
+                  <ul>
+                    {% for sub_cate in c.children.all %}
+                    {% if not sub_cate.children.all %}
+                    <li><a href="{% url 'category' sub_cate.slug %}">{{ sub_cate.category_name }}</a></li>
+                    {% else %}
+                    <li><a href="{% url 'category' sub_cate.slug %}">{{ sub_cate.category_name }}</a>
+                      <ul>
+                        {% for sub_catet in sub_cate.children.all %}
+                        <li>
+                          <a href="{% url 'category' sub_catet.slug %}">{{ sub_catet.category_name}}</a>
+                          <ul>
+                            {% for cat in sub_catet.children.all %}
+                            <li><a href="{% url 'category' cat.slug %}">{{ cat.category_name}}</a></li>
+                            {% endfor %}
+                          </ul>
+                        </li>
+                        {% endfor %}
+                      </ul>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                  </ul>
+                </li>
+                {% endif %}
+                {% endfor %}
+              </ul>
+            </li>
+            <!-- Brands -->
+            <li {% if brands %}class="open"{% endif %}>
+              <a href="javaScript:void(0)" style="color:{% if brands %}#ED2224{% endif %};">Brands</a>
+              <ul {% if brands %}style="display: block;"{% endif %}>
+                {% for p in request|brands %}
+                <li><a href="{% url 'brand' p.slug %}" style="color:{% if brands.id == p.id %}#ED2224{% else %}#595c59{% endif %}; font-weight: 500;">{{ p.name }}</a></li>
+                {% endfor %}
+              </ul>
+            </li>
+            <!-- Price Range -->
+            <li {% if price_ranges %}class="open"{% endif %}>
+              <a href="javaScript:void(0)" style="color:{% if price_ranges %}#ED2224{% endif %};">Price Range</a>
+              <ul {% if price_ranges %}style="display: block;"{% endif %}>
+                {% for p in request|price_ranges %}
+                <li><a href="{% url 'price_range_filtering' p.pk %}" style="color:{% if price_ranges.id == p.id %}#ED2224{% else %}#595c59{% endif %}; font-weight: 500;">{{ p.price_range }}</a></li>
+                {% endfor %}
+              </ul>
+            </li>
+            
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>

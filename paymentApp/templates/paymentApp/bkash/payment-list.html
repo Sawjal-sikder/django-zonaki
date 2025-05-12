@@ -1,0 +1,83 @@
+
+  {% extends 'dashboard/base.html' %}
+    
+  {% block dashboard %}
+    
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+      <div class="container-full">
+      <!-- Content Header (Page header) -->
+      <div class="content-header d-flex">
+        <div class="me-auto mt-2">
+          <h4 class="page-title">Bkash Payment List</h4>
+        </div>
+      </div>
+  
+      <!-- Main content -->
+      <section class="content">
+  
+        <div class="row">
+          <div class="col-12">
+          <div class="box">
+            <div class="box-body">
+            <div class="table-responsive">
+              <table id="productorder" class="table table-hover no-wrap product-order" data-page-size="10">
+                <thead>
+                    <tr>                                    
+                        <th>User</th> 
+                        <th>OrderID</th>                                 
+                        <th>PaymentID</th>                                 
+                        <th>Amount</th>
+                        <th>TransactionStatus</th>
+                        <th>TrxID</th>
+                        <th>Payment Query</th>
+                        <th>Search Transaction </th>
+                        <th>Refund</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in payment_list %}
+                    <tr>
+                        <td>{{ p.user }}</td>         
+                        <td>{{p.merchantInvoiceNumber }}</td>
+                        <td>{{p.paymentID }}</td>
+                        <td>{{ p.amount }}</td>
+                        <td>{{ p.transactionStatus }}</td>                    
+                        <td>{{ p.trxID }}</td>                    
+                        <td class="text-center">
+                            <a href="{% url 'bkash_payment_query' p.paymentID %}" class="text-primary" data-bs-original-title="View" data-bs-toggle="tooltip">
+                                <i class="ti-eye"></i>
+                            </a>
+                        </td>
+                        <td class="text-center">
+                          <a href="{% url 'bkash_search_transaction' p.trxID %}" class="text-info" data-bs-original-title="View" data-bs-toggle="tooltip">
+                              <i class="ti-eye"></i>
+                          </a>
+                      </td>
+                      <td class="text-center">
+                        <a href="{% url 'bkash_payment_refund' p.paymentID %}" class="text-info me-10" data-bs-toggle="tooltip" data-bs-original-title="Edit">
+                          <i class="ti-marker-alt"></i>
+                        </a>
+                    </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>					
+              </table>
+            </div>
+            </div>
+          </div>
+          </div>		  
+        </div>
+  
+      </section>
+      <!-- /.content -->
+      </div>
+    </div>
+    <!-- /.content-wrapper -->
+  
+  
+  
+    {% endblock dashboard %}
+    
+  
+	

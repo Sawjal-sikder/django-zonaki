@@ -1,0 +1,67 @@
+{% extends 'store/base.html' %}
+{% load static %}
+{% block content %}
+  <div class="container-fluid my-5">
+    <div class="row justify-content-between my-5">
+      {% include 'userapp/sidebar.html' %}
+      <div class="col-md-8 col-lg-9">
+        <h5>Return Product Status</h5>
+        <div class="row py-5">
+          <div class="col-12">
+            <table class="table table-cart table-mobile">
+              <thead>
+                <tr>
+                  <th class="px-4">ID</th>
+                  <th class="px-5">Product</th>
+                  <th>Price</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for c in return_products %}
+                  <tr>
+                    <td class="px-4">{{ c.id }}</td>
+                    <td class="px-4">
+                      {% if c.product_image %}
+                        <img src="{{ c.product_image.url }}" alt="" height="50px" width="80px" />
+                      {% endif %}
+                      {{ c.items }}
+                    </td>
+                    <td>
+                      {% if c.return_price %}
+                        {{ c.return_price }}
+                      {% else %}
+                        {{ c.return_request_price }}
+                      {% endif %}
+                      <sub style="font-size: 12px;">Charges:<del class="text-danger">{{ c.return_charge }}</del></sub>
+                    </td>
+                    <td>
+                      {% if c.status == 'Pending' %}
+                        <span class="badge p-3 text-white bg-primary">{{ c.status }}</span>
+                      {% elif c.status == 'Processing' %}
+                        <span class="badge p-3 text-white bg-info">{{ c.status }}</span>
+                      {% elif c.status == 'On the way' %}
+                        <span class="badge p-3 text-white bg-warning">{{ c.status }}</span>
+                      {% elif c.status == 'Complete' %}
+                        <span class="badge p-3 text-white bg-success">{{ c.status }}</span>
+                      {% elif c.status == 'Cancel' %}
+                        <span class="badge p-3 text-white bg-danger">{{ c.status }}</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      <form action="" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="p-3" style="background-color:red ; color: white;" name="delete_id" value="{{ c.id }}">Delete</button>
+                      </form>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

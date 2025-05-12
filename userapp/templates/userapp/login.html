@@ -1,0 +1,48 @@
+{% extends "store/base.html" %}
+{% load static %}
+{% load socialaccount %}
+
+
+{% block content %}
+<section class="content-section my-5">
+    <div class="container">
+        <div class="row justify-content-center align-items-center py-4">
+            <div class="col-11 col-md-4 my-4 rounded shadow p-5">
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <h3>Log In</h3>
+                    {% if messages %}
+                    <ul class="messages text-danger">
+                        {% for message in messages %}
+                        <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                    <hr class="mt-1 mb-3">
+
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="username" placeholder="Phone or Email address" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control" name="password" placeholder="Password" required>
+                    </div>
+                    <button type="submit" class="btn btn-block text-white rounded-pill" style="background-color: #eb5525; font-size: 18px;">
+                        Log In
+                    </button>
+                </form>
+                <div class="my-3 text-center">
+                    <a href="{% url 'password_reset' %}">Forgotten password?</a>
+                </div>
+
+                <a style="color: #eb5525; border: 1px solid #eb5525;" class="btn rounded-pill btn-block my-1" href="{% url 'google_login_with_type' %}?registration_type=customer">
+                    <i class="fa-brands fa-google" style="font-size: 20px; color: #4285F4;"></i>
+                    Login with Google
+                </a>
+                <div class="my-3 fs-6">
+                    Doesn't have any account? <a class="ml-2" href="{% url 'signup' %}">Sign Up</a> Now.
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}

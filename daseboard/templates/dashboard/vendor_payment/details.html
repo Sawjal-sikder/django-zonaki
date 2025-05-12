@@ -1,0 +1,212 @@
+{% extends 'dashboard/base.html' %}
+
+
+{% block dashboard %}
+<div class="content-wrapper mt-90">
+    <div class="container-full">
+        <div class="content-header">
+            <div class="d-flex align-items-center">
+                <div class="me-auto">
+                    <h4 class="page-title">Vendor Payment Information</h4>
+                </div>
+            </div>
+        </div>
+        <section class="content">
+            <div class="row">
+                <div class="col-xxxl-8 col-12">
+                    <div class="box">
+                        <div class="box-body">
+                            <div class="table-responsive-xl">
+                                <table class="table product-overview">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>User</th>
+                                            <th>OrderID</th>
+                                            <th>Product Name</th>
+                                            <th>Message</th>
+                                            <th>Status</th>
+                                            <th>Request Date</th>
+                                            <th>Complete Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="px-3">
+                                        <tr>
+                                            <td>{{ payment.id }}</td>
+                                            <td>{{payment.user}}</td>
+                                            <td>{{ payment.order_ids|safe }}</td>
+                                            <td>{{ payment.order_items|safe }}</td>
+                                            <td>{{payment.message}}</td>
+                                            <td>{{payment.status}}</td>
+                                            <td>{{payment.request_date}}</td>
+                                            <td>{{payment.complete_date}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box">
+                        <div class="box-body">
+                            <table class="table table-summary">
+                                <tbody>
+                                    <tr class="summary-subtotal">
+                                        <td colspan="4" class="col-12 text-left h4">Vendor Information</td>
+                                    </tr>
+                                    <tr class="col-12">
+                                        <td colspan="4">
+                                            <div class="row mb-2">
+                                                <div class="col-6 text-left">
+                                                    <p>user</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ vendor_info.user }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-6 text-left">
+                                                    <p>Phone 1</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ vendor_info.phone1 }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-6 text-left">
+                                                    <p>Phone 2</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right ;">
+                                                    <p>{{ vendor_info.phone2 }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-6 text-left">
+                                                    <p>Shop Name</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ vendor_info.shop_name }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-6 text-left">
+                                                    <p>Nid Number</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ vendor_info.Nid_number }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-6 text-left">
+                                                    <p>Address</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ vendor_info.address }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-6 text-left">
+                                                    <p>Account Title</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ vendor_info.account_title }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-6 text-left">
+                                                    <p>Account Number</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ vendor_info.account_number }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-6 text-left">
+                                                    <p>Bank Name</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ vendor_info.bank_name }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-6 text-left">
+                                                    <p>Bank Branch Name</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ vendor_info.bank_branch_name }}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="box">
+                        <div class="box-body">
+                            <table class="table table-summary">
+                                <tbody>
+                                    <tr class="summary-subtotal">
+                                        <td colspan="4" class="col-12 text-left h4">More Informations</td>
+                                    </tr>
+                                    <tr class="col-12">
+                                        <td colspan="4">
+                                            <div class="row mb-2">
+                                                <div class="col-6 text-left">
+                                                    <p>Remarks</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ payment.remark }}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="col-12">
+                                        <td colspan="4">
+                                            <div class="row mb-2">
+                                                <div class="col-6 text-left">
+                                                    <p>Transaction Informations</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ payment.transaction_informations }}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="col-12">
+                                        <td colspan="4">
+                                            <div class="row mb-2">
+                                                <div class="col-6 text-left">
+                                                    <p>Document File</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    {% if payment.document_file %}
+                                                        <a href="{{ payment.document_file.url }}" download="{{ payment.document_file }}">Download Document</a>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="col-12">
+                                        <td colspan="4">
+                                            <div class="row mb-2">
+                                                <div class="col-6 text-left">
+                                                    <p>Image</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    {% if payment.image %}
+                                                        <img src="{{ payment.image.url }}" alt="" srcset="" style="height: 100px;">
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock dashboard %}

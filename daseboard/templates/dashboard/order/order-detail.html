@@ -1,0 +1,429 @@
+{% extends 'dashboard/base.html' %}
+{% load commission %}
+
+{% block dashboard %}
+<div class="content-wrapper">
+    <div class="container-full">
+        <div class="content-header">
+            <div class="d-flex align-items-center">
+                <div class="me-auto">
+                    <h4 class="page-title">Order Details</h4>
+                </div>
+            </div>
+        </div>
+        <section class="content">
+            <div class="row">
+                <div class="col-xxxl-4 col-12">
+                    <div class="box">
+                        <div class="box-body">
+                            <div class="d-flex justify-content-between">
+                                <div class="d-flex align-items-center">
+                                    <img class="me-10 rounded-circle avatar avatar-xl b-2 border-primary"
+                                        src="{{ order.user.profile.image.url }}" alt="Customer">
+                                    <div>
+                                        <h4 class="mb-0">{{ order.user.first_name }} {{ order.user.last_name }}</h4>
+                                        <span class="fs-14 text-info">
+                                            {% if order.user.is_superuser %}
+                                            Superuser
+                                            {% elif order.user.is_staff %}
+                                            Staff
+                                            {% else %}
+                                            Customer
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                {% comment %} {% if not request.user.is_vendor %}
+                                <div>
+                                    <form action="{% url 'order_status_update' order.id %}" method="post" class="d-flex">
+                                        {% csrf_token %}
+                                        <div class="form-group me-2">
+                                            <select name="order_status" id="" class="form-select">
+                                                {% for key, value in order.ORDER_STATUS %}
+                                                <option value="{{ value }}" {% if order.order_status == value %}selected{% endif %}>{{ key }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="">
+                                            <input type="submit" value="Status" class="btn btn-primary">
+                                        </div>
+                                    </form>
+                                </div>
+                                {% endif %} {% endcomment %}
+                                    
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xxxl-8 col-12">
+                    <div class="box">
+                        <div class="box-body">
+                            <div class="table-responsive-xl">
+                                <table class="table product-overview">
+                                    <thead>
+                                        <tr>
+                                            <th>ProductID</th>
+                                            <th>Image</th>
+                                            <th>Product Name</th>
+                                            <th>Color</th>
+                                            <th>Size</th>
+                                            <th>Price</th>
+                                            <th>Quantity</th>
+                                            <th>Delivery Fee</th>
+                                            <th style="text-align:center">Total</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for p in order_items %}
+                                        <tr>
+                                            <td>{{ p.item.pk }}</td>
+                                            <td>
+                                                <img src="{{ p.item.image.url }}" alt="Product" width="50">
+                                            </td>
+                                            <td style="word-wrap: break-word; max-width: 15ch; white-space: normal;">{{ p.item.product_name }}</td>
+                                            {% for q in p.variation.all %}
+                                                <td>
+                                                    <div>
+                                                        {% if q.color.name %}
+                                                        <span class="color-col">{{ q.color.name }}</span>
+                                                        {% else %}
+                                                        <span class="color-col">None</span>
+                                                        {% endif %}
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div>
+                                                        {% if q.size.name  %}
+                                                            <span class="size-col">{{ q.size.name }}</span>
+                                                        {% else %}
+                                                            <span class="size-col">None</span>
+                                                        {% endif %}
+                                                    </div>
+                                                </td>
+                                            {% empty %}
+                                                <td>
+                                                    <div>
+                                                        <span class="color-col">None</span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div>
+                                                        <span class="size-col">None</span>
+                                                    </div>
+                                                </td>
+                                            {% endfor %}
+
+                                            <td>
+                                                ৳{{ p.get_item_price }} <br>
+                                                {% if p.coupon %}
+                                                    <span class="text-success">Coupon: {{ p.saving_price }}</span>
+                                                {% endif %}
+                                                {% comment %} {% if order.coupon_without_shipingcharge %}
+                                                ৳{{ order.coupon_without_shipingcharge }}
+                                                {% elif p.flashsale.flashsale_price %}
+                                                ৳{{p.flashsale.flashsale_price}}
+                                                {% elif p.product_new_price %}
+                                                {{p.product_new_price}}
+                                                {% elif p.item.discount_price %}
+                                                ৳{{ p.item.discount_price }}
+                                                {% else %}
+                                                ৳{{ p.item.price }}
+                                                {% endif %} {% endcomment %}
+                                            </td>
+                                            <td width="70">
+                                                {{ p.quantity }}
+                                            </td>
+                                            <td width="70">
+                                                {% if p.item.free_delivery %}
+                                                    Free Delivery
+                                                {% else %}
+                                                {{ p.shipping_charge }}
+                                                {% endif %}
+                                            </td>
+                                            <td width="100" class="fw-900">৳{{ p.get_subtotal_with_shipping_charge }}</td>
+                                            <td><span class="btn btn-outline-dark">{{ p.pathao_status|default_if_none:"No Status" }}</span></td>
+                                            {% comment %} {% if order.get_total_with_coupon %}
+                                            <td width="100" class="fw-900">৳{{ order.get_total_with_coupon }}</td>
+                                            {% else %}
+                                            <td width="100" class="fw-900">৳{{ p.get_subtotal }}</td>
+                                            {% endif %} {% endcomment %}
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="box">
+                        <div class="box-body">
+                            <table class="table table-summary">
+                                <tbody>
+                                    <tr class="summary-subtotal">
+                                        <td colspan="4" class="col-12 text-left h4">Order Summary</td>
+                                    </tr>
+                                    <tr class="col-12">
+                                        <td colspan="4">
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Total Item Price</p>
+                                                </div>
+                                                {% if request.user.is_superuser or request.user.is_staff %}
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>৳{{ order.get_total|floatformat:2 }} </p>
+                                                </div>
+                                                {% else %} 
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>৳{{ order.id|vendor_total_price_filter:request.user.id }} </p>
+                                                </div>
+                                                {% endif %}
+                                                {% comment %} <div class="col-6" style="text-align:right;">
+                                                    <p>৳{{ order.get_total }} </p>
+                                                </div> {% endcomment %}
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Total Commission</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right ;">
+                                                    <p> {% if request.user.is_vendor %} - {% endif %} ৳{{ order.id|commission_filter:request.user.id|floatformat:2 }}</p>
+                                                </div>
+                                            </div>
+                                        
+                                            
+                                            {% if request.user.is_superuser or request.user.is_staff %}
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Delivery Fee</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right ;">
+                                                    <p>+ ৳{{ order.get_delivery_amount|floatformat:2 }} </p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Free Delivery Fee</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right ;">
+                                                    <p class="text-danger">( ৳{{ order.get_free_delivery_amount|floatformat:2 }} ) </p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Pathao Delivery Fee</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right ;">
+                                                    <p class="text-danger">( ৳{{ order.total_shipping_amount|floatformat:2 }} ) </p>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                            {% if order.coupon %}
+                                                <div class="row">
+                                                    <div class="col-6 text-left">
+                                                        <p>Coupon</p>
+                                                    </div>
+                                                    <div class="col-6" style="text-align:right ;">
+                                                        <p> {% if order.coupon.coupon_type == 'Percentage' %}
+                                                            - ৳{{ order.coupon.amount_or_percentage }}%
+                                                        {% elif order.coupon.coupon_type == 'Amount' %}
+                                                            - ৳{{ order.coupon.amount_or_percentage|floatformat:0 }}Tk
+                                                        {% endif %}</p>
+                                                    </div>
+                                                </div>
+                                            {% elif order.items.coupon  %}
+                                                {% for o  in order.item.all  %}
+                                                <div class="row">
+                                                    <div class="col-6 text-left">
+                                                        <p>Coupon</p>
+                                                    </div>
+                                                    <div class="col-6" style="text-align:right ;">
+                                                        <p> {% if o.coupon.coupon_type == 'Percentage' %}
+                                                            - ৳{{ o.coupon.amount_or_percentage }}%
+                                                        {% elif order.coupon.coupon_type == 'Amount' %}
+                                                            - ৳{{ o.coupon.amount_or_percentage|floatformat:0 }}%
+                                                        {% endif %}</p>
+                                                    </div>
+                                                </div>
+                                                {% endfor %}
+                                            {% else %}
+                                                <div style="display:none"></div>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    
+                                    {% if request.user.is_superuser or request.user.is_staff %}
+                                    <tr class="summary-total">
+                                        <td>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    Total Amount
+                                                </div>
+                                                <div class="col-6 " style="text-align:right ;">
+                                                    ৳{{ order.total_order_amount|floatformat:2 }}
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% else %}
+                                    <tr class="summary-total">
+                                        <td>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    Total Amount
+                                                </div>
+                                                <div class="col-6 " style="text-align:right ;">
+                                                    ৳{{ order.id|vendor_commission_from_total:request.user.id }}
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                        
+                                    {% endif %}
+                                        
+                                    {% if request.user.is_superuser or request.user.is_staff %}
+                                    <tr class="summary-total">
+                                        <td style="color: green;">
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    Total Paid Amount
+                                                </div>
+                                                <div class="col-6" style="text-align:right ;">
+                                                    ৳{{ order.paid_amount }}
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    
+                                    <tr class="summary-total">
+                                        <td style="color: red;">
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    Total Due Amount
+                                                </div>
+                                                <div class="col-6" style="text-align:right ;">
+                                                    ৳{{ order.due_amount }}
+                                                </div>
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                            <p style="color:black; text-align: center;">Payment Method - {{order.payment_option}}</p>
+                        </div>
+                    </div>
+                    <div class="box">
+                        <div class="box-body">
+                            <table class="table table-summary">
+                                <tbody>
+                                    <tr class="summary-subtotal">
+                                        <td colspan="4" class="col-12 text-left h4">Shipping Information</td>
+                                    </tr>
+                                    <tr class="col-12">
+                                        <td colspan="4">
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Name </p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ order.shipping_address.full_name }} </p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Phone number</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{order.shipping_address.phone}}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Full address</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{order.shipping_address.full_address}} </p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Shipping area</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ order.shipping_address.area_name }}, {{ order.shipping_address.zone_name }}, {{ order.shipping_address.city_name }}</p>
+                                                </div>
+                                            </div>
+                                            {% if order.shipping_address.order_note %}
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Order note</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{order.shipping_address.order_note}}</p>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+
+                                            <tr class="summary-subtotal">
+                                                <td colspan="4" class="col-12 text-left h4">Order Processed By</td>
+                                            </tr>
+                                            <tr class="col-12">
+                                                <td colspan="4">
+                                                    <div class="row">
+                                                        <div class="col-6 text-left">
+                                                            <p>Name </p>
+                                                        </div>
+                                                        <div class="col-6" style="text-align:right;">
+                                                            <p>{{ order.staff_role.full_name }} </p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-6 text-left">
+                                                            <p>Phone number</p>
+                                                        </div>
+                                                        <div class="col-6" style="text-align:right;">
+                                                            <p>{{order.staff_role.phone}}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-6 text-left">
+                                                            <p>Order roled date</p>
+                                                        </div>
+                                                        <div class="col-6" style="text-align:right;">
+                                                            <p>{{order.staff_roled_date}}</p>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="row">
+                                                        <div class="col-6 text-left">
+                                                            <p>Order ID</p>
+                                                        </div>
+                                                        <div class="col-6" style="text-align:right;">
+                                                            
+                                                            <p>{{order.orderId}}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-6 text-left">
+                                                            <p>Order Remark</p>
+                                                        </div>
+                                                        <div class="col-6" style="text-align:right;">
+                                                            
+                                                            <p>{{order.order_remark}}</p>
+                                                        </div>
+                                                    </div>
+                                                    
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock dashboard %}

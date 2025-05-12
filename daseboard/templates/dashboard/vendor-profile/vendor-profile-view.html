@@ -1,0 +1,369 @@
+{% extends 'dashboard/base.html' %}
+
+
+{% block dashboard %}
+<div class="content-wrapper mt-90">
+    <div class="container-full">
+        <div class="content-header">
+            <div class="d-flex align-items-center">
+                <div class="me-auto">
+                    <h4 class="page-title">Vendor Profile</h4>
+                </div>
+            </div>
+        </div>
+        <section class="content">
+            <div class="row">
+                <div class="col-xxxl-4 col-12">
+                    <div class="box">
+                        <div class="box-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="col">
+                                    <div class="d-flex align-items-center">
+                                        <div class="vendor-img">
+                                            <img class="me-10 rounded-circle avatar avatar-xl b-2 border-primary" src="{{ profile.vendor_image.url }}" alt="Vendor">
+                                        </div>
+                                        <div class="vendor-info">
+                                            <h4 class="mb-0">{{ profile.user.full_name }}</h4>
+                                            <span class="fs-14 text-info">Vendor</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col text-end">
+                                    
+                                    {% if profile.is_verified %}
+                                    <a href="{% url 'vendor_profile_verify' profile.pk %}" class="btn btn-primary" readonly>Verified</a>
+                                    {% else %}
+                                    <a href="{% url 'vendor_profile_verify' profile.pk %}" class="btn btn-primary">Verifiy</a>
+                                    {% endif %}
+                                        
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xxxl-8 col-12">
+                    <div class="box">
+                        <div class="box-body">
+                            <table class="table table-summary">
+                                <tbody>
+                                    <tr class="summary-subtotal">
+                                        <td colspan="4" class="col-12 text-left h4">Basic Information</td>
+                                    </tr>
+                                    <tr class="col-12">
+                                        <td colspan="4">
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Vendor ID</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ profile.id }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Name</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ profile.user.full_name }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Mobile</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ profile.user.phone }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>E-mail</p>
+                                                </div>
+                                                <div class="col-6 " style="text-align: right;">
+                                                    <p>{{ profile.user.email }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>NID Number</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right ;">
+                                                    <p>{{ profile.Nid_number }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>NID Front Image</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    {% if profile.NID_copy_1 %}
+                                                        <img src="{{ profile.NID_copy_1.url }}" alt="NID Front">
+                                                    {% else %}
+                                                        <p>No NID Front Image available.</p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>NID Back Image</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    {% if profile.NID_copy_2 %}
+                                                        <img src="{{ profile.NID_copy_2.url }}" alt="NID Back">
+                                                    {% else %}
+                                                        <p>No NID Back Image available.</p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>                                            
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="box">
+                        <div class="box-body">
+                            <table class="table table-summary">
+                                <tbody>
+                                    <tr class="summary-subtotal">
+                                        <td colspan="4" class="col-12 text-left h4">Shop Information</td>
+                                    </tr>
+                                    <tr class="col-12">
+                                        <td colspan="4">
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Name</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ profile.shop_name }} </p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Country</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right ;">
+                                                    <p>{{ profile.country }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Division</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right ;">
+                                                    <p>{{ profile.division }} </p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>District</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ profile.district }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Upazila</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right ;">
+                                                    <p>{{ profile.upazila }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Address</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right ;">
+                                                    <p>{{ profile.address }}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="box">
+                        <div class="box-body">
+                            <table class="table table-summary">
+                                <tbody>
+                                    <tr class="summary-subtotal">
+                                        <td colspan="4" class="col-12 text-left h4">Warehouse Information</td>
+                                    </tr>
+                                    <tr class="col-12">
+                                        <td colspan="4">
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>The warehouse location matches that of the shop.</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ profile.warehouse_address }} </p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Division</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right ;">
+                                                    <p>{{ profile.w_division }} </p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>District</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ profile.w_district }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Upazila</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right ;">
+                                                    <p>{{ profile.w_upazila }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Address</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right ;">
+                                                    <p>{{ profile.w_address }}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="box">
+                        <div class="box-body">
+                            <table class="table table-summary">
+                                <tbody>
+                                    <tr class="summary-subtotal">
+                                        <td colspan="4" class="col-12 text-left h4">Return Information</td>
+                                    </tr>
+                                    <tr class="col-12">
+                                        <td colspan="4">
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>The return location matches that of the shop.</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ profile.return_address }} </p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Division</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right ;">
+                                                    <p>{{ profile.r_division }} </p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>District</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ profile.r_district }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Upazila</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right ;">
+                                                    <p>{{ profile.r_upazila }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Address</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right ;">
+                                                    <p>{{ profile.r_address }}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="box">
+                        <div class="box-body">
+                            <table class="table table-summary">
+                                <tbody>
+                                    <tr class="summary-subtotal">
+                                        <td colspan="4" class="col-12 text-left h4">Bank Information</td>
+                                    </tr>
+                                    <tr class="col-12">
+                                        <td colspan="4">
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Name</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ profile.bank_name }} </p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Account Title</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ profile.account_title }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Account Number</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ profile.account_number }} </p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Branch Name</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ profile.bank_branch_name }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Routing Number</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    <p>{{ profile.routing_number }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 text-left">
+                                                    <p>Check Copy</p>
+                                                </div>
+                                                <div class="col-6" style="text-align:right;">
+                                                    {% if profile.cheque_copy %}
+                                                        <img src="{{ profile.cheque_copy.url }}" alt="Check Copy">
+                                                    {% else %}
+                                                        <p>No Check Copy available.</p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>                                            
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock dashboard %}

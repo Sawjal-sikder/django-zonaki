@@ -1,0 +1,111 @@
+{% extends 'store/base.html' %}
+{% load static %}
+{% block content %}
+<style>
+	.profile-dashboard h4,
+	p {
+		color: white;
+	}
+
+	.cart-product {
+		background: linear-gradient(-45deg, #00a000, #5ddf51, #23d5ab, #04ff3a);
+		background-size: 400% 400%;
+		animation: gradient 15s ease infinite;
+		height: 140px;
+		color: white;
+		padding-top: 30px;
+		text-align: center;
+		border-radius: 3%;
+	}
+
+	.wishlist-product {
+		background: linear-gradient(-45deg, #e558f8, #a800b8, #e42695, #6b1a60);
+		background-size: 400% 400%;
+		animation: gradient 15s ease infinite;
+		height: 140px;
+		color: white;
+		padding-top: 30px;
+		text-align: center;
+		border-radius: 3%;
+	}
+
+	.ordered-product {
+		background: linear-gradient(-45deg, #2fff1c, #ff1b1b, #ff2525, #009b0d);
+		background-size: 400% 400%;
+		animation: gradient 15s ease infinite;
+		height: 140px;
+		color: white;
+		padding-top: 30px;
+		text-align: center;
+		border-radius: 3%;
+	}
+
+	@keyframes gradient {
+		0% {
+			background-position: 0% 50%;
+		}
+
+		50% {
+			background-position: 100% 50%;
+		}
+
+		100% {
+			background-position: 0% 50%;
+		}
+	}
+
+
+	.card-profile {
+		height: 200px;
+		background-color: #ED2224;
+	}
+
+	.m-active a {
+		color: #ED2224 !important;
+	}
+</style>
+<div class="container my-5">
+	<div class="row">
+		<div class="col-md-3 d-none d-md-block">
+			<div class="card border rounded">
+				<div class="card-profile ">
+					<img class="mx-auto mt-4 rounded-circle" src="{{ user.profile.image.url }}" alt="Customer"
+						style="height: 70px ; width: 70px;">
+					<p style="text-align:center ; font-size: 16px; font-weight: 500;">
+						{{ user.first_name }} {{user.last_name }}</p>
+					<p style="text-align:center ;">{{ user.email }}</p>
+				</div>
+				<div class="card-body">
+					<nav class="mobile-cats-nav">
+						<ul class="mobile-cats-menu dashboard-menu">
+							<li><a href="{% url 'customer_dashboard' %}"><i class="fa-solid fa-house"></i>Dashboard</a>
+							</li>
+							<li><a href="{% url 'cart_summary' %}"><i class="fa-solid fa-cart-shopping"></i>Cart
+									History</a></li>
+							<li class="m-active"><a href="{% url 'order_summary' %}"><i
+										class="fa-solid fa-book"></i>Purchase History</a></li>
+							<li><a href="{% url 'wishlist' %}"><i class="fa-solid fa-heart"></i>Wishlist</a></li>
+							<li><a href="{% url 'my_review' %}"><i class="fa-solid fa-list"></i>My Review</a></li>
+
+							{% comment %}
+							<li><a href="{% url 'profile_update' %}"><i class="fa-solid fa-circle-user"></i>Manage
+									Profile</a></li>
+							{% endcomment %}
+
+
+						</ul><!-- End .mobile-cats-menu -->
+					</nav><!-- End .mobile-cats-nav -->
+				</div>
+			</div>
+		</div>
+		<div class="col-md-9">
+			<div class="row justify-content-center align-items-center mt-5">
+				<div class="col-8 shadow p-3 text-center">
+                    <h3 class="text-success">Congratulations</h3>
+					<h6 class="text-info py-5">{{ response }}</h6>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

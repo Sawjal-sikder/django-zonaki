@@ -1,0 +1,284 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Meta Pixel Code -->
+  <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '473154005266287');
+    fbq('track', 'PageView');
+  </script>
+  <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=473154005266287&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code -->
+  {% block fb_meta %}
+  {% endblock fb_meta %}
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Zonaki Online Shopping in Bangladesh | Order Now From Zonaki.com</title>
+  <meta name="keywords" content="Zonaki Online shopping in Bangladesh | Order Now From Zonaki.com">
+  <meta name="description" content="Zonaki is an emerging best online shopping platform in Bangladesh.Zonaki offer genuine products with attractive discounts & best deals in Bangladesh.">
+  <meta name="author" content="Zonaki Online shopping in Bangladesh | Order Now From Zonaki.com">
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="{% static 'store/images/zo.jpg' %}">
+  <meta name="apple-mobile-web-app-title" content="Zonaki Online shopping in Bangladesh | Order Now From Zonaki.com">
+  <meta name="application-name" content="Zonaki Online shopping in Bangladesh | Order Now From Zonaki.com">
+  <meta name="msapplication-TileColor" content="#cc9966">
+  <meta name="msapplication-config" content="{% static 'store/images/zo.jpg' %}">
+  <meta name="theme-color" content="#fff">
+  <!-- Plugins CSS File -->
+  <link rel="stylesheet" href="{% static 'store/css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'store/css/plugins/owl-carousel/owl.carousel.css' %}">
+  <link rel="stylesheet" href="{% static 'store/css/plugins/magnific-popup/magnific-popup.css' %}">
+  <link rel="stylesheet" href="{% static 'store/css/plugins/jquery.countdown.css' %}">
+  <link rel="stylesheet" href="{% static 'store/slick-slider/slick.css' %}">
+  <link rel="stylesheet" href="{% static 'store/slick-slider/slick-theme.css' %}">
+  <!-- Main CSS File -->
+  <link rel="stylesheet" href="{% static 'store/css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'store/css/skins/skin-demo-13.css' %}">
+  <link rel="stylesheet" href="{% static 'store/css/demos/demo-13.css' %}">
+  <link rel="stylesheet" href="{% static 'store/css/plugins/nouislider/nouislider.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+
+  <style>
+    label {
+      font-weight: 500;
+    }
+
+    .product-label {
+      margin-left: -20px;
+      margin-top: -13px;
+    }
+
+    .table tr td {
+      font-weight: 500;
+      color: #666666;
+    }
+
+    .dashboard-menu li a {
+      font-weight: 500;
+      color: #666666;
+    }
+  </style>
+
+  {% block css %}
+
+  {% endblock css %}
+
+  <!-- Load Facebook SDK for JavaScript -->
+  <div id="fb-root"></div>
+  <script>
+    window.fbAsyncInit = function () {
+      FB.init({
+        xfbml: true,
+        version: 'v15.0'
+      });
+    };
+
+    (function (d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = 'https://connect.facebook.net/en_US/sdk/xfbml.customerchat.js';
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));</script>
+
+  <!-- Your Chat Plugin code -->
+  <div class="fb-customerchat" attribution="install_email" attribution_version="biz_inbox" page_id="103910454729853">
+  </div>
+  
+  
+
+  <!-- whatsapp Chat plugin Code -->
+
+  <script async src='https://d2mpatx37cqexb.cloudfront.net/delightchat-whatsapp-widget/embeds/embed.min.js'></script>
+  <script>
+    var wa_btnSetting = { "btnColor": "#16BE45", "ctaText": "", "cornerRadius": 50, "marginBottom": 70, "marginLeft": 20, "marginRight": 50, "btnPosition": "right", "whatsAppNumber": "+8801618871160", "welcomeMessage": "how may i help you?", "zIndex": 999999, "btnColorScheme": "light" };
+    window.onload = () => {
+      _waEmbed(wa_btnSetting);
+    };
+  </script>
+
+</head>
+
+<body>
+  
+  <div class="page-wrapper">
+    <!-- it is for address page loader start -->
+    <style>
+        #api-loader.active {
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 100%;
+          width: 100%;
+          background-color: rgba(0, 0, 0, 0.5);
+          z-index: 1000;
+        }
+        #api-loader.active .icon {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+        }
+    </style>
+    <div id="api-loader">
+        <div class="spinner-border text-light icon" style="width: 5rem; height: 5rem;" role="status">
+            <span class="sr-only">Loading...</span>  
+        </div>
+    </div>
+    <script>
+        function showLoader(v){
+            const loader = document.getElementById('api-loader');
+            if (v){
+                loader.style.display = 'block';
+                loader.classList.add('active');
+            } else {
+                loader.style.display = 'none';
+                loader.classList.remove('active');
+            }
+        }
+        showLoader(false);
+    </script>
+    <!-- it is for address page loader end -->
+
+    {% include "store/includes/navbar.html" %}
+
+    {% block content %}
+
+    {% endblock %}
+
+    <!-- footer start -->
+    {% include "store/includes/footer.html" %}
+    <!-- End .footer -->
+  </div>
+
+  <!-- End .page-wrapper -->
+  <button style="background-color: red; color:#fff" id="scroll-top" title="Back to Top"><i
+      class="icon-arrow-up"></i></button>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu-overlay"></div>
+  <!-- End .mobil-menu-overlay -->
+  {% include "store/includes/mobile-navbar.html" %}
+  <!-- End .mobile-menu-container -->
+
+  <style>
+    .swal-button {
+      padding: 20px 29px;
+      border-radius: 2px;
+      background-color: #075c15;
+      font-size: 12px;
+      border: 1px solid #27d309;
+      text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.3);
+    }
+  </style>
+
+
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer)
+        toast.addEventListener('mouseleave', Swal.resumeTimer)
+      }
+    })
+    {% for message in messages %}
+    Toast.fire({
+      icon: '{{ message.tags }}',
+      title: '{{ message }}',
+    })
+    {% endfor %}
+  </script>
+  <!-- Plugins JS File -->
+
+  <script src="{% static 'store/js/jquery.min.js' %}"></script>
+  <script src="{% static 'store/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'store/js/jquery.hoverIntent.min.js' %}"></script>
+  <script src="{% static 'store/js/jquery.waypoints.min.js' %}"></script>
+  <script src="{% static 'store/js/superfish.min.js' %}"></script>
+  <script src="{% static 'store/js/owl.carousel.min.js' %}"></script>
+  <script src="{% static 'store/js/jquery.plugin.min.js' %}"></script>
+  <script src="{% static 'store/js/jquery.magnific-popup.min.js' %}"></script>
+  <script src="{% static 'store/js/jquery.countdown.min.js' %}"></script>
+  <script src="{% static 'store/js/bootstrap-input-spinner.js' %}"></script>
+  <script src="{% static 'store/js/jquery.elevateZoom.min.js' %}"></script>
+  <script src="{% static 'store/js/bootstrap-input-spinner.js' %}"></script>
+  <script src="{% static 'store/js/jquery.magnific-popup.min.js' %}"></script>
+  <script src="{% static 'store/slick-slider/slick.min.js' %}"></script>
+  <!-- Main JS File -->
+  <script src="{% static 'store/js/main.js' %}"></script>
+  <script src="{% static 'store/js/demos/demo-13.js' %}"></script>
+
+  <script>
+    $('.menu-slider').slick({
+      slidesToShow: 5,
+      slidesToScroll: 1,
+      autoplay: true,
+      arrows: false,
+      autoplaySpeed: 1500,
+      responsive: [
+        {
+          breakpoint: 992,
+          settings: {
+            slidesToShow: 4
+          }
+        },
+        {
+          breakpoint: 868,
+          settings: {
+            slidesToShow: 3
+          }
+        },
+        {
+          breakpoint: 485,
+          settings: {
+            slidesToShow: 3
+          }
+        },
+        {
+          breakpoint: 335,
+          settings: {
+            slidesToShow: 2
+          }
+        }
+
+      ]
+    });
+  </script>
+
+  {% block script %}
+
+  {% endblock script %}
+
+
+
+  <script>
+    $(document).ready(function () {
+      $('#myOrderDataTable')
+        .dataTable({
+          dom: 'Bfrtip',
+          buttons: [
+            'copy', 'cvs', 'pdf', 'excel', 'print'
+          ]
+
+        });
+    });
+  </script>
+
+
+</body>
+</html>

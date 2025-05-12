@@ -1,0 +1,227 @@
+{% extends 'dashboard/base.html' %}
+{% load humanize %}
+
+{% block dashboard %}
+<div class="content-wrapper">
+    <div class="container-full">
+        <div class="content-header d-flex justify-content-between align-items-center">
+            <div class="mb-3 mb-md-0">
+                <h4 class="page-title">Pending Product List</h4>
+            </div>
+            <div class="content-filter">
+                <div class="d-flex row justify-content-between align-items-center">
+                    <div class="col">
+                        <input type="search" name="search" id="search" class="form-control" placeholder="Search by Id, Name, Stock">
+                    </div>
+                    <div class="col">
+                        <select class="form-select" name="category" id="category">
+                            <option value="">-- All Categories --</option>
+                            {% for c in categories %}
+                                <option value="{{ c.pk }}">{{ c.category_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col">
+                        <select class="form-select" name="brand" id="brand">
+                            <option value="">-- All Brands --</option>
+                            {% for b in brands %}
+                                <option value="{{ b.pk }}">{{ b.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col">
+                        <select class="form-select" name="user_type" id="user_type">
+                            <option value="">-- All Users --</option>
+                            <option value="superuser">Superuser</option>
+                            <option value="staff">Staff</option>
+                            <option value="customer">Customer</option>
+                            <option value="vendor">Vendor</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <select class="form-select" name="time_period" id="time_period">
+                            <option value="">-- All Time Periods --</option>
+                            <option value="today">Today</option>
+                            <option value="yesterday">Yesterday</option>
+                            <option value="thisweek">This Week</option>
+                            <option value="lastweek">Last Week</option>
+                            <option value="thismonth">This Month</option>
+                            <option value="lastmonth">Last Month</option>
+                            <option value="thisyear">This Year</option>
+                            <option value="lastyear">Last Year</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <section class="content">
+            <div class="row">
+                <div class="col-12">
+                    <div class="box">
+                        <div class="box-body">
+                            <div class="table-responsive">
+                                <form id="product-form" method="post">
+                                    {% csrf_token %}
+                                    <table id="productorder" class="table table-hover no-wrap product-order" data-page-size="10">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    <div class="form-check">
+                                                        <input type="checkbox" id="verifyall" class="form-check-input" onclick="selectAllCheckboxes(this)">
+                                                        <label for="verifyall"></label>
+                                                    </div>
+                                                </th>
+                                                <th>ID</th>
+                                                <th>Name</th>
+                                                <th>Category</th>
+                                                <th>Brand</th>
+                                                <th>Date & Time</th>
+                                                <th>Stock</th>
+                                                <th>Role</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="filtered-products">
+                                            {% for p in products %}
+                                            <tr>
+                                                <td>
+                                                    <div class="form-check">
+                                                        <input type="checkbox" id="verify{{ forloop.counter0 }}" class="form-check-input" name="selected_products" value="{{ p.pk }}">
+                                                        <label for="verify{{ forloop.counter0 }}"></label>
+                                                    </div>
+                                                </td>
+                                                <td>{{ p.pk }}</td>
+                                                <td>{{ p.product_name }}</td>
+                                                <td>{{ p.category }}</td>
+                                                <td>{{ p.brand }}</td>
+                                                <td>{{ p.created_at|naturaltime }}</td>
+                                                {% if p.stock_quantity == 0 %}
+                                                <td>
+                                                    <span class="badge badge-pill badge-danger">Out</span>
+                                                </td>
+                                                {% else %}
+                                                <td>
+                                                    <span class="badge badge-pill badge-success">{{ p.stock_quantity }}</span>
+                                                </td>
+                                                {% endif %}
+                                                {% if p.user.is_superuser %}
+                                                <td>Superuser</td>
+                                                {% elif p.user.is_staff %}
+                                                <td>Staff</td>
+                                                {% elif p.user.is_customer %}
+                                                <td>Customer</td>
+                                                {% elif p.user.is_vendor %}
+                                                <td>Vendor</td>
+                                                {% else %}
+                                                <td>Unknown</td>
+                                                {% endif %}
+                                                <td>
+                                                    <a href="{% url 'product_detail' p.pk %}" class="text-primary me-10" data-bs-toggle="tooltip" data-bs-original-title="View">
+                                                        <i class="fa fa-eye"></i>
+                                                    </a>
+                                                    <a href="{% url 'product-update' p.pk %}" class="text-info me-10" data-bs-toggle="tooltip" data-bs-original-title="Edit">
+                                                        <i class="ti-marker-alt"></i>
+                                                    </a>
+                                                    <a href="javascript:void(0)" class="text-danger delete-link" data-url="{% url 'dashboard_product_delete' p.pk %}" data-bs-original-title="Delete" data-bs-toggle="tooltip">
+                                                        <i class="ti-trash"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    <div class="d-flex">
+                                        {% if not request.user.is_vendor %}
+                                        <button type="button" class="btn btn-primary {% if request.user.is_vendor %}d-none{% endif %}" id="verify-button" style="display: none;" onclick="submitForm('{% url 'product_verify' %}')">Verify Selected Products</button>
+                                        {% endif %}
+                                        <button type="button" class="btn btn-danger ms-3" id="delete-button" style="display: none;" onclick="submitForm('{% url 'product_delete' %}')">Delete Selected Products</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock dashboard %}
+
+{% block script %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        function attachCheckboxListeners() {
+            var checkboxes = document.getElementsByName('selected_products');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', toggleButtonVisibility);
+            });
+            toggleButtonVisibility(); // Call toggleButtonVisibility initially
+        }
+
+        function toggleButtonVisibility() {
+            var checkboxes = document.getElementsByName('selected_products');
+            var verifyButton = document.getElementById('verify-button');
+            var deleteButton = document.getElementById('delete-button');
+            var anyChecked = Array.prototype.slice.call(checkboxes).some(x => x.checked);
+            verifyButton.style.display = anyChecked ? 'block' : 'none'; // Show verify button if any checkbox is checked
+            deleteButton.style.display = anyChecked ? 'block' : 'none'; // Show delete button if any checkbox is checked
+        }
+
+        function fetchFilteredContent(category, brand, user_type, time_period) {
+            $.ajax({
+                url: '',
+                type: 'GET',
+                data: {
+                    category: category,
+                    brand: brand,
+                    user_type: user_type,
+                    time_period: time_period
+                },
+                success: function(data) {
+                    var newContent = $(data).find('#filtered-products').html();
+                    $('#filtered-products').html(newContent);
+                    attachCheckboxListeners();
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching filtered content:', error);
+                }
+            });
+        }
+
+        $('#search').on('input', function() {
+            var search = $(this).val();
+            var category = $('#category').val();
+            var brand = $('#brand').val();
+            var user_type = $('#user_type').val();
+            var time_period = $('#time_period').val();
+            fetchFilteredContent(search, category, brand, user_type, time_period);
+        });
+        $('.form-select').on('change', function() {
+            var search = $('#search').val();
+            var category = $('#category').val();
+            var brand = $('#brand').val();
+            var user_type = $('#user_type').val();
+            var time_period = $('#time_period').val();
+            fetchFilteredContent(search, category, brand, user_type, time_period);
+        });
+
+        window.selectAllCheckboxes = function(source) {
+            var checkboxes = document.getElementsByName('selected_products');
+            for (var i = 0; i < checkboxes.length; i++) {
+                checkboxes[i].checked = source.checked;
+            }
+            toggleButtonVisibility();
+        };
+
+        window.submitForm = function(actionUrl) {
+            var form = document.getElementById('product-form');
+            form.action = actionUrl;
+            form.submit();
+        };
+
+        attachCheckboxListeners(); // Attach listeners on initial load
+    });
+</script>
+{% endblock script %}

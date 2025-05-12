@@ -1,0 +1,63 @@
+{% extends 'dashboard/base.html' %}
+
+
+{% block dashboard %}
+  <div class="content-wrapper">
+	  <div class="container-full">
+		<div class="content-header d-flex">
+			<div class="me-auto mt-2">
+				<h4 class="page-title">Deal Of The Day Product List</h4>
+			</div>
+			<div>
+				<a class="btn btn-sm btn-primary" href="{% url 'deal_of_the_day_product-add' %}">Add Deal Of The Product</a>
+			</div>
+		</div>
+		<section class="content">
+		  <div class="row">
+			  <div class="col-12">
+				<div class="box">
+				  <div class="box-body">
+					<div class="table-responsive">
+						<table id="productorder" class="table table-hover no-wrap product-order" data-page-size="10">
+							<thead>
+								<tr>
+                                    <th>ID</th>
+									<th>Product Name</th>                              
+									<th>Image</th>                              
+									<th>Campaign Category</th>                              
+                                    <th>Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+							{% for c in deal_of_the_day %} 
+								<tr>
+                                    <td>{{ c.id }}</td>                                                                      
+                                    <td>{{ c.product.product_name }}</td>                                                                      
+									<td>
+										<img src="{{ c.product.image.url }}" alt="Campingn Product" style="width: 30px;">
+									</td>
+									<td>{{ c.campaign_category }}</td>
+									<td>
+										<a href="{% url 'deal_of_the_day_product-update' c.pk %}" class="text-info me-10" data-bs-toggle="tooltip" data-bs-original-title="Edit">
+											<i class="ti-marker-alt"></i>
+										</a>
+										<a href="javascript:void(0)" class="text-danger delete-link"
+											data-url="{% url 'deal_of_the_day_product-delete' c.pk %}"
+											data-bs-original-title="Delete" data-bs-toggle="tooltip">
+											<i class="ti-trash"></i>
+                                        </a>
+									</td>
+								</tr>
+								{% endfor %}								
+							</tbody>						
+						</table>
+					</div>
+				  </div>
+				</div>
+			  </div>		  
+		  </div>
+		</section>
+	  </div>
+  </div>
+{% endblock dashboard %}
+	
