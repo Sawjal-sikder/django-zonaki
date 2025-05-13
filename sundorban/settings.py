@@ -205,14 +205,23 @@ SOCIAL_AUTH_LOGIN_ERROR_URL = '/'
 
 # email setup
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'mail.eranian.com'
-EMAIL_PORT = 465
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
 # EMAIL_USE_TLS = True
 EMAIL_USE_SSL = True
-EMAIL_HOST_USER = 'support@eranian.com'
-EMAIL_HOST_PASSWORD = 'PeMKdpwU@Oy4%&);kC$TwB0CGM_pFy4^Z@D^'
-DEFAULT_FROM_EMAIL = 'support@eranian.com'
+EMAIL_HOST_USER = 'zonaki.team@gmail.com'
+EMAIL_HOST_PASSWORD = 'mtcq jbux dkde dyda'
+DEFAULT_FROM_EMAIL = 'zonaki.team@gmail.com'
 
+# # email setup
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'mail.eranian.com'
+# EMAIL_PORT = 465
+# # EMAIL_USE_TLS = True
+# EMAIL_USE_SSL = True
+# EMAIL_HOST_USER = 'support@eranian.com'
+# EMAIL_HOST_PASSWORD = 'PeMKdpwU@Oy4%&);kC$TwB0CGM_pFy4^Z@D^'
+# DEFAULT_FROM_EMAIL = 'support@eranian.com'
 
 
 # pathao courier demo api
