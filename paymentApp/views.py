@@ -841,6 +841,8 @@ def initiate_payment(request):
 """
 
 
+from decimal import Decimal
+
 def create_pathao_order(request, id):  # using
     order = (
         Order.objects
@@ -878,8 +880,14 @@ def create_pathao_order(request, id):  # using
 
         merchant_order_id = f"zonaki-OID-#{order.id}"
         coupon_price = order.coupon_price() / order.items.count() if order.coupon else 0
-        amount_to_collect = round(float(sum((item.get_subtotal() - coupon_price)
-                                  for item in items)), 2) if order.payment_option != 'Bkash' else 0.00
+        amount_to_collect = round(
+            float(sum((item.get_subtotal() - coupon_price) for item in items)), 2)
+        
+        # Convert amount_to_collect to Decimal and add delivery amount (convert to float)
+        amount_to_collect = Decimal(amount_to_collect) + order.get_delivery_amount() if order.payment_option != 'Bkash' else Decimal(0.00)
+
+        # Convert amount_to_collect and other decimal fields to float for JSON serialization
+        amount_to_collect = float(amount_to_collect)
 
         payload = {
             "store_id": store_id,
@@ -917,17 +925,16 @@ def create_pathao_order(request, id):  # using
                 )
             order.merchant_order_id = merchant_order_id
             messages.success(request, f"Message: {res['message']}")
-
-
         else:
-            # Log the error response and inspect the details
-            print(f"API Error: {res['message']}, Errors {res['errors']}")
-            messages.error(
-                request, f"Message: {res['message']}, Errors {res['errors']}")
+            # Safely access 'message' and 'errors' keys
+            message = res.get('message', 'No message available')
+            errors = res.get('errors', 'No errors available')
+            print(f"API Error: {message}, Errors: {errors}")
+            messages.error(request, f"Message: {message}, Errors: {errors}")
+
 
     order.save()
     return redirect('order_list')
-
 
 def create_bulk_orders(request, id):  # not using
     order = (

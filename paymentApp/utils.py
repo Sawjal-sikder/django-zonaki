@@ -117,6 +117,8 @@ def fetch_cities(): # using
     return json_string
 
 from decimal import Decimal
+import json
+
 def fetch_shipping_amount(pk): # using
     # Prefetch related objects to optimize the query
     order = (
@@ -136,8 +138,7 @@ def fetch_shipping_amount(pk): # using
 
     # Print out the grouped items by user
     for user, data in vendor_items.items():
-        store_id = user.vendorinformation.store_id if user.is_vendor else user.profile.store_id or 241231
-        # print(f'called fetch_shipping_amount {store_id = }')
+        store_id = get_valid_store_id(user)        # print(f'called fetch_shipping_amount {store_id = }')
         # 129913 # it is admins store id
         item_weight = sum(
             Decimal(item_dict['item'].item.weight) * Decimal(item_dict['item'].quantity)
@@ -163,11 +164,11 @@ def fetch_shipping_amount(pk): # using
         # Send request to Pathao API
         response = requests.post(url, json=payload, headers=headers)
         res = response.json()
-        # print(f'called fetch_shipping_amount {res = }')
+        print(f'called fetch_shipping_amount {res = }')
         if response.status_code == 200:
             # Extract shipping charge from API response
             charge = res["data"]["final_price"]
-            # print(f'called fetch_shipping_amount {charge = }')
+            print(f'called fetch_shipping_amount {charge = }')
             total_charge += charge
             # print(f'called fetch_shipping_amount {total_charge = }')
             for item_dict in data['items']:

@@ -596,7 +596,7 @@ class Order(models.Model):
     
     """ {store app html:(checkout)} """
     def get_delivery_amount(self):
-        return self.total_shipping_amount - self.get_free_delivery_amount()
+        return self.total_shipping_amount + self.get_free_delivery_amount()
     
     def coupon_without_shipingcharge(self):
         total = 0
