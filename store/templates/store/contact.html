@@ -14,15 +14,35 @@
                         <ul class="contact-list">
                             <li>
                                 <i class="icon-map-marker"></i>
-                                Dhaka
+                                {% if logo.addresses.all %}
+                                    {% for company in logo.addresses.all %}
+                                        <p>{{ company.address }}</p>
+                                    {% endfor %}
+                                {% else %}
+                                    <p>No address found.</p>
+                                {% endif %}
+
                             </li>
                             <li>
                                 <i class="icon-phone"></i>
-                                <a href="tel:#">0191818****</a>
+                               {% if logo.phones.all|length > 0 %}
+                                    {% for company in logo.phones.all %}
+                                        <a href="tel:{{ company.phone }}">{{ company.phone }}</a>
+                                    {% endfor %}
+                                {% else %}
+                                    <p>No phone number found.</p>
+                                {% endif %}
+
                             </li>
                             <li>
                                 <i class="icon-envelope"></i>
-                                <a href="mailto:#">support@eranian.com.bdergt</a>
+                                {% if logo.emails.all|length > 0 %}
+                                    {% for company in logo.emails.all %}
+                                        <a href="mailto:{{ company.email }}">{{ company.email }}</a>{% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <p>No email address found.</p>
+                                {% endif %}
                             </li>
                         </ul><!-- End .contact-list -->
                     </div><!-- End .contact-info -->
