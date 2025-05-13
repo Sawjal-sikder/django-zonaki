@@ -53,9 +53,6 @@ def issue_access_token():
         raise Exception(f"Error issuing token: {response.json()}")
 
 def refresh_access_token():
-    """
-    Refreshes the access token using the stored refresh token.
-    """
     token = get_existing_token()
     if not token or not token.refresh_token:
         raise Exception("No refresh token available")
@@ -81,22 +78,26 @@ def refresh_access_token():
         # Update token in the database
         token.access_token = data.get('access_token')
         token.expires_at = expires_at
+        token.refresh_token = data.get('refresh_token', token.refresh_token)
         token.save()
         return token.access_token
     else:
+        print("Failed to refresh token:", response.json())
         raise Exception(f"Error refreshing token: {response.json()}")
 
-def get_access_token():
-    """Retrieve a valid access token, refreshing it if necessary."""
-    token = get_existing_token()
 
-    # If token is expired or not present, refresh or issue a new one
+def get_access_token():
+    token = get_existing_token()
     if not token or token.is_expired():
-        if token and token.refresh_token:
-            return refresh_access_token()
-        else:
+        try:
+            if token and token.refresh_token:
+                return refresh_access_token()
+        except Exception as e:
+            print("Refresh failed, issuing new token:", e)
             return issue_access_token()
+        return issue_access_token()
     return token.access_token
+
 
 
 
@@ -249,3 +250,24 @@ def fetch_stores(request):
 
     return redirect('pathao_store_list')
 
+
+def get_valid_store_id(vendor):
+    store_id = (
+        vendor.vendorinformation.store_id
+        if vendor.is_vendor and vendor.vendorinformation.store_id
+        else vendor.profile.store_id if vendor.profile and vendor.profile.store_id
+        else getattr(settings, 'PATHAO_DEFAULT_STORE_ID', None)
+    )
+    
+    # Check if store_id is valid
+    if store_id and PathaoStores.objects.filter(store_id=store_id, is_active=True).exists():
+        return store_id
+
+    # Fall back to default store if no valid store_id found
+    default_store = PathaoStores.objects.filter(is_default_store=True, is_active=True).first()
+    if default_store:
+        return default_store.store_id
+    else:
+        # Log/store the error if no valid store is found
+        print(f"Invalid store_id or no active store found for vendor {vendor.id}. Falling back to default.")
+        return getattr(settings, 'PATHAO_DEFAULT_STORE_ID', 186534)

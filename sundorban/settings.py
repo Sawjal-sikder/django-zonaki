@@ -13,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-0hl@-zq6o6jh%u288hc2=l^qwc4j!e3mb)7588h-&fh*)or1ca'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -230,6 +230,7 @@ PATHAO_API_CLIENT_SECRET = "CqRH7pyndQTV8WVYEoKIDCsNY07RkZGy3o18kz23"
 PATHAO_API_USERNAME = "zonaki.team@gmail.com"
 PATHAO_API_PASSWORD = "Pathao1234@.com"
 PATHAO_API_GRANT_TYPE = "password"
+PATHAO_DEFAULT_STORE_ID = 186534
 
 # Pathao webhook secret key
 WEBHOOK_SECRET = "f3992ecc-59da-4cbe-a049-a13da2018d51"

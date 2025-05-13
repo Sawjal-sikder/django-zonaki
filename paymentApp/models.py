@@ -137,8 +137,8 @@ class BkashApi(models.Model):
 from django.utils import timezone
 
 class PathaoToken(models.Model):
-    access_token = models.CharField(max_length=255)
-    refresh_token = models.CharField(max_length=255, blank=True, null=True)
+    access_token = models.CharField(max_length=1255)
+    refresh_token = models.CharField(max_length=1255, blank=True, null=True)
     expires_at = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
