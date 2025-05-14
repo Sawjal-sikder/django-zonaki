@@ -55,7 +55,7 @@
 								<td>{{ p.order_complate_date }}</td>
 								{% else %}
 								<td>
-									<a class="badge badge-info p-2" href="{% url 'render-order-pdf-view' p.pk %}">Download</a></td>
+									<a class="badge badge-info p-2" target="_blank" href="{% url 'render-order-pdf-view' p.pk %}">Download</a></td>
 								{% endif %}
 								<td>
 									<a style="font-size: 20px ;" href="{% url 'product_order_detail' p.pk %}"><i class="fa fa-eye" aria-hidden="true"></i></a>
