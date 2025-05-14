@@ -1,6 +1,68 @@
-__pycache__
-*.pyc
+# Python
+__pycache__/
 *.py[cod]
-*$py.class
-ashiq
+*.pyo
+*.pyd
+*.pyc
+*.so
+*.egg-info/
+*.egg
+
+# Virtual environments
+env/
+venv/
+ENV/
+env.bak/
+*.env
+*.venv
+.Python
+
+# Django stuff:
 *.log
+*.pot
+*.pyc
+db.sqlite3
+db.sqlite3-journal
+
+# If you use PostgreSQL or MySQL local DB dumps
+*.sql
+*.dump
+
+# Django media and static folders (user-generated and collected files)
+media/
+static/
+
+# If using Django's collectstatic output folder inside the project
+staticfiles/
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# pytest
+.cache/
+.pytest_cache/
+
+# coverage
+htmlcov/
+.coverage
+coverage.xml
+*.cover
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+*.eggs/
+
+# Backup files
+*~
+*.bak
+*.swp
+*.tmp
