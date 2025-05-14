@@ -588,7 +588,7 @@ def render_order_pdf_view(request, *args, **kwargs):
     }
     response = HttpResponse(content_type='application/pdf')
 
-    response['Content-Disposition'] = 'filename="eranian_order_invoice.pdf"'
+    response['Content-Disposition'] = 'filename="order_invoice.pdf"'
     template = get_template(template_path)
     html = template.render(context)
 
