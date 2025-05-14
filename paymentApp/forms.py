@@ -36,7 +36,7 @@ class SippingAddressForm(forms.Form):
     zone = forms.CharField(required=True)
     zone_name = forms.CharField(required=True)
     area = forms.CharField(required=True)
-    area_name = forms.CharField(required=True)
+    area_name = forms.CharField(required=False)
     delivery_type_ =(
         # ('12','Fast Delivery (Extra Charge)'),
         ('48','Normal Delivery'),
