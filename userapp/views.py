@@ -63,7 +63,8 @@ def signup(request):
 #             messages.error(request, 'Invalid credentials. Please try again.')
 #     return render(request, 'userapp/login.html')
 
-from django.utils.http import is_safe_url
+from django.utils.http import url_has_allowed_host_and_scheme
+
 def signin(request):
     if request.method == 'POST':
         # Get username and password from the request
